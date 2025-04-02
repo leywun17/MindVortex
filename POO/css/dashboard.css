@@ -1,0 +1,188 @@
+@import "https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap";
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: "Nunito", sans-serif;
+}
+
+body {
+	width: 100%;
+	height: 100vh;
+	background: linear-gradient(210deg, #000000 20%, #00529C 100%);
+	position: relative;
+	overflow: hidden;
+}
+
+body::before {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background:
+		radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 25%),
+		radial-gradient(circle at 80% 80%, rgba(0, 82, 156, 0.3) 0%, rgba(0, 82, 156, 0) 25%);
+}
+
+/* Color of the links BEFORE scroll */
+.navbar-scroll .nav-link,
+.navbar-scroll .navbar-toggler-icon,
+.navbar-scroll .navbar-brand {
+	color: #262626;
+}
+
+
+/* Color of the links AFTER scroll */
+.navbar-scrolled .nav-link,
+.navbar-scrolled .navbar-toggler-icon,
+.navbar-scroll .navbar-brand {
+	color: #262626;
+}
+
+/* Color of the navbar AFTER scroll */
+.navbar-scrolled {
+	background-color: #fff;
+}
+
+/* An optional height of the navbar AFTER scroll */
+.navbar.navbar-scroll.navbar-scrolled {
+	padding-top: auto;
+	padding-bottom: auto;
+}
+
+.navbar-brand {
+	font-size: unset;
+	height: 3.5rem;
+}
+
+.contenedor-principal {
+	background-color: rgb(145, 198, 247, 0.12);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+input[type="search"] {
+	background-color: transparent;
+	border: 1px solid #91C6F7;
+	color: #fff;
+	border-radius: 34px;
+	padding: 8px 12px;
+	font-size: 14px;
+	text-indent: 5px;
+	transition: width .5s ease-in-out;
+}
+
+input[type="search"]:focus {
+	background-color: transparent;
+	outline: none;
+	width: 250px;
+}
+
+.form-control:focus {
+	color: #fff !important;
+	/* Texto negro para asegurar visibilidad */
+	box-shadow: none !important;
+	/* Elimina el resplandor azul de Bootstrap */
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+	display: none;
+}
+
+.paginas .nav-link {
+	color: #fff !important;
+	text-decoration: none;
+	position: relative;
+	transition: color 0.3s ease;
+}
+
+.paginas .nav-link::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -2px;
+	width: 100%;
+	height: 2px;
+	background-color: #91C6F7;
+	transform: scaleX(0);
+	transform-origin: right;
+	transition: transform 0.3s ease;
+}
+
+.paginas .nav-link:hover,
+.paginas .nav-link.active {
+	color: #91C6F7 !important;
+}
+
+.paginas .nav-link:hover::after,
+.paginas .nav-link.active::after {
+	transform: scaleX(1);
+	transform-origin: left;
+}
+
+.contenedor-principal {
+	background-color: rgb(145, 198, 247, 0.12);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	height: 100%;
+	border-radius: 50px;
+}
+
+.dropdown-menu {
+    z-index: 1000 !important; /* Asegura que el menú se muestre sobre los demás elementos */
+}
+
+
+.dropdown-item,
+.dropdown-item {
+	color: #fff;
+	transition: background-color 0.5s linear;
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+	color: #c1c1c1;
+	background-color: rgb(145, 198, 247, 0.12) !important;
+}
+
+.contenedor {
+	height: 460px;
+}
+
+footer img {
+	width: 110%;
+	object-fit: cover;
+	position: relative;	
+	z-index: -10;
+}
+
+
+.custom-btn {
+	width: 80px !important;
+	height: 80px;
+	color: #91C6F7;
+	text-align: center;
+	padding: 0;
+	font-size: 24px;
+	background: linear-gradient(180deg, rgba(44, 95, 141, 0.73) 0%, rgba(145, 198, 247, 0.73) 100%);
+	line-height: 90px;
+	text-decoration: none;
+	transition: all 0.3s ease;
+	font-size: 50px;
+	position: relative;
+	z-index: 100;
+}
+
+.custom-btn:hover {
+	color: #fff;
+	transform: scale(1.1);
+}
+
+.h2{
+	font-weight: 800 !important;
+	color: #91C6F7 !important;
+}
