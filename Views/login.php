@@ -18,12 +18,12 @@
         <br>
         <div class="input-group">
             <label for="email">Email:</label>
-            <input type="email" name="email" required placeholder="Email">
+            <input type="email" name="email" id="email" required placeholder="Email">
         </div>
         <br>
         <div class="input-group">
             <label for="password">Contraseña:</label>
-            <input type="password" name="password" required placeholder="Contraseña">
+            <input type="password" name="password" id="password" required placeholder="Contraseña">
         </div>
         <br>
 

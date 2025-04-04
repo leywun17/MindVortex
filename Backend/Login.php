@@ -20,7 +20,7 @@ class Auth {
     public function authenticate($email, $password) {
         $email = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
         if (!$email) {
-            return ["status" => "error", "message" => "Correo electrónico inválido."];
+            return ["status" => "error", "message" => $email];
         }
 
         // Verificar si la cuenta está bloqueada
@@ -36,7 +36,7 @@ class Auth {
 
         if ($stmt->rowCount() == 1) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $hashedPassword = $row['password']; // Obtén la contraseña hasheada almacenada en la base de datos
+            $hashedPassword = $row['password'];
 
             if (password_verify($password, $hashedPassword)) {
                 if ($row['estado'] === 'activa') {
@@ -126,44 +126,37 @@ class Auth {
     }
 }
 
-// Aquí empieza la parte adaptada del código que se ejecuta en el POST
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Leer la entrada JSON
+    $input = json_decode(file_get_contents("php://input"), true);
+
     $email = $_POST['email'];
     $password = $_POST['password'];
+
+    if (!$email || !$password) {
+        echo json_encode(['status' => 'error', 'message' => 'Correo o contraseña no proporcionados']);
+        exit;
+    }
 
     $auth = new Auth();
     $result = $auth->authenticate($email, $password);
 
-    header("Content-Type: application/json");
-
     if ($result === true) {
-        // Autenticación exitosa
         $response = array(
             'status' => 'success',
             'id'=> $_SESSION['id'],
             'name' => $_SESSION['name'],
             'email' => $_SESSION['email'],
             'desc' => $_SESSION['desc'],
-            'img' => $_SESSION['profile_image'],
-
+            'img' => $_SESSION['profile_image']
         );
         echo json_encode($response);
     } elseif ($result === 'inactive') {
-        // Usuario inactivo
-        $response = array(
-            'status' => 'error',
-            'message' => 'El usuario está inactivo'
-        );
-        echo json_encode($response);
+        echo json_encode(array('status' => 'error', 'message' => 'El usuario está inactivo'));
     } elseif ($result === 'invalid') {
-        // Credenciales inválidas
-        $response = array(
-            'status' => 'error',
-            'message' => 'Verifique la información ingresada'
-        );
-        echo json_encode($response);
+        echo json_encode(array('status' => 'error', 'message' => 'Verifique la información ingresada'));
     } elseif (is_array($result)) {
-        // En caso de que se retorne un mensaje de error en el formato del primer código
         echo json_encode($result);
     }
 }

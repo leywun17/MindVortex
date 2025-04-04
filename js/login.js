@@ -1,10 +1,10 @@
 $(document).ready(function () {
     $("#loginForm").submit(function (event) {
         event.preventDefault(); // Evita el envío tradicional del formulario
-
+        
         // Obtener los valores de los campos de entrada
-        var email = $.trim($('input[name="email"]').val()); // Eliminar espacios en blanco al inicio y al final
-        var password = $.trim($('input[name="password"]').val());
+        let email = $.trim($('input[name="email"]').val()); // Eliminar espacios en blanco al inicio y al final
+        let password = $.trim($('input[name="password"]').val());
 
         // Sanitizar datos antes de enviarlos (opcional, solo como precaución adicional)
         password = encodeURIComponent(password);
@@ -37,6 +37,7 @@ function loginUser(email, password) {
                     title: "Error",
                     text: data.message
                 });
+                console.log("DAtos", data);
             }
         },
         error: function () {

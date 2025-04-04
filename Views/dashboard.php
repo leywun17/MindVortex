@@ -8,7 +8,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
     $email = isset($_SESSION["email"]) ? htmlspecialchars($_SESSION["email"]) : 'Correo no disponible';
 } else {
 
-    header("Location: ../index.php");
+    header("Location: ../index.html");
     exit();
 }
 
@@ -38,23 +38,23 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
     <div class="container-fluid d-grid gap-3">
         <div class="row">
             <nav class="navbar navbar-expand-md navbar-dark">
-                <div class="container rounded-pill text-bg-dark ps-n2 contenedor-principal">
+                <div class="container rounded-4 text-bg-dark ps-n2 contenedor-principal p-1">
                     <!-- Logo -->
                     <a class="navbar-brand d-flex align-items-center" href="">
-                        <img src="../Assets/logo.png" alt="Flowbite Logo" height="38">
+                        <img src="../Assets/logo.png" alt="Flowbite Logo" height="38" style="position: relative; left: 15px;">
                     </a>
 
                     <!-- Botones de usuario y toggler -->
                     <div class="d-flex align-items-center order-md-2">
                         <!-- Dropdown de usuario -->
                         <div class="dropdown d-grid gap-3 position-relative">
-                            <button class="btn p-1 d-flex align-items-center justify-content-center" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn p-1 d-flex align-items-center justify-content-center" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative; right: 5px;">
                                 <?php if (!empty($img)): ?>
                                     <img src="../uploads/profile_images/<?php echo $img ?>" alt="user photo" class="rounded-circle bg-light d-block" width="32" height="32">
                                 <?php else: ?>
                                     <i class='bx bx-user rounded-circle bg-dark d-block p-2' style='color:#91c6f7; font-size: 24px;'></i>
                                 <?php endif; ?>
-                                
+
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end rounded" aria-labelledby="userMenu" style="background-color: #13293D; z-index: 100;">
                                 <li class="dropdown-header d-flex align-items-center
@@ -109,15 +109,22 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                 </div>
             </nav>
         </div>
-        <div class="row contenedor">
+        <div class="row contenedor d-flex justify-content-center">
             <div class="container">
-                <div class=" container contenedor-principal p-5" style="border-radius: 50px; position: relative; z-index: -1;">
+                <div class=" container contenedor-principal p-5" style="border-radius: 50px; position: relative; max-height: 500px;">
                     <div class="h2">Preguntas</div>
+                    <div class="column d-flex justify-content-center">
+                        <div id="listaForos" class="d-flex gap-3 m-2">
+                        </div>
+                    </div>
+                    <div id="pagination-container" class="d-flex justify-content-center mt-3">
+                        
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row position-relative" style="top:-90px;">
-            <a class=" position-absolute rounded-circle custom-btn position-fixed end-0 m-3" data-bs-toggle="modal" href="#Agregarforo">
+        <div class="row">
+            <a class="rounded-circle custom-btn position-fixed end-0  mt-n4" data-bs-toggle="modal" href="#Agregarforo">
                 <i class='bx bx-plus' style='color:#91C6F7; border-radius:50%;'></i>
             </a>
 
@@ -125,23 +132,33 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
+                            Agregar Pregunta
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
-                            
-                            <input type="text">
-                            <input type="text">
-                        </div>
+                        <form id="formularioForo">
+                            <div class="form-group">
+                                <label for="titulo">Título:</label>
+                                <input type="text" class="form-control" id="titulo" name="titulo" required style="color: #000;">
+                            </div>
+                            <div class="form-group modal-body">
+                                <label for="descripcion">Descripción:</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" minlength="15" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Publicar Foro</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row d-md-block d-xl-block d-xxl-block ">
             <footer class="container-fluid fixed-bottom d-flex align-items-center p-0 m-0">
-                <img src="../Assets/Mask group.svg" alt="Footer SVG" class="img-fluid w-100" style="height: 85px">
+                <img src="../Assets/Mask group.svg" alt="Footer SVG" class="img-fluid w-100" style="height: 100px">
             </footer>
         </div>
     </div>
+    <div class="mensajeContainer"></div>
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/subirForo.js"></script>
 </body>
 
 </html>

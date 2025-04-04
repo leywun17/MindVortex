@@ -1,148 +1,256 @@
 <?php
+// Encabezados requeridos
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: POST, GET");
+header("Access-Control-Max-Age: 3600");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
 session_start(); // Asegúrate de iniciar la sesión antes de acceder a las variables de sesión.
+header('Content-Type: application/json');
+
+
 
 require_once 'config.php';
 
-class Foro {
+class Forum
+{
+    // Conexión a la base de datos y nombre de la tabla
     private $conn;
-    
-    public function __construct() {
-        $dbConfig = new Database();
-        $this->conn = $dbConfig->getConnection();
+    private $table_name = "foros";
+
+    // Propiedades de objeto
+    public $id;
+    public $titulo;
+    public $descripcion;
+    public $id_usuario;
+    public $fecha_creacion;
+    public $nombre_usuario; // Para JOIN con la tabla de usuarios
+    public $imagen_usuario; // Para JOIN con la tabla de usuarios
+
+    // Constructor con $db como conexión a la base de datos
+    public function __construct($db)
+    {
+        $this->conn = $db;
     }
-    
-    // Función para crear un nuevo tema con su primer post
-    public function crear_tema($titulo, $contenido, $categoria = 'general') {
-        try {
-            $this->conn->beginTransaction();
-            
-            // Insertar el tema
-            $sql = "INSERT INTO temas (usuario_id, titulo, categoria) VALUES (:usuario_id, :titulo, :categoria)";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':usuario_id', $_SESSION['user_id']);
-            $stmt->bindParam(':titulo', $titulo);
-            $stmt->bindParam(':categoria', $categoria);
-            
-            if ($stmt->execute()) {
-                $tema_id = $this->conn->lastInsertId();
-                
-                // Insertar el primer post del tema
-                $sql = "INSERT INTO posts (tema_id, usuario_id, contenido) VALUES (:tema_id, :usuario_id, :contenido)";
-                $stmt = $this->conn->prepare($sql);
-                $stmt->bindParam(':tema_id', $tema_id);
-                $stmt->bindParam(':usuario_id', $_SESSION['user_id']);
-                $stmt->bindParam(':contenido', $contenido);
-                
-                if ($stmt->execute()) {
-                    $this->conn->commit();
-                    return $tema_id;
-                }
-            }
-            
-            $this->conn->rollBack();
-            return false;
-            
-        } catch (PDOException $e) {
-            $this->conn->rollBack();
-            return $e->getMessage();
+
+    // Crear un nuevo foro
+    public function create()
+    {
+        // Sanitizar datos
+        $this->titulo = htmlspecialchars(strip_tags($this->titulo));
+        $this->descripcion = htmlspecialchars(strip_tags($this->descripcion));
+        $this->id_usuario = htmlspecialchars(strip_tags($this->id_usuario));
+
+        // Consulta para insertar
+        $query = "INSERT INTO " . $this->table_name . " 
+                  SET titulo = :titulo, 
+                      descripcion = :descripcion, 
+                      id_usuario = :id_usuario";
+
+        // Preparar consulta
+        $stmt = $this->conn->prepare($query);
+
+        // Vincular valores
+        $stmt->bindParam(':titulo', $this->titulo);
+        $stmt->bindParam(':descripcion', $this->descripcion);
+        $stmt->bindParam(':id_usuario', $this->id_usuario);
+
+        // Ejecutar consulta
+        if ($stmt->execute()) {
+            $this->id = $this->conn->lastInsertId();
+            return true;
         }
+
+        return false;
     }
-    
-    // Función para responder a un tema existente
-    public function responder_tema($tema_id, $contenido) {
-        try {
-            $sql = "INSERT INTO posts (tema_id, usuario_id, contenido) VALUES (:tema_id, :usuario_id, :contenido)";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':tema_id', $tema_id);
-            $stmt->bindParam(':usuario_id', $_SESSION['user_id']);
-            $stmt->bindParam(':contenido', $contenido);
-            
-            if ($stmt->execute()) {
-                return $this->conn->lastInsertId();
-            }
-            
-            return false;
-            
-        } catch (PDOException $e) {
-            return $e->getMessage();
-        }
+
+    // Leer todos los foros con información de usuario
+    public function readAll()
+    {
+        // Consulta con JOIN
+        $query = "SELECT f.id, f.titulo, f.descripcion, f.fecha_creacion, u.name, 
+                 COALESCE(u.profile_image, 'default.jpg') AS profile_image
+          FROM " . $this->table_name . " f
+          INNER JOIN users u ON f.id_usuario = u.id
+          ORDER BY f.fecha_creacion DESC";
+
+        // Preparar consulta
+        $stmt = $this->conn->prepare($query);
+
+        // Ejecutar consulta
+        $stmt->execute();
+
+        return $stmt;
     }
-    
-    // Obtener un tema con todas sus respuestas
-    public function obtener_tema($tema_id) {
-        try {
-            // Obtener información del tema
-            $sql = "SELECT t.*, u.nombre as autor 
-                    FROM temas t 
-                    JOIN usuarios u ON t.usuario_id = u.id 
-                    WHERE t.id = :tema_id";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':tema_id', $tema_id);
-            $stmt->execute();
-            $tema = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$tema) {
-                return false;
-            }
-            
-            // Obtener todos los posts del tema
-            $sql = "SELECT p.*, u.nombre as autor 
-                    FROM posts p 
-                    JOIN usuarios u ON p.usuario_id = u.id 
-                    WHERE p.tema_id = :tema_id 
-                    ORDER BY p.fecha_creacion ASC";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':tema_id', $tema_id);
-            $stmt->execute();
-            $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            $tema['posts'] = $posts;
-            return $tema;
-            
-        } catch (PDOException $e) {
-            return $e->getMessage();
+
+    // Leer un foro específico
+    public function readOne()
+    {
+        // Consulta para leer un solo foro con información de usuario
+        $query = "SELECT f.id, f.titulo, f.descripcion, f.fecha_creacion, 
+                         u.name, u.profile_image
+                  FROM " . $this->table_name . " f
+                  INNER JOIN users u ON f.id_usuario = u.id
+                  WHERE f.id = :id";
+
+        // Preparar consulta
+        $stmt = $this->conn->prepare($query);
+
+        // Vincular ID
+        $stmt->bindParam(':id', $this->id);
+
+        // Ejecutar consulta
+        $stmt->execute();
+
+        // Obtener fila
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $this->id = $row['id'];
+            $this->titulo = $row['titulo'];
+            $this->descripcion = $row['descripcion'];
+            $this->fecha_creacion = $row['fecha_creacion'];
+            $this->nombre_usuario = $row['name'];
+            $this->imagen_usuario = $row['profile_image'];
+            return true;
         }
-    }
-    
-    //Listar todos los temas
-    public function listar_temas($categoria = null, $pagina = 1, $por_pagina = 20) {
-        try {
-            $offset = ($pagina - 1) * $por_pagina;
-            
-            $where = "";
-            $params = [];
-            
-            if ($categoria) {
-                $where = "WHERE t.categoria = :categoria";
-                $params[':categoria'] = $categoria;
-            }
-            
-            $sql = "SELECT t.*, u.nombre as autor, COUNT(p.id) as num_respuestas, 
-                    MAX(p.fecha_creacion) as ultima_actividad
-                    FROM temas t 
-                    JOIN usuarios u ON t.usuario_id = u.id 
-                    LEFT JOIN posts p ON t.id = p.tema_id
-                    $where
-                    GROUP BY t.id
-                    ORDER BY ultima_actividad DESC
-                    LIMIT :offset, :limit";
-                    
-            $stmt = $this->conn->prepare($sql);
-            
-            foreach ($params as $param => $value) {
-                $stmt->bindValue($param, $value);
-            }
-            
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindValue(':limit', $por_pagina, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-        } catch (PDOException $e) {
-            return $e->getMessage();
-        }
+
+        return false;
     }
 }
+// Instanciar la base de datos
+$database = new Database();
+$db = $database->getConnection();
 
+// Instanciar el objeto foro
+$forum = new Forum($db);
+
+// Obtener datos enviados
+$data = json_decode(file_get_contents("php://input"));
+
+// Respuesta por defecto
+$response = array(
+    "exito" => false,
+    "mensaje" => "Acción no reconocida"
+);
+
+// Verificar método de solicitud
+$method = $_SERVER['REQUEST_METHOD'];
+
+switch ($method) {
+    case 'POST':
+        // Verificar acción solicitada
+        if (isset($_GET['action']) && $_GET['action'] === 'create') {
+            
+
+            // Verificar datos recibidos
+            if (!empty($data->titulo) && !empty($data->descripcion)) {
+                // Asignar valores a propiedades del foro
+                $forum->titulo = $data->titulo;
+                $forum->descripcion = $data->descripcion;
+                $forum->id_usuario = $_SESSION['id'];
+
+                // Crear foro
+                if ($forum->create()) {
+                    $response = array(
+                        "exito" => true,
+                        "mensaje" => "Foro creado correctamente",
+                        "id" => $forum->id
+                    );
+                } else {
+                    $response = array(
+                        "exito" => false,
+                        "mensaje" => "Error al crear el foro"
+                    );
+                }
+            } else {
+                $response = array(
+                    "exito" => false,
+                    "mensaje" => "El título y la descripción son obligatorios"
+                );
+            }
+        }
+        break;
+
+    case 'GET':
+        // Verificar acción solicitada
+        if (isset($_GET['action'])) {
+            switch ($_GET['action']) {
+                case 'read':
+                    // Leer todos los foros
+                    $stmt = $forum->readAll();
+                    $num = $stmt->rowCount();
+
+                    // Verificar si hay foros
+                    if ($num > 0) {
+                        $forums_arr = array();
+                        $forums_arr["foros"] = array();
+
+                        // Obtener resultados
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            extract($row);
+
+                            $forum_item = array(
+                                "id" => $id,
+                                "titulo" => $titulo,
+                                "descripcion" => $descripcion,
+                                "fecha_creacion" => $fecha_creacion,
+                                "nombre_usuario" => $name,
+                                "imagen_usuario"=>$profile_image
+                            );
+
+                            array_push($forums_arr["foros"], $forum_item);
+                        }
+
+                        $response = array(
+                            "exito" => true,
+                            "foros" => $forums_arr["foros"]
+                        );
+                    } else {
+                        $response = array(
+                            "exito" => true,
+                            "foros" => array()
+                        );
+                    }
+                    break;
+
+                case 'read_one':
+                    // Verificar ID
+                    if (isset($_GET['id'])) {
+                        $forum->id = $_GET['id'];
+
+                        // Leer un foro específico
+                        if ($forum->readOne()) {
+                            $response = array(
+                                "exito" => true,
+                                "foro" => array(
+                                    "id" => $forum->id,
+                                    "titulo" => $forum->titulo,
+                                    "descripcion" => $forum->descripcion,
+                                    "fecha_creacion" => $forum->fecha_creacion,
+                                    "nombre_usuario" => $forum->nombre_usuario,
+                                    "imagen_usuario" => $forum->imagen_usuario
+                                )
+                            );
+                        } else {
+                            $response = array(
+                                "exito" => false,
+                                "mensaje" => "Foro no encontrado"
+                            );
+                        }
+                    } else {
+                        $response = array(
+                            "exito" => false,
+                            "mensaje" => "ID no especificado"
+                        );
+                    }
+                    break;
+            }
+        }
+        break;
+}
+
+// Enviar respuesta
+echo json_encode($response);
 ?>
