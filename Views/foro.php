@@ -110,12 +110,14 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                 </div>
             </nav>
         </div>
-        <div id="contenidoForo">
-            <h2 id="titulo"></h2>
-            <p id="descripcion"></p>
-            <p><strong>Creado por:</strong> <span id="autor"></span></p>
-            <p><strong>Fecha:</strong> <span id="fecha"></span></p>
-            <img id="imagenUsuario" src="" alt="Foto de usuario" width="64">
+        <div class="container contenedor-principal p-5" id="contenidoForo" style="border-radius: 50px; position: relative; height: 80vh;">
+            <div class=" header d-flex gap-3 text-light mb-5">
+                <h2 style="color: #91C6F7; font-weight: bold;" id="titulo"></h2>
+                <p><strong>Creado por:</strong> <span id="autor"></span></p>
+                <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+                <img id="imagenUsuario" src="" alt="Foto de usuario"class="rounded-circle bg-light d-block" width="48" height="48">  
+            </div>
+            <p class=" text-light" id="descripcion"></p>
         </div>
 
         <script src="../js/jquery-3.7.1.min.js"></script>
