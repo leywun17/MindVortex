@@ -217,7 +217,7 @@ switch ($method) {
 
                 case 'read_one':
                     // Verificar ID
-                    if (isset($_GET['id'])) {
+                    if (isset($_GET['id']) && $_GET['action'] === 'read_one') {
                         $forum->id = $_GET['id'];
 
                         // Leer un foro específico

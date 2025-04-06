@@ -25,6 +25,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="shortcut icon" href="../Assets/logo.png" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
@@ -38,7 +39,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
     <div class="container-fluid d-grid gap-3">
         <div class="row">
             <nav class="navbar navbar-expand-md navbar-dark">
-                <div class="container rounded-4 text-bg-dark ps-n2 contenedor-principal p-1">
+                <div class="container rounded-4 text-bg-dark ps-n2 contenedor-header p-2">
                     <!-- Logo -->
                     <a class="navbar-brand d-flex align-items-center" href="">
                         <img src="../Assets/logo.png" alt="Flowbite Logo" height="38" style="position: relative; left: 15px;">
@@ -111,10 +112,11 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
         </div>
         <div class="row contenedor d-flex justify-content-center">
             <div class="container">
-                <div class=" container contenedor-principal p-5" style="border-radius: 50px; position: relative; max-height: 500px;">
-                    <div class="h2">Preguntas</div>
-                    <div class="column d-flex justify-content-center">
+                <div class=" container contenedor-principal p-5" style="border-radius: 50px; position: relative; height: auto;">
+                    <div class="h2 position-relative">Preguntas</div>
+                    <div class="column d-flex justify-content-center ">
                         <div id="listaForos" class="d-flex gap-3 m-2">
+                            
                         </div>
                     </div>
                     <div id="pagination-container" class="d-flex justify-content-center mt-3">
@@ -124,7 +126,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
             </div>
         </div>
         <div class="row">
-            <a class="rounded-circle custom-btn position-fixed end-0  mt-n4" data-bs-toggle="modal" href="#Agregarforo">
+            <a class="rounded-circle custom-btn position-fixed end-0  m-4" data-bs-toggle="modal" href="#Agregarforo">
                 <i class='bx bx-plus' style='color:#91C6F7; border-radius:50%;'></i>
             </a>
 
@@ -151,14 +153,15 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
             </div>
         </div>
         <div class="row d-md-block d-xl-block d-xxl-block ">
-            <footer class="container-fluid fixed-bottom d-flex align-items-center p-0 m-0">
-                <img src="../Assets/Mask group.svg" alt="Footer SVG" class="img-fluid w-100" style="height: 100px">
+            <footer class="container-fluid fixed-bottom z-index-n2 d-flex align-items-center p-0 m-0" style=" z-index: -1;">
+                <img src="../Assets/Mask group.svg" alt="Footer SVG" class="img-fluid w-100" style="height: 100px; z-index: -1;">
             </footer>
         </div>
     </div>
     <div class="mensajeContainer"></div>
     <script src="../js/jquery-3.7.1.min.js"></script>
     <script src="../js/subirForo.js"></script>
+    <script src="../js/verForo.js"></script>
 </body>
 
 </html>
