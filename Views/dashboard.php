@@ -126,7 +126,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
             </div>
         </div>
         <div class="row">
-            <a class="rounded-circle custom-btn position-fixed end-0  m-4" data-bs-toggle="modal" href="#Agregarforo">
+            <a class="rounded-circle custom-btn fixed-bottom end-100  m-4" data-bs-toggle="modal" href="#Agregarforo" style="left: 92%;">
                 <i class='bx bx-plus' style='color:#91C6F7; border-radius:50%;'></i>
             </a>
 
@@ -153,7 +153,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
             </div>
         </div>
         <div class="row d-md-block d-xl-block d-xxl-block ">
-            <footer class="container-fluid fixed-bottom z-index-n2 d-flex align-items-center p-0 m-0" style=" z-index: -1;">
+            <footer class="container-fluid fixed-bottom z-index-n2 d-flex align-items-center p-0 m-0" style=" z-index: -1;bottom:-43px;">
                 <img src="../Assets/Mask group.svg" alt="Footer SVG" class="img-fluid w-100" style="height: 100px; z-index: -1;">
             </footer>
         </div>

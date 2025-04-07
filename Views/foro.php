@@ -111,13 +111,44 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
             </nav>
         </div>
         <div class="container contenedor-principal p-5" id="contenidoForo" style="border-radius: 50px; position: relative; height: 80vh;">
-            <div class=" header d-flex gap-3 text-light mb-5">
+            <div class="header d-flex justify-content-between gap-3 text-light mb-5">
                 <h2 style="color: #91C6F7; font-weight: bold;" id="titulo"></h2>
-                <p><strong>Creado por:</strong> <span id="autor"></span></p>
-                <p><strong>Fecha:</strong> <span id="fecha"></span></p>
-                <img id="imagenUsuario" src="" alt="Foto de usuario"class="rounded-circle bg-light d-block" width="48" height="48">  
+                <div class="dropdown">
+                    <button class="btn p-1 d-flex align-items-center justify-content-center" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative; right: 5px;"> <i class='bx bx-dots-vertical-rounded' style="color:#91C6F7; font-size:35px;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end rounded" aria-labelledby="userMenu" style="background-color: #13293D; z-index: 100;">
+                        <li class="dropdown-header d-flex align-items-center justify-content-center gap-2" style="font-size: 17px;">
+                            <i class='bx bx-star' style='color:#ebff00'></i>
+                            favoritos
+                        </li>
+                        <hr>
+                        <li class="dropdown-header d-flex align-items-center justify-content-center gap-2" style="font-size: 17px;">
+                            <i class='bx bx-error' style='color:#ff0000'></i>
+                            Reportar
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <p class=" text-light" id="descripcion"></p>
+            <div class="body d-flex gap-3 justify-content-between text-light flex-column">
+                <div class="d-flex justify-content-between">
+                    <p id="descripcion"></p>
+                    <div class="d-flex gap-3">
+                        <img id="imagenUsuario" src="" alt="Foto de usuario" class="rounded-3 bg-light d-block" width="24" height="24">
+                        <p><span id="autor"></span></p>
+                        <p><span id="fecha"></span></p>
+                    </div>
+                </div>
+                <hr>
+                <div class="d-flex gap-3">
+                    <div class="h3">Comentarios</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-md-block d-xl-block d-xxl-block ">
+            <footer class="container-fluid fixed-bottom z-index-n2 d-flex align-items-center p-0 m-0" style=" z-index: -1; bottom:-43px;">
+                <img src="../Assets/Mask group.svg" alt="Footer SVG" class="img-fluid w-100" style="height: 100px; z-index: -1;">
+            </footer>
         </div>
 
         <script src="../js/jquery-3.7.1.min.js"></script>
