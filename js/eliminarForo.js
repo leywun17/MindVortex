@@ -7,14 +7,15 @@ $(document).ready(function() {
     let autorId;
     
     // Al cargar los datos del foro, verificar si el usuario actual es el autor
-    function verificarAutor(idAutor) {
-        autorId = idAutor;
+    function verificarAutor(autorID) {
+        autorId = autorID;
         
         // Si el usuario actual no es el autor, ocultar la opción de eliminar
-        if (usuarioActualId != autorId) {
-            $("#opcionEliminar, #separadorEliminar").hide();
+        if (parseInt(usuarioActualId) !== parseInt(autorId)) {
+            $("#opcionEliminar, #separadorEliminar").addClass("d-none");
         } else {
-            $("#opcionEliminar, #separadorEliminar").show();
+            $("#opcionEliminar").removeClass("d-none"); // mantiene d-flex
+            $("#separadorEliminar").removeClass("d-none").addClass("d-block"); // <hr> necesita d-block
         }
     }
     

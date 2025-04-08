@@ -88,7 +88,7 @@ class Forum
     public function readOne()
     {
         // Consulta para leer un solo foro con información de usuario
-        $query = "SELECT f.id, f.titulo, f.descripcion, f.fecha_creacion, 
+        $query = "SELECT f.id, f.titulo, f.descripcion, f.fecha_creacion, f.id_usuario,
                          u.name, u.profile_image
                   FROM " . $this->table_name . " f
                   INNER JOIN users u ON f.id_usuario = u.id
@@ -108,6 +108,7 @@ class Forum
 
         if ($row) {
             $this->id = $row['id'];
+            $this->id_usuario = $row['id_usuario'];
             $this->titulo = $row['titulo'];
             $this->descripcion = $row['descripcion'];
             $this->fecha_creacion = $row['fecha_creacion'];
@@ -214,7 +215,7 @@ switch ($method) {
                                 "descripcion" => $descripcion,
                                 "fecha_creacion" => $fecha_creacion,
                                 "nombre_usuario" => $name,
-                                "imagen_usuario" => $profile_image
+                                "imagen_usuario" => $profile_image,
                             );
 
                             array_push($forums_arr["foros"], $forum_item);
@@ -247,7 +248,8 @@ switch ($method) {
                                     "descripcion" => $forum->descripcion,
                                     "fecha_creacion" => $forum->fecha_creacion,
                                     "nombre_usuario" => $forum->nombre_usuario,
-                                    "imagen_usuario" => $forum->imagen_usuario
+                                    "imagen_usuario" => $forum->imagen_usuario,
+                                    "id_usuario" => $forum->id_usuario
                                 )
                             );
                         } else {
@@ -269,6 +271,7 @@ switch ($method) {
         case 'DELETE':
             if (isset($_GET['action']) && $_GET['action'] === 'delete') {
                 // Verificar que se recibió un ID
+                
                 if (isset($_GET['id'])) {
                     $forum->id = $_GET['id'];
                     
@@ -276,16 +279,24 @@ switch ($method) {
                     if ($forum->readOne()) {
                         // Verificar si el usuario está autenticado
                         if (isset($_SESSION['id'])) {
-                            // Eliminar el foro
-                            if ($forum->delete()) {
-                                $response = array(
-                                    "exito" => true,
-                                    "mensaje" => "Foro eliminado correctamente"
-                                );
+                            // IMPORTANTE: Verificar si el usuario actual es el propietario del foro
+                            if ($_SESSION['id'] == $forum->id_usuario) {
+                                // Eliminar el foro
+                                if ($forum->delete()) {
+                                    $response = array(
+                                        "exito" => true,
+                                        "mensaje" => "Foro eliminado correctamente"
+                                    );
+                                } else {
+                                    $response = array(
+                                        "exito" => false,
+                                        "mensaje" => "Error al eliminar el foro"
+                                    );
+                                }
                             } else {
                                 $response = array(
                                     "exito" => false,
-                                    "mensaje" => "Error al eliminar el foro"
+                                    "mensaje" => "No tienes permiso para eliminar este foro"
                                 );
                             }
                         } else {

@@ -18,7 +18,7 @@ $(document).ready(function(){
                     $("#imagenUsuario").attr("src", "../uploads/profile_images/" + foro.imagen_usuario);
 
                     if (window.verificarAutorForo) {
-                        window.verificarAutorForo(respuesta.foro.id_usuario);
+                        window.verificarAutorForo(foro.id_usuario);
                     }
                 }else{
                     $("#contenidoForo").html("<p>foro no encontrado</p>")

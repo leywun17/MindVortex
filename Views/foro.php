@@ -6,6 +6,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
     $img = isset($_SESSION["profile_image"]) ? htmlspecialchars($_SESSION["profile_image"]) : "";
     $name = $_SESSION['name'];
     $email = isset($_SESSION["email"]) ? htmlspecialchars($_SESSION["email"]) : 'Correo no disponible';
+    $user_id = isset($_SESSION['id']) ? (int) $_SESSION['id'] : 'null';
 } else {
 
     header("Location: ../index.html");
@@ -122,12 +123,12 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                             favoritos
                         </li>
                         <hr>
-                        <!-- Añadir esta opción para eliminar que solo se mostrará si el usuario es el propietario -->
-                        <li id="opcionEliminar" class="dropdown-header d-flex align-items-center justify-content-center gap-2" style="font-size: 17px; cursor: pointer;">
+                        <li id="opcionEliminar" class="dropdown-header d-flex align-items-center justify-content-center gap-2 d-none" style="font-size: 17px; cursor: pointer;">
                             <i class='bx bx-trash' style='color:#ff0000'></i>
                             Eliminar
                         </li>
-                        <hr id="separadorEliminar">
+                        <hr id="separadorEliminar" class="d-none">
+
                         <li class="dropdown-header d-flex align-items-center justify-content-center gap-2" style="font-size: 17px;">
                             <i class='bx bx-error' style='color:#ff0000'></i>
                             Reportar
@@ -157,7 +158,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
             </footer>
         </div>
         <script>
-            let usuarioActualId = <?php echo isset($_SESSION['id']) ? $_SESSION['id'] : 'null'; ?>;
+            let usuarioActualId = <?php echo $user_id ?>;
         </script>
         <script src="../js/jquery-3.7.1.min.js"></script>
         <script src="../js/verForo.js"></script>
