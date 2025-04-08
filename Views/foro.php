@@ -129,6 +129,12 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                         </li>
                         <hr id="separadorEliminar" class="d-none">
 
+                        <li id="opcionEditar" class="dropdown-header d-flex align-items-center justify-content-center gap-2 d-none" style="font-size: 17px; cursor: pointer;">
+                            <i class='bx bx-trash' style='color:#ff0000'></i>
+                            Eliminar
+                        </li>
+                        <hr id="separadorEditar" class="d-none">
+
                         <li class="dropdown-header d-flex align-items-center justify-content-center gap-2" style="font-size: 17px;">
                             <i class='bx bx-error' style='color:#ff0000'></i>
                             Reportar

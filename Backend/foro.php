@@ -135,6 +135,10 @@ class Forum
         
         return false;
     }
+
+    public function editar(){
+        $query = "";
+    }
 }
 
 // Instanciar la base de datos

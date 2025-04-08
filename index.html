@@ -1,181 +1,145 @@
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindVortex</title>
-    <link rel="stylesheet" href="./css/style-principal.css">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindVortex</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Fuentes y Boxicons -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="./css/style-principal.css">
+
+
 </head>
 <body>
- <!-- contenedor principal -->
- <div class="container-fluid">
-    <!-- fila 1 -->
-    <div class="row">
-        <!-- columna 1 fila 1 -->
-        <div class="justify-content-center text-center">
-            <div class="container-fluid d-grid gap-3">
-                <div class="row">
-                    <nav class="navbar navbar-expand-md navbar-dark">
-                        <div class="container rounded-pill text-bg-dark ps-n2 contenedor-principal">
-                            <!-- Logo -->
-                            <a class="navbar-brand d-flex align-items-center" href="">
-                                <img src="./Assets/freepik-doodle-linear-socialnet-connections-logo-20250207231305aLwH 1.png" alt="Flowbite Logo" height="70">
-                            </a>
-                
-                            <!-- Botones de usuario y toggler -->
-                            <div class="d-flex align-items-center order-md-2">
-                                <!-- Toggler del navbar en móvil -->
-                                <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarUser" aria-controls="navbarUser" aria-expanded="false" aria-label="Toggle navigation">
-                                    <span class="navbar-toggler-icon"></span>
-                                </button>
-                            </div>
-                
-                            <!-- Menú colapsable -->
-                            <div class="collapse navbar-collapse order-md-1" id="navbarUser">
-                                <ul class="navbar-nav mx-auto mb-2 mb-md-0 paginas" style="gap: 10px; color: rgb(255, 255, 255);">
-                                    <li class="nav-item">
-                                        <a>Inicio</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a>Quienes somos</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a>Objetivos</a>
-                                    </li>
-                                </ul>
-                                <div>
-                                    <a class="boton-header" href="./Views/register.php">Empezar Ahora</a>
-                                </div>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
-        
-
-        </div>
-        <!-- FIN  columna 1 fila 1 -->
-
+  <!-- Header Desktop -->
+  <header class="header-desktop container d-none d-md-flex justify-content-between align-items-center">
+    <div class="imagen-logo">
+      <img src="./Assets/logo.png" alt="Logo" style="width: 40px; height: 40px;">
     </div>
-    <!-- FIN fila 1 -->
-
-    <!-- fila 2 -->
-    <div class="row ">
-        <!-- columna 1 fila 2 -->
-        <div class="justify-content-center text-center">
-            <h1 class="contenedor-hero">MindVortex</h1>
-            <p class="letra" style="margin-bottom: 45px;">“Es mejor debatir una cuestión sin resolverla, que resolver una <br>cuestión sin debatirla” 
-            <br>Joseph Joubert</p>
-            <a class="boton-header" style="margin-bottom: 125px;  margin-top: 50px;" href="./Views/register.php">Empezar Ahora</a>
-        </div>
-        <!-- FIN columna 1 fila 2 -->
+    <nav>
+      <ul class="nav">
+        <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="#aboutUs">Quiénes Somos</a></li>
+        <li class="nav-item"><a class="nav-link" href="#objetivos">Objetivos</a></li>
+      </ul>
+    </nav>
+    <div>
+      <a class="boton-header" href="./Views/register.php">Empezar Ahora</a>
     </div>
-    <!-- FIN fila 2 -->
-
-    <!-- fila 3 -->
-    <div class="row">
-        <div class="justify-content-center text-center">
-            <h1 class="contenedor-hero-h1"style="margin-top: 105px;">¿Quienes somos?</h1>
-            <p class="letra" style="margin-bottom: 45px;">Somos un espacio colaborativo donde los participantes pueden intercambiar opiniones,<br>plantear preguntas sobre temas de interés común y compartir habilidades, experiencias o respuestas.<br> Creemos que el conocimiento se desarrolla mejor en conjunto que de manera individual.</p>
-        </div>
+  </header>
+  
+  <!-- Header Móvil -->
+  <header class="header-mobile container d-md-none">
+    <nav class="navbar navbar-expand-md navbar-dark">
+      <a class="navbar-brand imagen-logo" href="#">
+        <img src="./Assets/freepik-doodle-linear-socialnet-connections-logo-20250207231305aLwH 1.png" alt="Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMobile" aria-controls="navbarMobile" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarMobile">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="#aboutUs">Quiénes Somos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#objetivos">Objetivos</a></li>
+        </ul>
+        <a class="btn boton-header" href="./Views/register.php">Empezar Ahora</a>
+      </div>
+    </nav>
+  </header>
+  
+  <!-- Sección Hero -->
+  <section class="contenedor-hero text-center">
+    <div class="container">
+      <h1 class="display-4">MindVortex</h1>
+      <p class="lead">
+        “Es mejor debatir una cuestión sin resolverla, que resolver una cuestión sin debatirla”<br>
+        Joseph Joubert
+      </p>
+      <a class="btn boton-header btn-lg" href="./Views/register.php">Empezar Ahora</a>
     </div>
-    <!-- FIN fila 3 -->
-
-    <!-- fila 4 -->
-    <div class="row">
-        <!-- columna 1 fila 4 -->
-        <div class="col">
-            <div class="text">
-                <div class="trans">
-                    <i class='bx bx-expand ' style='color:#91c6f7; font-size: 30px; margin-top: 50px;'></i>
-                    <h3 class="contenedor-hero-h1" style=" margin-top: 60px;" >Transversales</h3>
-                </div>
-                <p style="color: rgb(223, 216, 216);">No nos limitamos a un ámbito específico,<br> sino que fomentamos el debate abierto <br> sobre una amplia variedad de temas,<br> abarcando desde cuestiones cotidianas <br> hasta temas complejos y especializados. <br> Creemos que cualquier conocimiento puede <br> enriquecerse a través del intercambio de <br> ideas y perspectivas diversas.</p>
+  </section>
+  
+  <!-- Sección About Us -->
+  <section id="aboutUs" class="aboutUs">
+    <div class="container">
+      <div class="row align-items-center gap-2">
+        <!-- Texto de About Us -->
+        <div class="col-md-12 justify-content-center">
+          <div class="part1 text-center">
+            <h2>¿Quiénes somos?</h2>
+            <p>
+              Somos un espacio colaborativo donde los participantes pueden intercambiar opiniones, plantear preguntas sobre temas de interés común y compartir habilidades, experiencias o respuestas. Creemos que el conocimiento se desarrolla mejor en conjunto que de manera individual.
+            </p>
+          </div>
+        </div>
+        <!-- Dos bloques de información -->
+        <div class="col-md-21">
+          <div class="row">
+            <div class=" col-xs-12 col-6 mb-4">
+              <div class="d-flex justify-content-center align-items-center gap-2">
+                <i class='bx bx-expand' style='color:#91C6F7; font-size: 2rem;'></i>
+                <h3 class="mb-0">Transversales</h3>
+              </div>
+              <p class="text-center">
+                Fomentamos el debate abierto sobre una amplia variedad de temas, enriqueciendo cualquier conocimiento con el intercambio de ideas.
+              </p>
             </div>
-        </div>
-        <!-- FIN  columna 1 fila 4 -->
-
-        <!-- columna 2 fila 4 -->
-        <div class="col">
-            <div class="text">
-                <div class="inter">
-                    <i class="fa fa-users " aria-hidden="true" style='color:#91c6f7; font-size: 30px; margin-top: 50px;'></i>
-                    <h3 class="contenedor-hero-h1" style="margin-top: 60px;">Intergeneracionales</h3>
-                </div>
-                <p style="color: rgb(223, 216, 216);">Buscamos fomentar el intercambio de <br> conocimientos y experiencias entre personas <br> de todas las edades, promoviendo así el <br> aprendizaje intergeneracional. Creemos que <br> cada generación tiene valiosas perspectivas y <br> saberes que pueden enriquecer a los demás, <br> creando un espacio donde el conocimiento <br> fluya de manera bidireccional y contribuya al <br> crecimiento colectivo.</p>
+            <div class="col-6">
+              <div class="d-flex justify-content-center align-items-center gap-2">
+                <i class="fa fa-users" aria-hidden="true" style="color:#91C6F7; font-size: 2rem;"></i>
+                <h3 class="mb-0">Intergeneracionales</h3>
+              </div>
+              <p class="text-center">
+                Promovemos el intercambio de conocimientos y experiencias entre personas de todas las edades, enriqueciendo a cada generación.
+              </p>
             </div>
+          </div>
         </div>
-        <!-- FIN  columna 2 fila 4 -->
+      </div>
     </div>
-    <!-- FIN fila 4 -->
-
-    <!-- fila 5 -->
-    <div class="row">
-            <div class="container">
-                <div class=" container contenedor-principal p-5" style="position: relative; z-index: -1;">
-                    <div class="texto-objetivos letra">
-                        <h2 class="contenedor-hero-h1">Objetivos</h2>
-                    
-                        <p>
-                            Crear un espacio colaborativo para debatir ideas, resolver desafíos y compartir conocimientos es fundamental en un mundo donde la información fluye rápidamente y el aprendizaje se enriquece con múltiples perspectivas.
-                        </p>
-            
-                        <ul>
-                            <li>
-                                Fomento del pensamiento crítico y la creatividad
-                            </li>
-            
-                            <li>
-                                Resolución efectiva de desafíos
-                            </li>
-            
-                            <li>
-                                Aprendizaje continuo y colectivo
-                            </li>
-            
-                            <li>
-                                Fortalecimiento de redes y comunidades
-                            </li>
-                        </ul>
-                        <p>
-                            En conclusión, fomentar un entorno donde las personas puedan debatir, aprender y resolver desafíos en conjunto es una estrategia poderosa para el crecimiento personal y colectivo. La inteligencia colectiva supera las limitaciones individuales y permite alcanzar soluciones más sólidas y creativas.
-                        </p>
-            
-                    </div>
-                    <div class="imagen">
-                        <img src="./Assets/objetivos-especificos-1024x459_1-removebg-preview 1.png" alt="">
-                    </div>
-                </div>
-            </div>
+  </section>
+  
+  <!-- Sección Objetivos -->
+  <section id="objetivos" class="objetivos ">
+    <div class="container container-objetivos">
+      <div class="row align-items-center">
+        <div class="col-lg-6 texto-objetivos">
+          <h2>Objetivos</h2>
+          <p>
+            Crear un espacio colaborativo para debatir ideas, resolver desafíos y compartir conocimientos es fundamental en un mundo en constante evolución.
+          </p>
+          <ul>
+            <li>Fomento del pensamiento crítico y la creatividad</li>
+            <li>Resolución efectiva de desafíos</li>
+            <li>Aprendizaje continuo y colectivo</li>
+            <li>Fortalecimiento de redes y comunidades</li>
+          </ul>
+          <p>
+            La inteligencia colectiva supera las limitaciones individuales y permite alcanzar soluciones más sólidas y creativas.
+          </p>
+        </div>
+        <div class="col-lg-6 imagen text-center">
+          <img src="./Assets/objetivos-especificos-1024x459_1-removebg-preview 1.png" alt="Objetivos" class="img-fluid">
+        </div>
+      </div>
     </div>
-    <!-- FIN fila 5 -->
-
-    <!-- fila 6 -->
-    <di class="row">
-        <img src="./Assets/Footer 30.png" >
+  </section>
+  
+  <!-- Footer -->
+  <footer class="py-4">
+    <div class="container text-center position-relative">
+      <img src="./Assets/Footer 30.png" alt="Footer" class="img-fluid">
     </div>
-    <!-- FIN fila 6 -->
-
-</div>
-<!--FIN  contenedor principal -->
-
-<!-- Optional JavaScript; choose one of the two! -->
-
-<!-- Option 1: Bootstrap Bundle with Popper -->
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
-
-<!-- Option 2: Separate Popper and Bootstrap JS -->
-<!--
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
--->
+  </footer>
+  
+  <!-- Bootstrap JS Bundle (incluye Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Archivo JS opcional para funcionalidades extra -->
+  <script src="./js/mobile.js"></script>
 </body>
 </html>
