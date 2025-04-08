@@ -23,7 +23,7 @@ $(document).ready(function () {
             success: function (respuesta) {
                 if (respuesta.exito) {
                     Swal.fire({
-                        icon: "succes",
+                        icon: "success",
                         title: "Success",
                         text: "Foro Añadido con exito",
                         confirmButtonText: "Continuar"

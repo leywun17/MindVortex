@@ -158,7 +158,6 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
             </footer>
         </div>
     </div>
-    <div class="mensajeContainer"></div>
     <script src="../js/jquery-3.7.1.min.js"></script>
     <script src="../js/subirForo.js"></script>
     <script src="../js/verForo.js"></script>

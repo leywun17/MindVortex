@@ -118,7 +118,24 @@ class Forum
 
         return false;
     }
+
+    public function delete(){
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        // Vincular ID
+        $stmt->bindParam(':id', $this->id);
+        
+        // Ejecutar consulta
+        if($stmt->execute()) {
+            return true;
+        }
+        
+        return false;
+    }
 }
+
 // Instanciar la base de datos
 $database = new Database();
 $db = $database->getConnection();
@@ -142,7 +159,7 @@ switch ($method) {
     case 'POST':
         // Verificar acción solicitada
         if (isset($_GET['action']) && $_GET['action'] === 'create') {
-            
+
 
             // Verificar datos recibidos
             if (!empty($data->titulo) && !empty($data->descripcion)) {
@@ -197,7 +214,7 @@ switch ($method) {
                                 "descripcion" => $descripcion,
                                 "fecha_creacion" => $fecha_creacion,
                                 "nombre_usuario" => $name,
-                                "imagen_usuario"=>$profile_image
+                                "imagen_usuario" => $profile_image
                             );
 
                             array_push($forums_arr["foros"], $forum_item);
@@ -249,8 +266,49 @@ switch ($method) {
             }
         }
         break;
-}
+        case 'DELETE':
+            if (isset($_GET['action']) && $_GET['action'] === 'delete') {
+                // Verificar que se recibió un ID
+                if (isset($_GET['id'])) {
+                    $forum->id = $_GET['id'];
+                    
+                    // Primero verificar que el foro existe
+                    if ($forum->readOne()) {
+                        // Verificar si el usuario está autenticado
+                        if (isset($_SESSION['id'])) {
+                            // Eliminar el foro
+                            if ($forum->delete()) {
+                                $response = array(
+                                    "exito" => true,
+                                    "mensaje" => "Foro eliminado correctamente"
+                                );
+                            } else {
+                                $response = array(
+                                    "exito" => false,
+                                    "mensaje" => "Error al eliminar el foro"
+                                );
+                            }
+                        } else {
+                            $response = array(
+                                "exito" => false,
+                                "mensaje" => "Debes iniciar sesión para eliminar un foro"
+                            );
+                        }
+                    } else {
+                        $response = array(
+                            "exito" => false,
+                            "mensaje" => "Foro no encontrado"
+                        );
+                    }
+                } else {
+                    $response = array(
+                        "exito" => false,
+                        "mensaje" => "ID no especificado"
+                    );
+                }
+            }
+            break;
+    }
 
 // Enviar respuesta
 echo json_encode($response);
-?>

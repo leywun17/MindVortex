@@ -122,6 +122,12 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                             favoritos
                         </li>
                         <hr>
+                        <!-- Añadir esta opción para eliminar que solo se mostrará si el usuario es el propietario -->
+                        <li id="opcionEliminar" class="dropdown-header d-flex align-items-center justify-content-center gap-2" style="font-size: 17px; cursor: pointer;">
+                            <i class='bx bx-trash' style='color:#ff0000'></i>
+                            Eliminar
+                        </li>
+                        <hr id="separadorEliminar">
                         <li class="dropdown-header d-flex align-items-center justify-content-center gap-2" style="font-size: 17px;">
                             <i class='bx bx-error' style='color:#ff0000'></i>
                             Reportar
@@ -150,9 +156,12 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                 <img src="../Assets/Mask group.svg" alt="Footer SVG" class="img-fluid w-100" style="height: 100px; z-index: -1;">
             </footer>
         </div>
-
+        <script>
+            let usuarioActualId = <?php echo isset($_SESSION['id']) ? $_SESSION['id'] : 'null'; ?>;
+        </script>
         <script src="../js/jquery-3.7.1.min.js"></script>
         <script src="../js/verForo.js"></script>
+        <script src="../js/eliminarForo.js"></script>
 </body>
 
 </html>

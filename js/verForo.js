@@ -16,6 +16,10 @@ $(document).ready(function(){
                     $("#fecha").text(new Date(foro.fecha_creacion).toLocaleString())
                     $("#autor").text(foro.nombre_usuario)
                     $("#imagenUsuario").attr("src", "../uploads/profile_images/" + foro.imagen_usuario);
+
+                    if (window.verificarAutorForo) {
+                        window.verificarAutorForo(respuesta.foro.id_usuario);
+                    }
                 }else{
                     $("#contenidoForo").html("<p>foro no encontrado</p>")
                 }
