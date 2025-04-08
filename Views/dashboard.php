@@ -35,7 +35,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
 
 </head>
 
-<body>
+<body style="height: 100vh !important;">
     <div class="container-fluid d-grid gap-3">
         <div class="row">
             <nav class="navbar navbar-expand-md navbar-dark">
@@ -116,11 +116,11 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                     <div class="h2 position-relative">Preguntas</div>
                     <div class="column d-flex justify-content-center ">
                         <div id="listaForos" class="d-flex gap-3 m-2">
-                            
+
                         </div>
                     </div>
                     <div id="pagination-container" class="d-flex justify-content-center mt-3">
-                        
+
                     </div>
                 </div>
             </div>
@@ -138,15 +138,13 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <form id="formularioForo">
-                            <div class="form-group">
+                            <div class="form-group modal-body d-grid gap-2">
                                 <label for="titulo">Título:</label>
-                                <input type="text" class="form-control" id="titulo" name="titulo" required style="color: #000;">
-                            </div>
-                            <div class="form-group modal-body">
+                                <input type="text" class="form-control" id="titulo" name="titulo" required>
                                 <label for="descripcion">Descripción:</label>
                                 <textarea class="form-control" id="descripcion" name="descripcion" minlength="15" rows="5" required></textarea>
+                                <button type="submit" class="btn btn-primary">Publicar Foro</button>
                             </div>
-                            <button type="submit" class="btn btn-primary">Publicar Foro</button>
                         </form>
                     </div>
                 </div>

@@ -26,7 +26,7 @@ $(document).ready(function () {
                         icon: "success",
                         title: "Success",
                         text: "Foro Añadido con exito",
-                        confirmButtonText: "Continuar"
+                        confirmButtonText: "Continuar",
                     }).then(() => {
                         window.location.href = "../Views/dashboard.php"; // Cambia a la vista crrecta
                         console.log("DAtos", data);
