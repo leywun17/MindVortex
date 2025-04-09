@@ -695,10 +695,6 @@ body {
 }
 
 
-.ocultar {
-    display: none;
-}
-
 /* Estilos para los formularios dentro del modal */
 .modal form {
     display: flex;

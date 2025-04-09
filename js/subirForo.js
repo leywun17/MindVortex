@@ -63,45 +63,52 @@ $(document).ready(function () {
     function mostrarForos(foros) {
         // Limpiar el contenido existente
         $("#listaForos").empty();
-
+    
         // Verificar si hay foros
         if (foros.length === 0) {
             $("#listaForos").html("<p>No hay foros disponibles</p>");
             return;
         }
-
+    
         // Configuración de paginación
         const cardsPerPage = 4;
         const totalPages = Math.ceil(foros.length / cardsPerPage);
         let currentPage = 1;
-
+    
         // Función para mostrar una página específica
         function showPage(page) {
             // Limpiar el contenedor
             $("#listaForos").empty();
-
+    
             // Calcular índices
             const startIndex = (page - 1) * cardsPerPage;
             const endIndex = Math.min(startIndex + cardsPerPage, foros.length);
-
+    
+            // Configurar el contenedor de foros como flexbox
+            $("#listaForos").css({
+                "display": "flex",
+                "flex-wrap": "wrap",
+                "position": "relative"
+            });
+    
             // Construir los cards para esta página
             let html = "";
             for (let i = startIndex; i < endIndex; i++) {
                 const foro = foros[i];
                 let fecha = new Date(foro.fecha_creacion).toLocaleString();
-
+    
                 html += `
-                    <div class="card-item card mb-3 mx-2" data-id="${foro.id}" style="flex: 1 0 45%; min-width: 250px; max-width: 400px;">
+                    <div class="card-item card mb-3 mx-2" data-id="${foro.id}" style="flex: 1 0 45%; min-width: 350px; max-width: 550px;">
                         <div class="card-header d-flex justify-content-space-evenly">
                             <h5>${foro.titulo}</h5>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="user-info d-flex align-items-center">
                                     <div class="avatar me-2">
-                                        <img src="../uploads/profile_images/${foro.imagen_usuario}" alt="user photo" class="rounded-circle bg-light d-block" width="32" height="32">
+                                        <img src="../uploads/profile_images/${foro.imagen_usuario}" alt="user photo" class="bg-secondary d-block" width="32" height="32" style="border-radius: 10px;">
                                     </div>
-                                    <small class="text-muted"> <strong>${foro.nombre_usuario}</strong></small>
+                                    <small class="texto-info-foro"> <strong>${foro.nombre_usuario}</strong></small>
+                                    <small class="texto-info-foro"> ${fecha}</small>
                                 </div>
-                                <small class="text-muted"> ${fecha}</small>
                             </div>
                         </div>
                         <div class="card-body">
@@ -109,15 +116,30 @@ $(document).ready(function () {
                         </div>
                     </div>
                 `;
+                
+                // Agregar línea vertical después de cada segundo card
+                if ((i - startIndex + 1) % 2 === 0 && (i - startIndex + 1) < (endIndex - startIndex)) {
+                    html += `
+                        <div class="vertical-divider" style="
+                            width: 1px;
+                            background-color: #fff  ;
+                            height: calc(100% - 30px);
+                            position: absolute;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            top: 10px;
+                        "></div>
+                    `;
+                }
             }
-
+    
             // Insertar los cards en el contenedor
             $("#listaForos").html(html);
-
+    
             // Actualizar estado de los botones de paginación
             updatePaginationButtons();
         }
-
+    
         // Función para actualizar los botones de paginación
         function updatePaginationButtons() {
             $("#currentPage").text(currentPage);
@@ -125,7 +147,7 @@ $(document).ready(function () {
             $("#prevPage").prop("disabled", currentPage === 1);
             $("#nextPage").prop("disabled", currentPage === totalPages);
         }
-
+    
         // Crear controles de paginación (solo si hay más de una página)
         if (totalPages > 1) {
             // Usar el contenedor de paginación existente
@@ -133,15 +155,15 @@ $(document).ready(function () {
                 <button id="prevPage" class="btn btn-outline-primary me-2">← Anterior</button>
                 <div class="d-flex align-items-center mx-2 text-primary"> <p>
                         Página
-                        <span id="currentPage" class="text-primary"> 1 </span> de <span id="totalPages class="text-primary"> ${totalPages} </span>
+                        <span id="currentPage" class="text-primary"> 1 </span> de <span id="totalPages" class="text-primary"> ${totalPages} </span>
                     </p>
                 </div>
                 <button id="nextPage" class="btn btn-outline-primary ms-2">Siguiente →</button>
             `);
-
+    
             // Mostrar el contenedor de paginación
             $("#pagination-container").show();
-
+    
             // Configurar manejadores de eventos
             $("#prevPage").on("click", function () {
                 if (currentPage > 1) {
@@ -149,7 +171,7 @@ $(document).ready(function () {
                     showPage(currentPage);
                 }
             });
-
+    
             $("#nextPage").on("click", function () {
                 if (currentPage < totalPages) {
                     currentPage++;
@@ -160,10 +182,9 @@ $(document).ready(function () {
             // Ocultar el contenedor de paginación si solo hay una página
             $("#pagination-container").hide();
         }
-
+    
         // Mostrar la primera página inicialmente
         showPage(1);
-
     }
 
     function abrirForo() {

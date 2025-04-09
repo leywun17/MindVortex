@@ -73,6 +73,10 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
+                                <li><a class="dropdown-item" style="color: #fff;" href="#modalUser" data-bs-toggle="modal" href="#Agregarforo">Edit</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li><a class="dropdown-item" style="color: #fff;" href="../Backend/logout.php">Sign out</a></li>
                             </ul>
                         </div>
@@ -132,18 +136,18 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
 
             <div class="modal fade" id="Agregarforo" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
+                    <div class="modal-content d-flex align-items-center">
                         <div class="modal-header">
                             Agregar Pregunta
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                         </div>
                         <form id="formularioForo">
-                            <div class="form-group modal-body d-grid gap-2">
-                                <label for="titulo">Título:</label>
-                                <input type="text" class="form-control" id="titulo" name="titulo" required>
-                                <label for="descripcion">Descripción:</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion" minlength="15" rows="5" required></textarea>
-                                <button type="submit" class="btn btn-primary">Publicar Foro</button>
+                            <div class="form-group modal-body d-grid gap-4" style="justify-items: end;">
+                                <input type="text" placeholder="Titulo" class="form-control input-foro" id="titulo" name="titulo" required>
+
+                                <textarea placeholder="Descripcion" class="form-control input-foro" id="descripcion" name="descripcion" minlength="15" rows="5" required></textarea>
+
+                                <button type="submit" class="boton-foro btn btn-primary">Publicar Foro</button>
                             </div>
                         </form>
                     </div>
@@ -155,8 +159,37 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                 <img src="../Assets/Mask group.svg" alt="Footer SVG" class="img-fluid w-100" style="height: 100px; z-index: -1;">
             </footer>
         </div>
+
+        <div class="modal fade" id="modalUser" aria-hidden="true" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content modalCuerpo">
+                    <form id="uploadImageForm">
+                        <img id="imagePreview">
+                        <input type="file" id="profileImageInput" name="profile_image" accept="image/*">
+                        <button type="submit" id="uploadImageBtn" disabled>Subir imagen</button>
+                    </form>
+                    <div class="modal-change">
+                        <form id="updateProfileForm">
+                            <input type="text" name="name" value="<?= $name ?>" placeholder="name">
+                            <input type="email" name="email" value="<?= $email ?>" placeholder="email">
+                            <button type="submit" id="updateProfileBtn">Actualizar información</button>
+                        </form>
+    
+                        <!-- Formulario de cambio de contraseña -->
+                        <form id="changePasswordForm">
+                            <input type="password" name="current_password" placeholder="Contraseña actual">
+                            <input type="password" name="new_password" placeholder="Nueva contraseña">
+                            <input type="password" name="confirm_password" placeholder="Confirmar contraseña">
+                            <button type="submit" id="changePasswordBtn">Cambiar contraseña</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
     <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/update.js"></script>
     <script src="../js/subirForo.js"></script>
     <script src="../js/verForo.js"></script>
 </body>
