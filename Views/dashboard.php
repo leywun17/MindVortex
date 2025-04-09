@@ -73,7 +73,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" style="color: #fff;" href="#modalUser" data-bs-toggle="modal" href="#Agregarforo">Edit</a></li>
+                                <li><a class="dropdown-item" style="color: #fff;" href="#modalUser" data-bs-toggle="modal">Edit</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>

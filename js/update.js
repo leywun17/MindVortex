@@ -185,9 +185,8 @@ $(document).ready(function() {
         // Obtener los valores de los campos
         let name = $.trim($('input[name="name"]').val());
         let email = $.trim($('input[name="email"]').val());
-        let descripcion = $.trim($('textarea[name="descripcion"]').val());
 
-        if (name === "" || email === "" || descripcion === "") {
+        if (name === "" || email === "") {
             Swal.fire({
                 icon: "warning",
                 title: "Campos vacíos",
@@ -206,7 +205,7 @@ $(document).ready(function() {
     });
 
     // Función para actualizar información del usuario
-    function updateUserInfo(name, email, descripcion) {
+    function updateUserInfo(name, email) {
         $.ajax({
             url: "../Backend/update-user.php",
             type: "POST",
@@ -214,7 +213,6 @@ $(document).ready(function() {
                 action: "update_info",
                 name: name,
                 email: email,
-                descripcion: descripcion
             },
             dataType: "json",
             beforeSend: function () {
@@ -237,8 +235,7 @@ $(document).ready(function() {
                     }).then(() => {
                         $(".info-user li:nth-child(1)").text("Nombre: " + name);
                         $(".info-user li:nth-child(2)").text("Email: " + email);
-                        $(".info-user li:nth-child(3)").text("Descripción: " + descripcion);
-                        $("#editProfileModal").modal('hide');
+                        $("#modalUser").modal('hide');
                     });
                 } else {
                     Swal.fire({

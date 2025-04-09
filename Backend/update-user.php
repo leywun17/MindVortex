@@ -12,7 +12,7 @@ class User {
     }
     
     // Método para actualizar la información del usuario
-    public function updateUserInfo($user_id, $name, $email, $descripcion) {
+    public function updateUserInfo($user_id, $name, $email) {
         try {
             // Validar email
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -30,11 +30,10 @@ class User {
                 return ["status" => "error", "message" => "El correo electrónico ya está en uso"];
             }
 
-            $query = "UPDATE users SET name = :name, email = :email, descripcion = :descripcion WHERE id = :user_id";
+            $query = "UPDATE users SET name = :name, email = :email WHERE id = :user_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":name", $name);
             $stmt->bindParam(":email", $email);
-            $stmt->bindParam(":descripcion", $descripcion);
             $stmt->bindParam(":user_id", $user_id);
 
             if ($stmt->execute()) {
@@ -158,9 +157,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
         case "update_info":
             $name = trim($_POST["name"] ?? '');
             $email = trim($_POST["email"] ?? '');
-            $descripcion = trim($_POST["descripcion"] ?? '');
 
-            $response = $user->updateUserInfo($user_id, $name, $email, $descripcion);
+            $response = $user->updateUserInfo($user_id, $name, $email);
             echo json_encode($response);
             break;
 
