@@ -162,21 +162,26 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
 
         <div class="modal fade" id="modalUser" aria-hidden="true" tabindex="-1">
             <div class="modal-dialog">
-                <div class="modal-content modalCuerpo">
+                <div class="modal-header">
+                    Editar Perfil
+                </div>
+                <div class="modal-content modalCuerpo d-flex align-items-center">
                     <form id="uploadImageForm">
                         <img id="imagePreview">
                         <input type="file" id="profileImageInput" name="profile_image" accept="image/*">
                         <button type="submit" id="uploadImageBtn" disabled>Subir imagen</button>
                     </form>
-                    <div class="modal-change">
+                    <div class="modal-change d-flex flex-column justify-content-center">
                         <form id="updateProfileForm">
-                            <input type="text" name="name" value="<?= $name ?>" placeholder="name">
-                            <input type="email" name="email" value="<?= $email ?>" placeholder="email">
+                            <div class="d-flex gap-3 justify-content-center">
+                                <input type="text" name="name" value="<?= $name ?>" placeholder="name">
+                                <input type="email" name="email" value="<?= $email ?>" placeholder="email">
+                            </div>
                             <button type="submit" id="updateProfileBtn">Actualizar información</button>
                         </form>
-    
+
                         <!-- Formulario de cambio de contraseña -->
-                        <form id="changePasswordForm">
+                        <form class="d-flex flex-row flex-wrap" id="changePasswordForm">
                             <input type="password" name="current_password" placeholder="Contraseña actual">
                             <input type="password" name="new_password" placeholder="Nueva contraseña">
                             <input type="password" name="confirm_password" placeholder="Confirmar contraseña">

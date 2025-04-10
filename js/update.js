@@ -18,14 +18,6 @@ $(document).ready(function() {
             return;
         }
 
-        if (newPassword !== confirmPassword) {
-            Swal.fire({
-                icon: "error", 
-                title: "Error",
-                text: "Las contraseñas nuevas no coinciden."
-            });
-            return;
-        }
 
         // AJAX request to change password
         $.ajax({
