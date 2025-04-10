@@ -4,15 +4,18 @@ header('Content-Type: application/json');
 
 require_once "./config.php"; // Archivo de conexión
 
-class User {
+class User
+{
     private $conn;
-    
-    public function __construct($db) {
+
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
-    
+
     // Método para actualizar la información del usuario
-    public function updateUserInfo($user_id, $name, $email) {
+    public function updateUserInfo($user_id, $name, $email)
+    {
         try {
             // Validar email
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -47,7 +50,8 @@ class User {
     }
 
     // Método para cambiar la contraseña
-    public function changePassword($user_id, $current_password, $new_password) {
+    public function changePassword($user_id, $new_password)
+    {
         try {
             // Verificar contraseña actual
             $checkQuery = "SELECT password FROM users WHERE id = :user_id";
@@ -57,9 +61,7 @@ class User {
             $user = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
             // Verificar contraseña actual
-            if (!password_verify($current_password, $user['password'])) {
-                return ["status" => "error", "message" => "Contraseña actual incorrecta"];
-            }
+
 
             // Validaciones de la nueva contraseña
             if (strlen($new_password) < 8) {
@@ -86,7 +88,8 @@ class User {
     }
 
     // Método para subir imagen de perfil
-    public function uploadProfileImage($user_id, $image) {
+    public function uploadProfileImage($user_id, $image)
+    {
         try {
 
             $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -104,7 +107,7 @@ class User {
             $file_extension = pathinfo($image['name'], PATHINFO_EXTENSION);
             $new_filename = "profile_" . $user_id . "_" . uniqid() . "." . $file_extension;
             $upload_dir = "../uploads/profile_images/";
-            
+
             // Crear directorio si no existe
             if (!is_dir($upload_dir)) {
                 mkdir($upload_dir, 0755, true);
@@ -122,7 +125,7 @@ class User {
                 $stmt->execute();
 
                 return [
-                    "status" => "success", 
+                    "status" => "success",
                     "message" => "Imagen de perfil actualizada correctamente",
                     "filename" => $new_filename
                 ];
@@ -166,26 +169,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
             $current_password = $_POST["current_password"] ?? '';
             $new_password = $_POST["new_password"] ?? '';
 
-            $response = $user->changePassword($user_id, $current_password, $new_password);
+            $response = $user->changePassword($user_id, $new_password);
             echo json_encode($response);
             break;
 
-            case "upload_image":
-                if (isset($_FILES["profile_image"])) {
-                    $profile_image = $_FILES["profile_image"];
-    
-                    // Verifica si no hay errores en la subida
-                    if ($profile_image['error'] === UPLOAD_ERR_OK) {
-                        $response = $user->uploadProfileImage($user_id, $profile_image);
-                        echo json_encode($response);
-                    } else {
-                        // Manejo específico para errores de subida
-                        echo json_encode(["status" => "error", "message" => "Error al subir la imagen: " . $profile_image['error']]);
-                    }
+        case "upload_image":
+            if (isset($_FILES["profile_image"])) {
+                $profile_image = $_FILES["profile_image"];
+
+                // Verifica si no hay errores en la subida
+                if ($profile_image['error'] === UPLOAD_ERR_OK) {
+                    $response = $user->uploadProfileImage($user_id, $profile_image);
+                    echo json_encode($response);
                 } else {
-                    echo json_encode(["status" => "error", "message" => "No se recibió ninguna imagen"]);
+                    // Manejo específico para errores de subida
+                    echo json_encode(["status" => "error", "message" => "Error al subir la imagen: " . $profile_image['error']]);
                 }
-                break;
+            } else {
+                echo json_encode(["status" => "error", "message" => "No se recibió ninguna imagen"]);
+            }
+            break;
 
         default:
             echo json_encode(["status" => "error", "message" => "Acción no válida"]);
@@ -198,4 +201,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
 // Si no se reconoce la acción
 echo json_encode(["status" => "error", "message" => "Acción no válida"]);
 exit;
-?>

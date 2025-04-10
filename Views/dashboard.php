@@ -181,10 +181,11 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
                         </form>
 
                         <!-- Formulario de cambio de contraseña -->
-                        <form class="d-flex flex-row flex-wrap" id="changePasswordForm">
-                            <input type="password" name="current_password" placeholder="Contraseña actual">
+                        <form id="changePasswordForm">
+                        <div class="d-flex gap-3 justify-content-center">
                             <input type="password" name="new_password" placeholder="Nueva contraseña">
                             <input type="password" name="confirm_password" placeholder="Confirmar contraseña">
+                        </div>
                             <button type="submit" id="changePasswordBtn">Cambiar contraseña</button>
                         </form>
                     </div>

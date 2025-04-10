@@ -3,13 +3,12 @@ $(document).ready(function() {
     $('#changePasswordForm').on('submit', function(e) {
         e.preventDefault(); // Prevent default form submission
 
-        // Get form values
-        let currentPassword = $('input[name="current_password"]').val();
+        
         let newPassword = $('input[name="new_password"]').val();
         let confirmPassword = $('input[name="confirm_password"]').val();
 
         // Basic client-side validation
-        if (!currentPassword || !newPassword || !confirmPassword) {
+        if (!newPassword || !confirmPassword) {
             Swal.fire({
                 icon: "warning",
                 title: "Campos vacíos",
@@ -25,7 +24,6 @@ $(document).ready(function() {
             method: 'POST',
             data: {
                 action: 'change_password',
-                current_password: currentPassword,
                 new_password: newPassword
             },
             dataType: "json",
