@@ -346,37 +346,39 @@ footer img {
 	font-weight: 900;
 }
 
+.modalCuerpo{
+	height: 450px;
+}
 
 .modalCuerpo form {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 20px;
 	flex-wrap: wrap;
 	align-items: center;
 }
 
 .modalCuerpo form input {
 	width: 40%;
-    padding: 10px;
-    margin-bottom: 10px;
+	padding: 10px;
+	margin-bottom: 10px;
 	border: none;
 	outline: none;
 	height: 60px;
 	color: #fff;
-    border-radius: 5px;
-    font-size: 16px;
+	border-radius: 10px;
+	font-size: 16px;
 	background-color: #cccccc12;
 }
 
-.modalCuerpo form input{
+.modalCuerpo form input {
 	outline: none;
 }
 
 .modalCuerpo form button {
 	color: #c1c1c1;
-	width: 50% !important;
 	padding: 14px !important;
-	border-radius: 18px !important;
+	border-radius: 10px !important;
 	border: none !important;
 	background-color: rgb(44, 95, 141, .49) !important;
 	transition: all 1s ease !important;
@@ -387,12 +389,101 @@ footer img {
 	background: rgb(44, 95, 141, .9) !important;
 }
 
+.actualizar input, .actualizar button{
+	width: 100% 
+	!important;
+}
 
-
-.modal-change{
+.modal-change {
 	display: flex;
 }
 
 .modalCuerpo form button:hover {
-    background-color: #1470d2;
+	background-color: #1470d2;
+}
+
+#modalUser {
+	flex-direction: row;
+}
+
+.uploadImageBtn {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin: 5px;
+}
+
+.image-upload-container {
+	position: relative;
+    /* margin: 20px; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#imagePreview {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 1px solid #ddd;
+	background-color: #f8f8f8;
+}
+
+.uploadImageBtn {
+	position: absolute;
+	bottom: 60px;
+    left: 100px;
+	width: 40px !important;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #4285f4;
+	color: white;
+	font-size: 24px;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+
+#uploadImageBtn:disabled {
+	background-color: #cccccc;
+	cursor: not-allowed;
+}
+
+.file-input {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.btn-file {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Estilos adicionales para el botón */
+#uploadImageBtn {
+    transition: background-color 0.3s ease;
+}
+
+/* Estilos para el botón en modo actualización */
+#uploadImageBtn.update-mode {
+    background-color: #ff9800; /* Color naranja para indicar actualización */
+}
+
+#uploadImageBtn.update-mode:hover {
+    background-color: #f57c00; /* Color naranja más oscuro al pasar el mouse */
+}
+.cuerpo-modal{
+	display: flex;
+	padding: 10px;
 }

@@ -40,6 +40,9 @@ $(document).ready(function() {
                         text: response.message
                     });
                     $('#changePasswordForm')[0].reset();
+                    setTimeout(() => {
+                        window.location.href = "../Backend/logout.php";
+                    }, 1000);
                 } else {
                     Swal.fire({
                         icon: "error",
@@ -119,10 +122,12 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.status === "success") {
+                    $('.modal').modal('hide');
                     Swal.fire({
                         icon: "success",
                         title: "Imagen subida",
                         text: response.message,
+                        timer: 1500, 
                         target: 'body', // Se añade directamente al body
                         backdrop: 'rgba(0, 0, 0, 0.4)', // Fondo semitransparente para la alerta
                         customClass: {
@@ -133,6 +138,9 @@ $(document).ready(function() {
                     $('#imagePreview').hide();
                     $('#uploadImageForm')[0].reset();
                     $('#uploadImageBtn').prop('disabled', true);
+                    setTimeout(() => {
+                        window.location.href = "../Backend/logout.php";
+                    }, 1000);
                 } else {
                     Swal.fire({
                         icon: "error",
@@ -146,19 +154,6 @@ $(document).ready(function() {
                     });
                     $('#uploadProgress').hide();
                 }
-            },
-            error: function(xhr) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error inesperado",
-                    text: "No se pudo subir la imagen. Inténtalo de nuevo.",
-                    target: 'body', // Se añade directamente al body
-                    backdrop: 'rgba(0, 0, 0, 0.4)', // Fondo semitransparente para la alerta
-                    customClass: {
-                        popup: 'my-swal-popup' // Clase personalizada para el popup
-                    }
-                });
-                $('#uploadProgress').hide();
             },
             complete: function() {
                 $('#uploadImageBtn')
@@ -225,7 +220,11 @@ $(document).ready(function() {
                     }).then(() => {
                         $(".info-user li:nth-child(1)").text("Nombre: " + name);
                         $(".info-user li:nth-child(2)").text("Email: " + email);
+                        window.location.href = "../Backend/logout.php";
                         $("#modalUser").modal('hide');
+                        setTimeout(() => {
+                            window.location.href = "../Backend/logout.php";
+                        }, 1000);
                     });
                 } else {
                     Swal.fire({

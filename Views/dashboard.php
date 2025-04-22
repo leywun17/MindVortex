@@ -130,7 +130,7 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
             </div>
         </div>
         <div class="row">
-            <a class="rounded-circle custom-btn fixed-bottom end-100  m-4" data-bs-toggle="modal" href="#Agregarforo" style="left: 92%;">
+            <a class="rounded-circle custom-btn fixed-bottom end-100  m-4" data-bs-toggle="modal" href="#Agregarforo" style="left: 90%;">
                 <i class='bx bx-plus' style='color:#91C6F7; border-radius:50%;'></i>
             </a>
 
@@ -162,32 +162,45 @@ if (isset($_SESSION['logged_in']) &&  $_SESSION['logged_in'] === true) {
 
         <div class="modal fade" id="modalUser" aria-hidden="true" tabindex="-1">
             <div class="modal-dialog">
-                <div class="modal-header">
-                    Editar Perfil
-                </div>
-                <div class="modal-content modalCuerpo d-flex align-items-center">
-                    <form id="uploadImageForm">
-                        <img id="imagePreview">
-                        <input type="file" id="profileImageInput" name="profile_image" accept="image/*">
-                        <button type="submit" id="uploadImageBtn" disabled>Subir imagen</button>
-                    </form>
-                    <div class="modal-change d-flex flex-column justify-content-center">
-                        <form id="updateProfileForm">
-                            <div class="d-flex gap-3 justify-content-center">
-                                <input type="text" name="name" value="<?= $name ?>" placeholder="name">
-                                <input type="email" name="email" value="<?= $email ?>" placeholder="email">
+                <div class="modal-content modalCuerpo d-flex align-items-center justify-content-around">
+                    <div class="modal-header d-flex">
+                        Editar Perfil
+                    </div>
+                    <div class="cuerpo-modal gap-3">
+                        <form id="uploadImageForm">
+                            <div class="image-upload-container gap-3">
+                                <div class="">
+                                    <img id="imagePreview" style="width: 100px; height: 100px; border: radius 50%;;">
+                                    <div class="uploadImageBtn" disabled>
+                                        <label for="" class="btn-file">
+                                            <input type="file" class="file-input" id="profileImageInput" name="profile_image" accept="image/*" required>
+                                        </label>
+                                        +
+                                    </div>
+                                </div>
+                                <button type="submit" id="uploadImageBtn" disabled>Actualizar Imagen</button>
                             </div>
-                            <button type="submit" id="updateProfileBtn">Actualizar información</button>
                         </form>
-
-                        <!-- Formulario de cambio de contraseña -->
-                        <form id="changePasswordForm">
-                        <div class="d-flex gap-3 justify-content-center">
-                            <input type="password" name="new_password" placeholder="Nueva contraseña">
-                            <input type="password" name="confirm_password" placeholder="Confirmar contraseña">
+    
+                        <div class="modal-change d-flex justify-content-center gap-3">
+                            <form id="updateProfileForm" class="actualizar">
+                                <div class="d-flex gap-3 justify-content-center flex-column">
+                                    <input type="text" name="name" value="<?= $name ?>" placeholder="name">
+                                    <input type="email" name="email" value="<?= $email ?>" placeholder="email">
+                                </div>
+                                <button type="submit" id="updateProfileBtn">Actualizar información</button>
+                                <i class="fas fa-plus"></i>
+                            </form>
+    
+                            <!-- Formulario de cambio de contraseña -->
+                            <form id="changePasswordForm" class="actualizar">
+                                <div class="d-flex gap-3 justify-content-center flex-column">
+                                    <input type="password" name="new_password" placeholder="Nueva contraseña">
+                                    <input type="password" name="confirm_password" placeholder="Confirmar contraseña">
+                                </div>
+                                <button type="submit" id="changePasswordBtn">Cambiar contraseña</button>
+                            </form>
                         </div>
-                            <button type="submit" id="changePasswordBtn">Cambiar contraseña</button>
-                        </form>
                     </div>
                 </div>
             </div>

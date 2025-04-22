@@ -1,31 +1,56 @@
 $(document).ready(function() {
-    // Obtener ID del foro de la URL
+    let IDusuario;
     const urlParams = new URLSearchParams(window.location.search);
     const foroId = urlParams.get("id");
-    
-    // Variables para almacenar información del foro
     let autorId;
-    
-    // Al cargar los datos del foro, verificar si el usuario actual es el autor
+
     function verificarAutor(autorID) {
         autorId = autorID;
         
-        // Si el usuario actual no es el autor, ocultar la opción de eliminar
-        if (parseInt(usuarioActualId) !== parseInt(autorId)) {
+        // ✅ Esto solo se debe hacer cuando IDusuario YA ESTÉ DEFINIDO
+        if (parseInt(IDusuario) !== parseInt(autorId)) {
             $("#opcionEliminar, #separadorEliminar").addClass("d-none");
         } else {
-            $("#opcionEliminar").removeClass("d-none"); // mantiene d-flex
-            $("#separadorEliminar").removeClass("d-none").addClass("d-block"); // <hr> necesita d-block
+            $("#opcionEliminar").removeClass("d-none");
+            $("#separadorEliminar").removeClass("d-none").addClass("d-block");
         }
     }
-    
-    // Esta función debería ser llamada desde verForo.js cuando se carguen los datos
-    // Puedes exportarla o hacer que verForo.js llame a verificarAutor con el ID del autor
-    
+
+    function Obtener_id() {
+        $.ajax({
+            url: `../Backend/foro.php`,
+            type: "GET",
+            data: { action: 'obtener_id' },
+            dataType: "json",
+            success: function(data) {
+                IDusuario = data.id_usuario || data.mensaje; // según cómo venga del backend
+                console.log("IDusuario obtenido:", IDusuario);
+
+                // 👇 Si ya tenías el autorId cargado antes, podrías hacer:
+                if (autorId) verificarAutor(autorId); 
+            },
+            error: function() {
+                alert('Error en la conexión con el servidor');
+            }
+        });
+    }
+
+    // Llamar al obtener ID del usuario al principio
+    Obtener_id();
+
+    // Esta función puede ser llamada luego desde verForo.js cuando ya se sepa el autor
+    window.verificarAutorForo = function(autorDelForo) {
+        autorId = autorDelForo;
+        // ⚠️ Si ya tenés IDusuario, podés comparar ahora
+        if (IDusuario) verificarAutor(autorId);
+        // Si no, se va a comparar más tarde cuando llegue la respuesta de `Obtener_id()`
+    }
+
     // Manejar clic en la opción eliminar
     $("#opcionEliminar").click(function() {
         if (!foroId) return;
         
+        // 1. Mostrar confirmación con SweetAlert
         Swal.fire({
             title: "¿Estás seguro?",
             text: "No podrás revertir esta acción",
@@ -37,12 +62,17 @@ $(document).ready(function() {
             cancelButtonText: "Cancelar"
         }).then((result) => {
             if (result.isConfirmed) {
-                // Proceder con la eliminación
+                // 2. Hacer la petición AJAX mediante POST
                 $.ajax({
-                    url: `../Backend/foro.php?action=delete&id=${foroId}`,
-                    type: "DELETE",
+                    url: "../Backend/foro.php",
+                    type: "POST",
+                    data: {
+                        action: "delete",
+                        id: foroId
+                    },
                     dataType: "json",
                     success: function(respuesta) {
+                        // 3. Si la respuesta es exitosa, mostrar alerta y redirigir
                         if (respuesta.exito) {
                             Swal.fire({
                                 icon: "success",
@@ -53,6 +83,7 @@ $(document).ready(function() {
                                 window.location.href = "../Views/dashboard.php";
                             });
                         } else {
+                            // 4. Si hay un error lógico, mostrar mensaje de error
                             Swal.fire({
                                 icon: "error",
                                 title: "Error",
@@ -61,6 +92,7 @@ $(document).ready(function() {
                         }
                     },
                     error: function(xhr, status, error) {
+                        // 5. Si la petición falla, loguear y notificar
                         console.error("Error AJAX:", error);
                         Swal.fire({
                             icon: "error",
@@ -73,6 +105,4 @@ $(document).ready(function() {
         });
     });
     
-    // Función para exponer al exterior y ser llamada desde verForo.js
-    window.verificarAutorForo = verificarAutor;
 });

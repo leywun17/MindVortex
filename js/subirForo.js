@@ -153,9 +153,9 @@ $(document).ready(function () {
             // Usar el contenedor de paginación existente
             $("#pagination-container").html(`
                 <button id="prevPage" class="btn btn-outline-primary me-2">← Anterior</button>
-                <div class="d-flex align-items-center mx-2 text-primary"> <p>
+                <div class="d-flex align-items-center justify-content-center mx-2 text-light"> <p>
                         Página
-                        <span id="currentPage" class="text-primary"> 1 </span> de <span id="totalPages" class="text-primary"> ${totalPages} </span>
+                        <span id="currentPage" class="text-light"> 1 </span> de <span id="totalPages" class="text-light"> ${totalPages} </span>
                     </p>
                 </div>
                 <button id="nextPage" class="btn btn-outline-primary ms-2">Siguiente →</button>

@@ -1,329 +1,258 @@
 <?php
-// Encabezados requeridos
+// Encabezados CORS y JSON
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST, GET");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-session_start(); // Asegúrate de iniciar la sesión antes de acceder a las variables de sesión.
-header('Content-Type: application/json');
+session_start();
 
-
+// Responder preflight CORS
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 require_once 'config.php';
 
 class Forum
 {
-    // Conexión a la base de datos y nombre de la tabla
     private $conn;
     private $table_name = "foros";
 
-    // Propiedades de objeto
     public $id;
     public $titulo;
     public $descripcion;
     public $id_usuario;
     public $fecha_creacion;
-    public $nombre_usuario; // Para JOIN con la tabla de usuarios
-    public $imagen_usuario; // Para JOIN con la tabla de usuarios
+    public $nombre_usuario;
+    public $imagen_usuario;
 
-    // Constructor con $db como conexión a la base de datos
     public function __construct($db)
     {
         $this->conn = $db;
     }
 
-    // Crear un nuevo foro
     public function create()
     {
-        // Sanitizar datos
-        $this->titulo = htmlspecialchars(strip_tags($this->titulo));
+        $this->titulo      = htmlspecialchars(strip_tags($this->titulo));
         $this->descripcion = htmlspecialchars(strip_tags($this->descripcion));
-        $this->id_usuario = htmlspecialchars(strip_tags($this->id_usuario));
+        $this->id_usuario  = htmlspecialchars(strip_tags($this->id_usuario));
 
-        // Consulta para insertar
-        $query = "INSERT INTO " . $this->table_name . " 
-                  SET titulo = :titulo, 
-                      descripcion = :descripcion, 
+        $query = "INSERT INTO {$this->table_name}
+                  SET titulo = :titulo,
+                      descripcion = :descripcion,
                       id_usuario = :id_usuario";
 
-        // Preparar consulta
         $stmt = $this->conn->prepare($query);
-
-        // Vincular valores
-        $stmt->bindParam(':titulo', $this->titulo);
+        $stmt->bindParam(':titulo',      $this->titulo);
         $stmt->bindParam(':descripcion', $this->descripcion);
-        $stmt->bindParam(':id_usuario', $this->id_usuario);
+        $stmt->bindParam(':id_usuario',  $this->id_usuario);
 
-        // Ejecutar consulta
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
             return true;
         }
-
         return false;
     }
 
-    // Leer todos los foros con información de usuario
     public function readAll()
     {
-        // Consulta con JOIN
-        $query = "SELECT f.id, f.titulo, f.descripcion, f.fecha_creacion, u.name, 
-                 COALESCE(u.profile_image, 'default.jpg') AS profile_image
-          FROM " . $this->table_name . " f
-          INNER JOIN users u ON f.id_usuario = u.id
-          ORDER BY f.fecha_creacion DESC";
-
-        // Preparar consulta
+        $query = "SELECT f.id, f.titulo, f.descripcion, f.fecha_creacion,
+                         u.name, COALESCE(u.profile_image,'default.jpg') AS profile_image
+                  FROM {$this->table_name} f
+                  INNER JOIN users u ON f.id_usuario = u.id
+                  ORDER BY f.fecha_creacion DESC";
         $stmt = $this->conn->prepare($query);
-
-        // Ejecutar consulta
         $stmt->execute();
-
         return $stmt;
     }
 
-    // Leer un foro específico
     public function readOne()
     {
-        // Consulta para leer un solo foro con información de usuario
         $query = "SELECT f.id, f.titulo, f.descripcion, f.fecha_creacion, f.id_usuario,
                          u.name, u.profile_image
-                  FROM " . $this->table_name . " f
+                  FROM {$this->table_name} f
                   INNER JOIN users u ON f.id_usuario = u.id
                   WHERE f.id = :id";
-
-        // Preparar consulta
         $stmt = $this->conn->prepare($query);
-
-        // Vincular ID
         $stmt->bindParam(':id', $this->id);
-
-        // Ejecutar consulta
         $stmt->execute();
-
-        // Obtener fila
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            $this->id = $row['id'];
-            $this->id_usuario = $row['id_usuario'];
-            $this->titulo = $row['titulo'];
-            $this->descripcion = $row['descripcion'];
+            $this->id             = $row['id'];
+            $this->id_usuario     = $row['id_usuario'];
+            $this->titulo         = $row['titulo'];
+            $this->descripcion    = $row['descripcion'];
             $this->fecha_creacion = $row['fecha_creacion'];
             $this->nombre_usuario = $row['name'];
             $this->imagen_usuario = $row['profile_image'];
             return true;
         }
-
         return false;
     }
 
-    public function delete(){
-        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
-        
-        $stmt = $this->conn->prepare($query);
-        
-        // Vincular ID
-        $stmt->bindParam(':id', $this->id);
-        
-        // Ejecutar consulta
-        if($stmt->execute()) {
+    public function delete()
+    {
+        try {
+            // 1) Iniciar transacción
+            $this->conn->beginTransaction();
+    
+            // 2) Borrar comentarios del foro
+            $sql1 = "DELETE FROM comentarios WHERE foro_id = :id";
+            $stmt1 = $this->conn->prepare($sql1);
+            $stmt1->bindParam(':id', $this->id);
+            $stmt1->execute();
+    
+            // 3) Borrar el propio foro
+            $sql2 = "DELETE FROM {$this->table_name} WHERE id = :id";
+            $stmt2 = $this->conn->prepare($sql2);
+            $stmt2->bindParam(':id', $this->id);
+            $stmt2->execute();
+    
+            // 4) Confirmar
+            $this->conn->commit();
             return true;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return false;
         }
-        
-        return false;
-    }
-
-    public function editar(){
-        $query = "";
     }
 }
 
-// Instanciar la base de datos
+// Instanciar DB y objeto
 $database = new Database();
-$db = $database->getConnection();
-
-// Instanciar el objeto foro
-$forum = new Forum($db);
-
-// Obtener datos enviados
-$data = json_decode(file_get_contents("php://input"));
+$db       = $database->getConnection();
+$forum    = new Forum($db);
 
 // Respuesta por defecto
-$response = array(
-    "exito" => false,
+$response = [
+    "exito"   => false,
     "mensaje" => "Acción no reconocida"
-);
+];
 
-// Verificar método de solicitud
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'POST':
-        // Verificar acción solicitada
-        if (isset($_GET['action']) && $_GET['action'] === 'create') {
+        // detecto la acción venga por POST o GET
+        $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
-
-            // Verificar datos recibidos
-            if (!empty($data->titulo) && !empty($data->descripcion)) {
-                // Asignar valores a propiedades del foro
-                $forum->titulo = $data->titulo;
-                $forum->descripcion = $data->descripcion;
-                $forum->id_usuario = $_SESSION['id'];
-
-                // Crear foro
-                if ($forum->create()) {
-                    $response = array(
-                        "exito" => true,
-                        "mensaje" => "Foro creado correctamente",
-                        "id" => $forum->id
-                    );
+        switch ($action) {
+            case 'create':
+                $data = json_decode(file_get_contents("php://input"));
+                if (!empty($data->titulo) && !empty($data->descripcion)) {
+                    $forum->titulo      = $data->titulo;
+                    $forum->descripcion = $data->descripcion;
+                    $forum->id_usuario  = $_SESSION['id'];
+                    if ($forum->create()) {
+                        $response = [
+                            "exito"   => true,
+                            "mensaje" => "Foro creado correctamente",
+                            "id"      => $forum->id
+                        ];
+                    } else {
+                        $response["mensaje"] = "Error al crear el foro";
+                    }
                 } else {
-                    $response = array(
-                        "exito" => false,
-                        "mensaje" => "Error al crear el foro"
-                    );
+                    $response["mensaje"] = "El título y la descripción son obligatorios";
                 }
-            } else {
-                $response = array(
-                    "exito" => false,
-                    "mensaje" => "El título y la descripción son obligatorios"
-                );
-            }
+                break;
+
+            case 'delete':
+                if (isset($_POST['id'])) {
+                    $forum->id = $_POST['id'];
+                    if ($forum->readOne()) {
+                        if (isset($_SESSION['id']) && $_SESSION['id'] == $forum->id_usuario) {
+                            if ($forum->delete()) {
+                                $response = [
+                                    "exito"   => true,
+                                    "mensaje" => "Foro eliminado correctamente"
+                                ];
+                            } else {
+                                $response["mensaje"] = "Error al eliminar el foro";
+                            }
+                        } else {
+                            $response["mensaje"] = "No tienes permiso para eliminar este foro";
+                        }
+                    } else {
+                        $response["mensaje"] = "Foro no encontrado";
+                    }
+                } else {
+                    $response["mensaje"] = "ID no especificado";
+                }
+                break;
+
+            default:
+                // deja $response por defecto
+                break;
         }
         break;
 
     case 'GET':
-        // Verificar acción solicitada
         if (isset($_GET['action'])) {
             switch ($_GET['action']) {
                 case 'read':
-                    // Leer todos los foros
                     $stmt = $forum->readAll();
-                    $num = $stmt->rowCount();
-
-                    // Verificar si hay foros
+                    $num  = $stmt->rowCount();
+                    $foros = [];
                     if ($num > 0) {
-                        $forums_arr = array();
-                        $forums_arr["foros"] = array();
-
-                        // Obtener resultados
                         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                             extract($row);
-
-                            $forum_item = array(
-                                "id" => $id,
-                                "titulo" => $titulo,
-                                "descripcion" => $descripcion,
+                            $foros[] = [
+                                "id"             => $id,
+                                "titulo"         => $titulo,
+                                "descripcion"    => $descripcion,
                                 "fecha_creacion" => $fecha_creacion,
                                 "nombre_usuario" => $name,
-                                "imagen_usuario" => $profile_image,
-                            );
-
-                            array_push($forums_arr["foros"], $forum_item);
+                                "imagen_usuario" => $profile_image
+                            ];
                         }
-
-                        $response = array(
-                            "exito" => true,
-                            "foros" => $forums_arr["foros"]
-                        );
-                    } else {
-                        $response = array(
-                            "exito" => true,
-                            "foros" => array()
-                        );
                     }
+                    $response = ["exito" => true, "foros" => $foros];
                     break;
 
                 case 'read_one':
-                    // Verificar ID
-                    if (isset($_GET['id']) && $_GET['action'] === 'read_one') {
+                    if (isset($_GET['id'])) {
                         $forum->id = $_GET['id'];
-
-                        // Leer un foro específico
                         if ($forum->readOne()) {
-                            $response = array(
+                            $response = [
                                 "exito" => true,
-                                "foro" => array(
-                                    "id" => $forum->id,
-                                    "titulo" => $forum->titulo,
-                                    "descripcion" => $forum->descripcion,
+                                "foro"  => [
+                                    "id"             => $forum->id,
+                                    "titulo"         => $forum->titulo,
+                                    "descripcion"    => $forum->descripcion,
                                     "fecha_creacion" => $forum->fecha_creacion,
                                     "nombre_usuario" => $forum->nombre_usuario,
                                     "imagen_usuario" => $forum->imagen_usuario,
-                                    "id_usuario" => $forum->id_usuario
-                                )
-                            );
+                                    "id_usuario"     => $forum->id_usuario
+                                ]
+                            ];
                         } else {
-                            $response = array(
-                                "exito" => false,
-                                "mensaje" => "Foro no encontrado"
-                            );
+                            $response["mensaje"] = "Foro no encontrado";
                         }
                     } else {
-                        $response = array(
-                            "exito" => false,
-                            "mensaje" => "ID no especificado"
-                        );
+                        $response["mensaje"] = "ID no especificado";
                     }
+                    break;
+
+                case 'obtener_id':
+                    $response = [
+                        "exito"      => true,
+                        "id_usuario" => $_SESSION['id']
+                    ];
+                    break;
+
+                default:
                     break;
             }
         }
         break;
-        case 'DELETE':
-            if (isset($_GET['action']) && $_GET['action'] === 'delete') {
-                // Verificar que se recibió un ID
-                
-                if (isset($_GET['id'])) {
-                    $forum->id = $_GET['id'];
-                    
-                    // Primero verificar que el foro existe
-                    if ($forum->readOne()) {
-                        // Verificar si el usuario está autenticado
-                        if (isset($_SESSION['id'])) {
-                            // IMPORTANTE: Verificar si el usuario actual es el propietario del foro
-                            if ($_SESSION['id'] == $forum->id_usuario) {
-                                // Eliminar el foro
-                                if ($forum->delete()) {
-                                    $response = array(
-                                        "exito" => true,
-                                        "mensaje" => "Foro eliminado correctamente"
-                                    );
-                                } else {
-                                    $response = array(
-                                        "exito" => false,
-                                        "mensaje" => "Error al eliminar el foro"
-                                    );
-                                }
-                            } else {
-                                $response = array(
-                                    "exito" => false,
-                                    "mensaje" => "No tienes permiso para eliminar este foro"
-                                );
-                            }
-                        } else {
-                            $response = array(
-                                "exito" => false,
-                                "mensaje" => "Debes iniciar sesión para eliminar un foro"
-                            );
-                        }
-                    } else {
-                        $response = array(
-                            "exito" => false,
-                            "mensaje" => "Foro no encontrado"
-                        );
-                    }
-                } else {
-                    $response = array(
-                        "exito" => false,
-                        "mensaje" => "ID no especificado"
-                    );
-                }
-            }
-            break;
-    }
 
-// Enviar respuesta
+    // no usamos DELETE directo
+}
+
+// Enviar JSON de respuesta
 echo json_encode($response);

@@ -4,8 +4,9 @@ $(document).ready(function(){
 
     if(id){
         $.ajax({
-            url: `../Backend/foro.php?action=read_one&id=${id}`,
+            url: `../Backend/foro.php`,
             type: "GET",
+            data: {action: "read_one", id: id},
             dataType: "json",
             success: function(respuesta){
                 if(respuesta.exito){
