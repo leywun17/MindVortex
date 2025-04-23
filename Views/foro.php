@@ -134,6 +134,7 @@ $foro_id = isset($_GET['id']) ? (int)$_GET['id'] : null;
                         <hr id="separadorEditar" class="d-none bg-light">
                         <li class="dropdown-header text-center"> <i class='bx bx-error text-danger'></i> Reportar </li>
                     </ul>
+                    <div id="botonFavoritoContenedor"></div>
                 </div>
             </div>
 

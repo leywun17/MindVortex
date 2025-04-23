@@ -12,7 +12,7 @@ require_once 'config.php';
 class Comment
 {
     private $conn;
-    private $table_name = "comentarios";
+    private $table_name = "comments";
 
     public $id;
     public $foro_id;
@@ -56,7 +56,7 @@ class Comment
     public function readByForum()
     {
         $query = "SELECT c.*, u.name as author_name, u.profile_image as author_image
-              FROM comentarios c
+              FROM comments c
               JOIN users u ON c.user_id = u.id
               WHERE c.foro_id = :foro_id
               ORDER BY c.created_at DESC";

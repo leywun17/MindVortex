@@ -25,12 +25,12 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
         rel="stylesheet">
 
     <!-- Tus estilos -->
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/fav.css">
 
     <link rel="shortcut icon" href="../Assets/logo.png" type="image/x-icon">
 </head>
@@ -46,46 +46,33 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
             <div class="collapse navbar-collapse" id="navbarUser">
                 <ul class="navbar-nav mx-auto paginas gap-2">
                     <li class="nav-item">
-                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>" href="dashboard.php">Preguntas</a>
+                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
+                            href="dashboard.php">Preguntas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'favorite.php' ? 'active' : ''; ?>" href="favorite.php">Favoritos</a>
+                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'favorite.php' ? 'active' : ''; ?>"
+                            href="favorite.php">Favoritos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>" href="history.php">Historial</a>
+                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>"
+                            href="history.php">Historial</a>
                     </li>
                 </ul>
                 <form class="d-flex me-3 position-relative">
-                    <input
-                        class="form-control search-input"
-                        type="search"
-                        placeholder="Buscar"
-                        aria-label="Search">
+                    <input class="form-control search-input" type="search" placeholder="Buscar" aria-label="Search">
                     <button class="btn btn-link search-btn" type="submit">
                         <i class='bx bx-search-alt-2'></i>
                     </button>
                 </form>
             </div>
             <div class="dropdown">
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarUser"
-                    aria-controls="navbarUser"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarUser"
+                    aria-controls="navbarUser" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <button
-                    class="btn user-btn"
-                    id="userMenu"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                <button class="btn user-btn" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                     <?php if ($img): ?>
-                        <img
-                            src="../uploads/profile_images/<?= htmlspecialchars($img) ?>"
-                            alt="user photo"
+                        <img src="../uploads/profile_images/<?= htmlspecialchars($img) ?>" alt="user photo"
                             class="rounded-circle user-avatar">
                     <?php else: ?>
                         <i class='bx bx-user user-icon'></i>
@@ -97,9 +84,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                 <ul class="dropdown-menu dropdown-menu-end user-dropdown" aria-labelledby="userMenu">
                     <li class="dropdown-header text-center">
                         <?php if ($img): ?>
-                            <img
-                                src="../uploads/profile_images/<?= htmlspecialchars($img) ?>"
-                                alt="user photo"
+                            <img src="../uploads/profile_images/<?= htmlspecialchars($img) ?>" alt="user photo"
                                 class="rounded-circle user-avatar-lg">
                         <?php else: ?>
                             <i class='bx bx-user user-icon-lg'></i>
@@ -121,7 +106,10 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     </nav>
 
     <main class="flex-fill container">
-        
+        <h2 class="text-center titulo">Favoritos</h2>
+        <div class="container mt-5">
+            <div id="contenedor-favoritos" class="row"></div>
+        </div>
     </main>
 
     <!-- Modal Editar Perfil -->
@@ -136,27 +124,34 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                             <input type="file" id="profileImageInput" name="profile_image" accept="image/*" hidden>
                             Cambiar imagen
                         </label>
-                        <button type="submit" id="uploadImageBtn" class="btn btn-primary" disabled>Actualizar Imagen</button>
+                        <button type="submit" id="uploadImageBtn" class="btn btn-primary" disabled>Actualizar
+                            Imagen</button>
                     </div>
                 </form>
                 <div class="d-flex gap-4">
                     <form id="updateProfileForm" class="flex-fill">
                         <div class="mb-3">
-                            <input type="text" name="name" value="<?= htmlspecialchars($name) ?>" class="form-control" placeholder="Nombre">
+                            <input type="text" name="name" value="<?= htmlspecialchars($name) ?>" class="form-control"
+                                placeholder="Nombre">
                         </div>
                         <div class="mb-3">
-                            <input type="email" name="email" value="<?= htmlspecialchars($email) ?>" class="form-control" placeholder="Correo">
+                            <input type="email" name="email" value="<?= htmlspecialchars($email) ?>"
+                                class="form-control" placeholder="Correo">
                         </div>
-                        <button type="submit" id="updateProfileBtn" class="btn btn-primary w-100">Actualizar información</button>
+                        <button type="submit" id="updateProfileBtn" class="btn btn-primary w-100">Actualizar
+                            información</button>
                     </form>
                     <form id="changePasswordForm" class="flex-fill">
                         <div class="mb-3">
-                            <input type="password" name="new_password" class="form-control" placeholder="Nueva contraseña">
+                            <input type="password" name="new_password" class="form-control"
+                                placeholder="Nueva contraseña">
                         </div>
                         <div class="mb-3">
-                            <input type="password" name="confirm_password" class="form-control" placeholder="Confirmar contraseña">
+                            <input type="password" name="confirm_password" class="form-control"
+                                placeholder="Confirmar contraseña">
                         </div>
-                        <button type="submit" id="changePasswordBtn" class="btn btn-secondary w-100">Cambiar contraseña</button>
+                        <button type="submit" id="changePasswordBtn" class="btn btn-secondary w-100">Cambiar
+                            contraseña</button>
                     </form>
                 </div>
             </div>
@@ -171,7 +166,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     <script src="../js/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/update.js"></script>
-    <script src="../js/subirForo.js"></script>
+    <script src="../js/favoritos.js"></script>
     <script src="../js/verForo.js"></script>
 </body>
 

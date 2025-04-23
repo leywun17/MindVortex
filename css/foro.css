@@ -72,6 +72,10 @@ h2{
     height: 100px;
 }
 
+p{
+    margin-bottom: 0 !important;
+}
+
 #boton-publicar{
     background-color: #13293D;
     border: none;

@@ -31,6 +31,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
 
     <!-- Tus estilos -->
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/history.css">
 
     <link rel="shortcut icon" href="../Assets/logo.png" type="image/x-icon">
 </head>
@@ -121,7 +122,39 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     </nav>
 
     <main class="flex-fill container">
-        
+        <!-- Dentro de tu página principal -->
+        <section class="historiales-section py-5">
+            <div class="container py-5">
+                <h2 class="section-title mb-4">Historiales</h2>
+                <div class="historiales-scroll p-3 bg-dark rounded-3">
+                    <div class="accordion" id="accordionPrincipal">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading-historial">
+                                <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-historial"
+                                    aria-expanded="false"
+                                    aria-controls="collapse-historial">
+                                    <span class="me-2 text-secondary">?</span>
+                                    <span class="foro-title">Historial De Preguntas</span>
+                                </button>
+                            </h2>
+                            <div id="collapse-historial"
+                                class="accordion-collapse collapse"
+                                aria-labelledby="heading-historial"
+                                data-bs-parent="#accordionPrincipal">
+                                <div class="accordion-body px-0">
+                                    <!-- Aquí se inyecta el nested accordion de foros -->
+                                    <div class="accordion nested-accordion" id="accordionForos"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
     </main>
 
     <!-- Modal Editar Perfil -->
@@ -173,6 +206,8 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     <script src="../js/update.js"></script>
     <script src="../js/subirForo.js"></script>
     <script src="../js/verForo.js"></script>
+    <script src="../js/history.js"></script>
+
 </body>
 
 </html>

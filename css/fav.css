@@ -1,0 +1,10 @@
+h2{
+    font-weight: 900;
+    color: #91C6F7;
+}
+
+body{
+    width: 100%;
+    height: 100vh;
+    overflow: hidden !important;
+}
