@@ -95,13 +95,13 @@ $(document).ready(function () {
             let html = "";
             for (let i = startIndex; i < endIndex; i++) {
                 const foro = foros[i];
-                let fecha = new Date(foro.fecha_creacion).toLocaleString();
+                let fecha = new Date(foro.fecha_creacion).toLocaleDateString();
     
                 html += `
                     <div class="card-item card mb-3 mx-2" data-id="${foro.id}" style="flex: 1 0 45%; min-width: 350px; max-width: 550px;">
-                        <div class="card-header d-flex justify-content-space-evenly">
-                            <h5>${foro.titulo}</h5>
-                            <div class="d-flex justify-content-between align-items-center">
+                        <div class="card-header d-flex justify-content-space-beetwen gap-3">
+                            <h5 class="w-50 d-flex flex-wrap">${foro.titulo}</h5>
+                            <div class="w-50 d-flex justify-content-between align-items-center">
                                 <div class="user-info d-flex align-items-center">
                                     <div class="avatar me-2">
                                         <img src="../uploads/profile_images/${foro.imagen_usuario}" alt="user photo" class="bg-secondary d-block" width="32" height="32" style="border-radius: 10px;">
@@ -152,13 +152,13 @@ $(document).ready(function () {
         if (totalPages > 1) {
             // Usar el contenedor de paginación existente
             $("#pagination-container").html(`
-                <button id="prevPage" class="btn btn-outline-primary me-2">← Anterior</button>
+                <button id="prevPage" class="btn btn-outline-light me-2">← Anterior</button>
                 <div class="d-flex align-items-center justify-content-center mx-2 text-light"> <p>
                         Página
                         <span id="currentPage" class="text-light"> 1 </span> de <span id="totalPages" class="text-light"> ${totalPages} </span>
                     </p>
                 </div>
-                <button id="nextPage" class="btn btn-outline-primary ms-2">Siguiente →</button>
+                <button id="nextPage" class="btn btn-outline-light ms-2">Siguiente →</button>
             `);
     
             // Mostrar el contenedor de paginación

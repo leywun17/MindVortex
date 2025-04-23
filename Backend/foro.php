@@ -59,11 +59,11 @@ class Forum
 
     public function readAll()
     {
-        $query = "SELECT f.id, f.titulo, f.descripcion, f.fecha_creacion,
+        $query = "SELECT f.id, f.titulo, f.descripcion, DATE(f.fecha_creacion) AS fecha_creacion,
                          u.name, COALESCE(u.profile_image,'default.jpg') AS profile_image
                   FROM {$this->table_name} f
                   INNER JOIN users u ON f.id_usuario = u.id
-                  ORDER BY f.fecha_creacion DESC";
+                  ORDER BY DATE(f.fecha_creacion) DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -71,7 +71,7 @@ class Forum
 
     public function readOne()
     {
-        $query = "SELECT f.id, f.titulo, f.descripcion, f.fecha_creacion, f.id_usuario,
+        $query = "SELECT f.id, f.titulo, f.descripcion, DATE(f.fecha_creacion) AS fecha_creacion, f.id_usuario,
                          u.name, u.profile_image
                   FROM {$this->table_name} f
                   INNER JOIN users u ON f.id_usuario = u.id

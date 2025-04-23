@@ -20,7 +20,6 @@ body {
 body {
 	position: relative;
 	z-index: -100;
-	height: 100vh !important;
 }
 
 /* Color of the links BEFORE scroll */
@@ -165,8 +164,8 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 footer {
-	position: fixed;
-	z-index: -1;
+	
+	z-index: -1 !important;
 }
 
 footer img {
@@ -229,7 +228,7 @@ footer img {
 }
 
 .card-header {
-	background-color: #f8f9fa;
+	background-color: #f8f9fa1b;
 	justify-content: space-between;
 	border-radius: 18px 18px 0 0 !important;
 	padding: 15px 20px;
@@ -239,6 +238,7 @@ footer img {
 	margin-bottom: 10px;
 	font-weight: 700;
 	color: #91C6F7;
+	word-break: break-word;
 }
 
 
@@ -273,7 +273,6 @@ footer img {
 #listaForos {
 	flex-wrap: wrap;
 	width: 100%;
-	overflow: scroll;
 }
 
 .pagination-container {
@@ -346,7 +345,7 @@ footer img {
 	font-weight: 900;
 }
 
-.modalCuerpo{
+.modalCuerpo {
 	height: 450px;
 }
 
@@ -389,9 +388,9 @@ footer img {
 	background: rgb(44, 95, 141, .9) !important;
 }
 
-.actualizar input, .actualizar button{
-	width: 100% 
-	!important;
+.actualizar input,
+.actualizar button {
+	width: 100% !important;
 }
 
 .modal-change {
@@ -416,10 +415,10 @@ footer img {
 
 .image-upload-container {
 	position: relative;
-    /* margin: 20px; */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+	/* margin: 20px; */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 #imagePreview {
@@ -434,7 +433,7 @@ footer img {
 .uploadImageBtn {
 	position: absolute;
 	bottom: 60px;
-    left: 100px;
+	left: 100px;
 	width: 40px !important;
 	height: 40px;
 	border-radius: 50%;
@@ -472,18 +471,144 @@ footer img {
 
 /* Estilos adicionales para el botón */
 #uploadImageBtn {
-    transition: background-color 0.3s ease;
+	transition: background-color 0.3s ease;
 }
 
 /* Estilos para el botón en modo actualización */
 #uploadImageBtn.update-mode {
-    background-color: #ff9800; /* Color naranja para indicar actualización */
+	background-color: #ff9800;
+	/* Color naranja para indicar actualización */
 }
 
 #uploadImageBtn.update-mode:hover {
-    background-color: #f57c00; /* Color naranja más oscuro al pasar el mouse */
+	background-color: #f57c00;
+	/* Color naranja más oscuro al pasar el mouse */
 }
-.cuerpo-modal{
+
+.cuerpo-modal {
 	display: flex;
 	padding: 10px;
+}
+
+body {
+	font-family: 'Nunito', sans-serif;
+}
+
+/* Header y navbar */
+.navbar .container {
+	background-color: rgb(145, 198, 247, 0.12);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border-radius: 29px;
+}
+
+/* Búsqueda */
+.search-input {
+	padding-right: 2.5rem;
+}
+
+.search-btn {
+	position: absolute;
+	top: 50%;
+	right: 0.75rem;
+	transform: translateY(-50%);
+	color: #91C6F7;
+}
+
+/* Avatar usuario */
+.user-btn {
+	background: transparent;
+	border: none;
+	padding: 0.25rem;
+	margin-left: 1rem;
+}
+
+.user-avatar {
+	width: 32px;
+	height: 32px;
+	background: #fff;
+}
+
+.user-avatar-lg {
+	width: 48px;
+	height: 48px;
+	background: #fff;
+}
+
+.user-icon,
+.user-icon-lg {
+	font-size: 24px;
+	color: #91C6F7;
+	background: #13293D;
+	padding: 0.5rem;
+	border-radius: 50%;
+}
+
+/* Dropdown de usuario */
+.user-dropdown {
+	background-color: #13293D;
+	z-index: 100;
+}
+
+main {
+	z-index: -1;
+}
+
+main, nav{
+	padding: 10px;
+}
+
+
+.cuerpo {
+	background-color: rgb(145, 198, 247, 0.12);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border-radius: 19px;
+	height: auto;
+}
+
+/* Contenedor principal */
+main h2 {
+	color: #91C6F7;
+	font-weight: 800;
+}
+
+/* Botón flotante para agregar foro */
+.add-foro-btn {
+	position: fixed;
+	bottom: 3rem;
+	right: 1.5rem;
+	background-color: #13293D;
+	color: #91C6F7;
+	width: 4.5rem;
+	height: 4.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2.5rem;
+}
+
+.add-foro-btn:hover {
+	background-color: #1e3f5f;
+	color: #91C6F7;
+}
+
+/* Footer */
+.footer-img img {
+	height: 100px;
+	object-fit: cover;
+}
+
+@media (max-width: 480px) {
+	.vertical-divider {
+		display: none;
+	}
+
+	body{
+		height: auto;
+	}
+
+	footer{
+		position: relative !important;
+	}
 }

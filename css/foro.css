@@ -1,0 +1,99 @@
+body{
+    overflow: hidden;
+}
+
+.color-acento {
+    color: #91C6F7;
+}
+
+h2{
+    color: #91C6F7;
+    font-weight: 800;
+}
+
+.bg-oscuro {
+    background-color: #13293D;
+}
+
+.texto-opciones i {
+    font-size: 35px;
+}
+
+.dropdown-opcion {
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.boton-publicar {
+    background-color: #91C6F7;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+}
+
+.boton-publicar:hover {
+    background-color: #7bb5e8;
+}
+
+.contenedor-foro {
+    border-radius: 2rem;
+    height: 80vh;
+}
+
+.img-footer {
+    height: 100px;
+    z-index: -1;
+}
+
+.img-fluid{
+    height: 100px !important;
+}
+
+#userMenu{
+    color: #91C6F7;
+    font-size: 25px;
+}
+
+.fondo-dropdown{
+    background-color: #13293D !important;
+}
+
+.contenedor-principal{
+    height: 135% !important;
+}
+
+#commentInput{
+    border: 2px solid #91C6F7;
+    background-color: transparent;
+    color: #fff;
+    border-radius: 10px;
+    height: 100px;
+}
+
+#boton-publicar{
+    background-color: #13293D;
+    border: none;
+    border-radius: 12px;
+    
+}
+
+#boton-publicar:hover{
+    background-color: #214668;
+}
+
+@media (max-width: 480px) {
+
+	body{
+        overflow: auto;
+	}
+
+    .contenedor{
+        height: 100vh;
+    }
+
+	footer{
+		position: relative !important;
+	}
+}
