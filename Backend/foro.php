@@ -216,6 +216,35 @@ class Forum
         $stmt->execute();
         return $stmt;
     }
+
+    /**
+     * Busca foros por título o descripción
+     *
+     * @param string $term Término de búsqueda
+     * @return array Lista de foros que coinciden
+     */
+    public function search(string $term): array
+    {
+        // Preparar término con comodines
+        $term = '%' . $term . '%';
+
+        $sql = "SELECT
+                    f.id,
+                    f.title,
+                    f.description,
+                    DATE(f.createdAt) AS createdAt,
+                    u.userName,
+                    COALESCE(u.userImage,'default.jpg') AS userImage
+                FROM {$this->tableName} f
+                INNER JOIN users u ON f.userId = u.id
+                WHERE f.title LIKE :term OR f.description LIKE :term
+                ORDER BY f.createdAt DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':term', $term, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 
 // Instantiate database and model
@@ -344,6 +373,17 @@ switch ($method) {
                         $userForums[] = $row;
                     }
                     $response = ["success" => true, "forums" => $userForums];
+                    break;
+                case 'search':
+                    // Obtenemos término de búsqueda desde la query string
+                    $queryTerm = $_GET['query'] ?? '';
+                    // Ejecutamos método search de la clase Forum
+                    $results = $forum->search($queryTerm);
+                    // Devolvemos respuesta JSON
+                    $response = [
+                        'success' => true,
+                        'results' => $results
+                    ];
                     break;
 
                 case 'my_favorites':

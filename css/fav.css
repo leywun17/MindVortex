@@ -8,3 +8,7 @@ body{
     height: 100vh;
     overflow: hidden !important;
 }
+
+.fondo-dropdown{
+    background-color: #13293D !important;
+}

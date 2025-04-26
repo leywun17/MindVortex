@@ -614,6 +614,14 @@ main h2 {
 	top: 10px;
 }
 
+.fondo-dropdown{
+    background-color: #13293D !important;
+}
+
+.bx-search-alt-2{
+	color: #91C6F7;
+}
+
 @media (max-width: 480px) {
 	.vertical-divider {
 		display: none;

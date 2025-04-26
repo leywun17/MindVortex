@@ -86,15 +86,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                     <li class="nav-item"><a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>" href="history.php">Historial</a></li>
                 </ul>
 
-                <!-- Formulario de búsqueda -->
-                <form class="d-flex me-3">
-                    <div class="position-relative w-110">
-                        <input type="search" class="form-control" placeholder="Buscar" aria-label="Search">
-                        <button type="submit" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2">
-                            <i class='bx bx-search-alt-2 icono-busqueda'></i>
-                        </button>
-                    </div>
-                </form>
+
             </div>
         </div>
     </nav>

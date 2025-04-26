@@ -191,6 +191,43 @@ $(document).ready(function () {
         });
     }
 
+    $('#searchForm').on('submit', function(e) {
+        e.preventDefault();                          
+        const term = $('#searchInput').val().trim();
+    
+        // Si está vacío, recarga todo
+        if (!term) {
+            $('#paginationContainer').show();
+            loadForums();
+            return;
+        }
+    
+        // Petición AJAX al case 'search'
+        $.ajax({
+            url: "../Backend/foro.php",
+            type: "GET",
+            data: {
+                action: 'search',
+                query: term
+            },
+            dataType: "json",
+            success: function(res) {
+                if (res.success) {
+                    // Pagina y muestra sólo los resultados de búsqueda
+                    renderForums(res.results);
+                    $('#paginationContainer').show();
+                } else {
+                    $('#forumList').html('<p class="text-muted">No se encontraron foros.</p>');
+                    $('#paginationContainer').hide();
+                }
+            },
+            error: function() {
+                $('#forumList').html('<p class="text-danger">Error de comunicación.</p>');
+                $('#paginationContainer').hide();
+            }
+        });
+    });
+
     // Maneja el toggle de favorito usando el nuevo parámetro forum_id
     $(document).on("click", "#btnFavorite", function () {
         const forumId = $(this).data("id");

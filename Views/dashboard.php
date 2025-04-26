@@ -65,9 +65,13 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                             <strong><?php echo $userName ?></strong>
                             <small><?php echo $userEmail ?></small>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item text-white" href="#editProfileModal" data-bs-toggle="modal">Edit</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item text-white" href="../Backend/logout.php">Sign out</a></li>
                     </ul>
                 </div>
@@ -93,14 +97,25 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                 </ul>
 
                 <!-- Formulario de búsqueda -->
-                <form class="d-flex me-3">
+                <!-- Barra de búsqueda -->
+                <form id="searchForm" class="d-flex">
                     <div class="position-relative w-110">
-                        <input type="search" class="form-control" placeholder="Buscar" aria-label="Search">
-                        <button type="submit" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2">
+                        <input
+                            id="searchInput"
+                            type="search"
+                            class="form-control"
+                            placeholder="Buscar foros..."
+                            aria-label="Buscar"
+                            autocomplete="off">
+                        <button
+                            id="searchBtn"
+                            type="submit"
+                            class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2">
                             <i class='bx bx-search-alt-2 icono-busqueda'></i>
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </nav>
@@ -110,6 +125,8 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
         <div class="cuerpo p-3 flex-fill">
             <h2 class="mb-4">Preguntas</h2>
             <div id="forumList" class="d-flex flex-wrap gap-3 justify-content-center"></div>
+            <!-- Resultados de búsqueda -->
+            <div id="searchResults" class="row"></div>
             <div id="paginationContainer" class="d-flex justify-content-center mt-3"></div>
         </div>
     </main>

@@ -99,16 +99,7 @@ $forumId = isset($_GET['id']) ? (int) $_GET['id'] : null;
                                 <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>" href="history.php">Historial</a>
                             </li>
                         </ul>
-
-                        <!-- Search form -->
-                        <form class="d-flex me-3">
-                            <div class="position-relative w-110">
-                                <input type="search" class="form-control" placeholder="Buscar" aria-label="Search">
-                                <button type="submit" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2">
-                                    <i class='bx bx-search-alt-2 icono-busqueda'></i>
-                                </button>
-                            </div>
-                        </form>
+                        
                     </div>
                 </div>
             </nav>
@@ -210,11 +201,6 @@ $forumId = isset($_GET['id']) ? (int) $_GET['id'] : null;
         </footer>
     </div>
 
-    <!-- Pass PHP variables to JS -->
-    <script>
-        const currentForumId = <?php echo json_encode($forumId); ?>;
-        const currentUserId  = <?php echo json_encode($user_id); ?>;
-    </script>
 
     <!-- Scripts -->
     <script src="../js/jquery-3.7.1.min.js"></script>

@@ -23,6 +23,10 @@ html, body {
     height: 75%;
 }
 
+.fondo-dropdown{
+    background-color: #13293D !important;
+}
+
 .contenedor{
     height: 100%;
 }

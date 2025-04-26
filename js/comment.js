@@ -1,109 +1,93 @@
-$(document).ready(function() {
-    let userId;                   // ID del usuario actual
-    const forumId = window.currentForumId;  // ID del foro actual
+$(document).ready(function () {
+    let userId;                                 // ID del usuario autenticado
+    const params = new URLSearchParams(window.location.search);
+    const forumId = params.get('id');           // ID del foro actual
 
-    getUserId(); // Obtiene userId y luego carga comentarios
+    obtenerUserId().then(() => cargarComentarios());
 
-    // Mensaje de consola o UI
-    function mostrarMensaje(mensaje) {
-        console.log(mensaje);
+    // Mostrar mensajes (console/UI)
+    function mostrarMensaje(msg) {
+        console.log(msg);
     }
 
-    // Crear comentario
-    $('#commentForm').on('submit', function(e) {
+    // Evento submit: crear comentario
+    $('#commentForm').submit(e => {
         e.preventDefault();
         const content = $('#commentInput').val().trim();
-        if (!content) {
-            mostrarMensaje('Escribe un comentario');
-            return;
-        }
+        if (!content) return mostrarMensaje('Escribe un comentario');
+
         $.ajax({
             url: '../Backend/comment.php?action=create',
             type: 'POST',
-            data: JSON.stringify({ forum_id: forumId, content: content }),
             contentType: 'application/json',
             dataType: 'json',
-            success: function(response) {
-                if (response.success) {
+            data: JSON.stringify({ forum_id: forumId, content }),
+            success: res => {
+                if (res.success) {
                     $('#commentInput').val('');
-                    loadComments();
-                } else {
-                    mostrarMensaje(response.message);
-                }
+                    cargarComentarios();
+                } else mostrarMensaje(res.message);
             },
-            error: function() {
-                mostrarMensaje('Error en el servidor');
-            }
+            error: () => mostrarMensaje('Error en el servidor')
         });
     });
 
-    // Cargar comentarios
-    function loadComments() {
+    // Cargar lista de comentarios
+    function cargarComentarios() {
         $.ajax({
             url: '../Backend/comment.php',
             type: 'GET',
-            data: { action: "read", forum_id: forumId },
+            data: { action: 'read', forum_id: forumId },
             dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    renderComments(response.comments);
-                } else {
-                    $('#commentContainer').html('<p class="text-danger">No se pudieron cargar los comentarios</p>');
-                }
+            success: res => {
+                if (res.success) renderizarComentarios(res.comments);
+                else $('#commentContainer').html('<p class="text-danger">' + res.message + '</p>');
             },
-            error: function() {
-                $('#commentContainer').html('<p class="text-danger">Error de comunicación</p>');
-            }
+            error: () => $('#commentContainer').html('<p class="text-danger">Error de comunicación</p>')
         });
     }
 
-    // Obtener ID de usuario
-    function getUserId() {
-        $.ajax({
-            url: '../Backend/foro.php',
+    // Obtener ID de usuario autenticado
+    function obtenerUserId() {
+        return $.ajax({
+            url: '../Backend/comment.php',
             type: 'GET',
             data: { action: 'get_id' },
-            dataType: 'json',
-            success: function(response) {
-                userId = response.userId;
-                loadComments();
-            },
-            error: function() {
-                alert('Error en la conexión con el servidor');
-            }
-        });
+            dataType: 'json'
+        }).done(res => {
+            userId = res.user_id;
+        }).fail(() => alert('Error al obtener ID'));
     }
 
-    // Renderizar comentarios
-    function renderComments(list) {
+    // Renderizar comentarios en DOM
+    function renderizarComentarios(list) {
         const container = $('#commentContainer').empty();
-        if (!list.length) {
-            container.html('<p>No hay comentarios</p>');
-            return;
-        }
+        if (!list.length) return container.html('<p>No hay comentarios</p>');
+
         list.forEach(c => {
-            const own = c.user_id === userId;
-            const actions = own
+            const isOwn = c.user_id === userId;
+            const actions = isOwn
                 ? `<span>
-                     <a href="#" class="edit-comment" data-id="${c.id}">Editar</a>
-                     <a href="#" class="delete-comment" data-id="${c.id}">Eliminar</a>
-                   </span>`
+             <a href="#" class="edit-comment" data-id="${c.id}">Editar</a>
+             <a href="#" class="delete-comment" data-id="${c.id}">Eliminar</a>
+           </span>`
                 : '';
+
             const html = `
-                <div class="comment mb-3" id="comment-${c.id}">
-                  <div class="d-flex justify-content-between">
-                    <span><strong>${c.author_name}</strong> <small>${new Date(c.created_at).toLocaleString()}</small></span>
-                    ${actions}
-                  </div>
-                  <p class="comment-content">${c.content}</p>
-                </div>
-            `;
+        <div class="comment mb-3" id="comment-${c.id}">
+          <div class="d-flex justify-content-between">
+            <span><strong>${c.author_name}</strong> <small>${new Date(c.created_at).toLocaleString()}</small></span>
+            ${actions}
+          </div>
+          <p class="comment-content">${c.content}</p>
+        </div>
+      `;
             container.append(html);
         });
     }
 
     // Editar comentario
-    $(document).on('click', '.edit-comment', function(e) {
+    $(document).on('click', '.edit-comment', function (e) {
         e.preventDefault();
         const commentId = $(this).data('id');
         const current = $(`#comment-${commentId} .comment-content`).text();
@@ -130,7 +114,7 @@ $(document).ready(function() {
                         data: JSON.stringify({ content: updated }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        success: function(res) {
+                        success: function (res) {
                             if (res.success) {
                                 Swal.fire('¡Actualizado!', 'Tu comentario ha sido actualizado.', 'success');
                                 loadComments();
@@ -138,7 +122,7 @@ $(document).ready(function() {
                                 Swal.fire('Error', res.message || 'No se pudo actualizar el comentario', 'error');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire('Error', 'Error en el servidor', 'error');
                         }
                     });
@@ -148,7 +132,7 @@ $(document).ready(function() {
     });
 
     // Eliminar comentario
-    $(document).on('click', '.delete-comment', function(e) {
+    $(document).on('click', '.delete-comment', function (e) {
         e.preventDefault();
         const commentId = $(this).data('id');
 
@@ -165,7 +149,7 @@ $(document).ready(function() {
                     url: `../Backend/comment.php?action=delete&id=${commentId}`,
                     type: 'DELETE',
                     dataType: 'json',
-                    success: function(res) {
+                    success: function (res) {
                         if (res.success) {
                             Swal.fire('¡Eliminado!', 'El comentario ha sido eliminado.', 'success');
                             loadComments();
@@ -173,7 +157,7 @@ $(document).ready(function() {
                             Swal.fire('Error', res.message || 'No se pudo eliminar el comentario', 'error');
                         }
                     },
-                    error: function() {
+                    error: function () {
                         Swal.fire('Error', 'Error en el servidor', 'error');
                     }
                 });

@@ -83,15 +83,6 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                     <li class="nav-item"><a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>" href="history.php">Historial</a></li>
                 </ul>
 
-                <!-- Formulario de búsqueda -->
-                <form class="d-flex me-3">
-                    <div class="position-relative w-110">
-                        <input type="search" class="form-control" placeholder="Buscar" aria-label="Search">
-                        <button type="submit" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2">
-                            <i class='bx bx-search-alt-2 icono-busqueda'></i>
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </nav>
@@ -157,8 +148,8 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     <script src="../js/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/update.js"></script>
-    <script src="../js/favoritos.js"></script>
-    <script src="../js/verForo.js"></script>
+    <script src="../js/favorites.js"></script>
+    <script src="../js/viewForum.js"></script>
 </body>
 
 </html>
