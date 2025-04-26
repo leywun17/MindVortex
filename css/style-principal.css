@@ -115,6 +115,13 @@
     padding: 20px 0;
     margin-top: 40px;
   }
+
+  .img-footer{
+    width: 100%;
+    position: relative;
+    bottom: -25px;
+    left: 0;
+  }
   
   /* Menu Móvil (utilizando el collapse de Bootstrap) */
   @media (max-width: 767px) {

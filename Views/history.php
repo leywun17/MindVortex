@@ -19,6 +19,8 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Boxicons -->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
@@ -39,103 +41,79 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
 <body class="d-flex flex-column">
 
     <nav class="navbar navbar-expand-md navbar-dark">
-        <div class="container px-3 py-2">
-            <a class="navbar-brand d-flex align-items-center" href="dashboard.php">
-                <img src="../Assets/logo.png" alt="Logo" height="38" class="ms-2">
+        <div class="container rounded-4 text-bg-dark contenedor-header p-2">
+
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center" href="">
+                <img src="../Assets/logo.png" alt="Flowbite Logo" height="38" class="logo-pos">
             </a>
 
-            <div class="collapse navbar-collapse" id="navbarUser">
-                <ul class="navbar-nav mx-auto paginas gap-2">
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>" href="dashboard.php">Preguntas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'favorite.php' ? 'active' : ''; ?>" href="favorite.php">Favoritos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>" href="history.php">Historial</a>
-                    </li>
-                </ul>
-                <form class="d-flex me-3 position-relative">
-                    <input
-                        class="form-control search-input"
-                        type="search"
-                        placeholder="Buscar"
-                        aria-label="Search">
-                    <button class="btn btn-link search-btn" type="submit">
-                        <i class='bx bx-search-alt-2'></i>
+            <!-- Menú de usuario -->
+            <div class="d-flex align-items-center order-md-2">
+                <div class="dropdown d-grid gap-3 position-relative">
+                    <button class="btn p-1 d-flex align-items-center justify-content-center" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <!-- Imagen o icono del usuario -->
+                        <img src="../uploads/profile_images/<?php echo $img ?>" alt="user photo" class="rounded-circle bg-light d-block" width="32" height="32">
                     </button>
-                </form>
-            </div>
-            <div class="dropdown">
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarUser"
-                    aria-controls="navbarUser"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
+                    <ul class="dropdown-menu dropdown-menu-end rounded fondo-dropdown" aria-labelledby="userMenu">
+                        <li class="dropdown-header d-flex align-items-center flex-column">
+                            <img src="../uploads/profile_images/<?php echo $img ?>" alt="user photo" class="rounded-circle bg-light d-block" width="48" height="48">
+                            <strong><?php echo $name ?></strong>
+                            <small><?php echo $email ?></small>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-white" href="#modalUser" data-bs-toggle="modal">Edit</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-white" href="../Backend/logout.php">Sign out</a></li>
+                    </ul>
+                </div>
+
+                <!-- Botón hamburguesa -->
+                <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarUser">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <button
-                    class="btn user-btn"
-                    id="userMenu"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <?php if ($img): ?>
-                        <img
-                            src="../uploads/profile_images/<?= htmlspecialchars($img) ?>"
-                            alt="user photo"
-                            class="rounded-circle user-avatar">
-                    <?php else: ?>
-                        <i class='bx bx-user user-icon'></i>
-                    <?php endif; ?>
-                </button>
+            </div>
 
-
-
-                <ul class="dropdown-menu dropdown-menu-end user-dropdown" aria-labelledby="userMenu">
-                    <li class="dropdown-header text-center">
-                        <?php if ($img): ?>
-                            <img
-                                src="../uploads/profile_images/<?= htmlspecialchars($img) ?>"
-                                alt="user photo"
-                                class="rounded-circle user-avatar-lg">
-                        <?php else: ?>
-                            <i class='bx bx-user user-icon-lg'></i>
-                        <?php endif; ?>
-                        <strong class="d-block"><?= htmlspecialchars($name) ?></strong>
-                        <small class="text-muted"><?= htmlspecialchars($email) ?></small>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item text-light" href="#modalUser" data-bs-toggle="modal">Edit</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item text-light" href="../Backend/logout.php">Sign out</a></li>
+            <!-- Menú de navegación -->
+            <div class="collapse navbar-collapse order-md-1" id="navbarUser">
+                <ul class="navbar-nav mx-auto mb-2 mb-md-0 paginas gap-2">
+                    <li class="nav-item"><a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>" href="dashboard.php">Preguntas</a></li>
+                    <li class="nav-item"><a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'favorite.php' ? 'active' : ''; ?>" href="favorite.php">Favoritos</a></li>
+                    <li class="nav-item"><a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>" href="history.php">Historial</a></li>
                 </ul>
+
+                <!-- Formulario de búsqueda -->
+                <form class="d-flex me-3">
+                    <div class="position-relative w-110">
+                        <input type="search" class="form-control" placeholder="Buscar" aria-label="Search">
+                        <button type="submit" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2">
+                            <i class='bx bx-search-alt-2 icono-busqueda'></i>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </nav>
 
     <main class="flex-fill container">
         <!-- Dentro de tu página principal -->
-        <section class="historiales-section py-5">
-            <div class="container py-5">
-                <h2 class="section-title mb-4">Historiales</h2>
-                <div class="historiales-scroll p-3 bg-dark rounded-3">
-                    <div class="accordion" id="accordionPrincipal">
+        <section class="historiales-section py-2">
+            <div class="container py-2 contenedor">
+                <h1 class="section-title mb-4">Historiales</h1>
+                <div class="p-3 apartado-historiales">
+                    <div class="accordion historiales-scroll" id="accordionPrincipal">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading-historial">
-                                <button class="accordion-button collapsed" type="button"
+                                <button class="accordion-button collapsed historial-button" type="button"
                                     data-bs-toggle="collapse"
                                     data-bs-target="#collapse-historial"
                                     aria-expanded="false"
                                     aria-controls="collapse-historial">
-                                    <span class="me-2 text-secondary">?</span>
+                                    <i class='bx bx-question-mark'></i>
                                     <span class="foro-title">Historial De Preguntas</span>
                                 </button>
                             </h2>
@@ -150,6 +128,30 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                             </div>
                         </div>
                     </div>
+                    <div class="accordion historiales-scroll mt-3" id="accordionPrincipalRespuestas">
+                        <div class="accordion-item ">
+                            <h2 class="accordion-header" id="heading-respuestas">
+                                <button class="accordion-button collapsed historial-button" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-respuestas"
+                                    aria-expanded="false"
+                                    aria-controls="collapse-respuestas">
+                                    <i class='bx bxs-edit-alt'></i>
+                                    <span class="foro-title text-center">Historial De Respuestas</span>
+                                </button>
+                            </h2>
+                            <div id="collapse-respuestas"
+                                class="accordion-collapse collapse"
+                                aria-labelledby="heading-respuestas"
+                                data-bs-parent="#accordionPrincipal">
+                                <div class="accordion-body px-0">
+                                    <!-- Aquí se inyectan los foros relacionados con respuestas -->
+                                    <div class="accordion nested-accordion" id="accordionRespuestas"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -204,8 +206,8 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     <script src="../js/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/update.js"></script>
-    <script src="../js/subirForo.js"></script>
-    <script src="../js/verForo.js"></script>
+    <script src="../js/uploadForum.js"></script>
+    <script src="../js/viewForum.js"></script>
     <script src="../js/history.js"></script>
 
 </body>

@@ -20,10 +20,10 @@ $(document).ready(function() {
         $.ajax({
             url: `../Backend/foro.php`,
             type: "GET",
-            data: { action: 'obtener_id' },
+            data: { action: 'get_id' },
             dataType: "json",
             success: function(data) {
-                IDusuario = data.id_usuario || data.mensaje; // según cómo venga del backend
+                IDusuario = data.userId || data.mensaje; // según cómo venga del backend
                 console.log("IDusuario obtenido:", IDusuario);
 
                 // 👇 Si ya tenías el autorId cargado antes, podrías hacer:

@@ -186,7 +186,7 @@ $(document).ready(function() {
         }
 
         // Enviar datos al backend
-        updateUserInfo(name, email, descripcion);
+        updateUserInfo(name, email);
     });
 
     // Función para actualizar información del usuario

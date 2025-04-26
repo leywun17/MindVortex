@@ -1,4 +1,4 @@
-*{
+* {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
@@ -20,15 +20,18 @@ body {
 
 @keyframes gradientAnimation {
   0% {
-      background-position: 0% 50%;
+    background-position: 0% 50%;
   }
+
   50% {
-      background-position: 100% 50%;
+    background-position: 100% 50%;
   }
+
   100% {
-      background-position: 0% 50%;
+    background-position: 0% 50%;
   }
 }
+
 .form-container {
   width: 450px;
   border-radius: 0 20px 0 20px;
@@ -41,22 +44,23 @@ body {
 
 @keyframes shadow-pulse {
   0% {
-      box-shadow: 0 0 20px rgba(119, 200, 251, 0.25);
+    box-shadow: 0 0 20px rgba(119, 200, 251, 0.25);
   }
+
   100% {
-      box-shadow: 0 0 30px rgba(119, 200, 251, 0.5);
+    box-shadow: 0 0 30px rgba(119, 200, 251, 0.5);
   }
 }
 
 
-p{
+p {
   font-size: 13px;
   font-weight: 300;
   font-style: italic;
   margin: 5px;
 }
 
-h1{
+h1 {
   font-weight: 800;
   font-size: 2.5rem;
 }
@@ -103,17 +107,19 @@ h1{
   justify-content: flex-end;
   font-size: 0.75rem;
   line-height: 1rem;
-  color: rgba(156, 163, 175,1);
+  color: rgba(156, 163, 175, 1);
   margin: 8px 0 14px 0;
 }
 
-.forgot a,.signup a {
+.forgot a,
+.signup a {
   color: rgba(243, 244, 246, 1);
   text-decoration: none;
   font-size: 14px;
 }
 
-.forgot a:hover, .signup a:hover {
+.forgot a:hover,
+.signup a:hover {
   text-decoration: underline #77C8FB;
 }
 
@@ -131,7 +137,8 @@ h1{
   transition: box-shadow .5s linear;
 }
 
-button:hover::before, button:hover::after {
+button:hover::before,
+button:hover::after {
   transform: scale(0)
 }
 
@@ -186,9 +193,17 @@ button:hover {
 }
 
 @media screen and (max-width: 767px) {
-  .form-container{
+  .form-container {
     width: 350px;
     font-size: 10px;
   }
+
+}
+
+.swal2-shown {
+  height: 100vh !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
 }

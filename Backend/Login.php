@@ -43,10 +43,10 @@ class Auth {
                     $this->restablecerIntentos($email);
                     $_SESSION['logged_in'] = true;
                     $_SESSION['id'] = $row['id'];
-                    $_SESSION['name'] = $row['name'];
+                    $_SESSION['name'] = $row['userName'];
                     $_SESSION['email'] = $row['email'];
                     $_SESSION['desc'] = $row['descripcion'];
-                    $_SESSION['profile_image'] = $row['profile_image'];
+                    $_SESSION['profile_image'] = $row['userImage'];
                     return true; // Autenticación exitosa
                 } else {
                     return 'inactive'; // Usuario inactivo

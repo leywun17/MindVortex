@@ -1,5 +1,5 @@
 <?php
-// Encabezados CORS y JSON
+// CORS and JSON response headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
@@ -8,7 +8,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 session_start();
 
-// Responder preflight CORS
+// Respond to CORS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
@@ -19,36 +19,35 @@ require_once 'config.php';
 class Forum
 {
     private $conn;
-    private $table_name = "forums";
+    private $tableName = "forums";
 
     public $id;
-    public $titulo;
-    public $descripcion;
-    public $id_usuario;
-    public $fecha_creacion;
-    public $nombre_usuario;
-    public $imagen_usuario;
+    public $title;
+    public $description;
+    public $userId;
+    public $createdAt;
+    public $userName;
+    public $userImage;
 
     public function __construct($db)
     {
         $this->conn = $db;
     }
 
+    // Create new forum
     public function create()
     {
-        $this->titulo      = htmlspecialchars(strip_tags($this->titulo));
-        $this->descripcion = htmlspecialchars(strip_tags($this->descripcion));
-        $this->id_usuario  = htmlspecialchars(strip_tags($this->id_usuario));
+        // Sanitize input
+        $this->title       = htmlspecialchars(strip_tags($this->title));
+        $this->description = htmlspecialchars(strip_tags($this->description));
+        $this->userId      = htmlspecialchars(strip_tags($this->userId));
 
-        $query = "INSERT INTO {$this->table_name}
-                  SET titulo = :titulo,
-                      descripcion = :descripcion,
-                      id_usuario = :id_usuario";
-
+        $query = "INSERT INTO {$this->tableName} (title, description, userId)
+                  VALUES (:title, :description, :userId)";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':titulo',      $this->titulo);
-        $stmt->bindParam(':descripcion', $this->descripcion);
-        $stmt->bindParam(':id_usuario',  $this->id_usuario);
+        $stmt->bindParam(':title',       $this->title);
+        $stmt->bindParam(':description', $this->description);
+        $stmt->bindParam(':userId',      $this->userId);
 
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
@@ -57,61 +56,73 @@ class Forum
         return false;
     }
 
+    // Read all forums
     public function readAll()
     {
-        $query = "SELECT f.id, f.titulo, f.descripcion, DATE(f.fecha_creacion) AS fecha_creacion,
-                         u.name, COALESCE(u.profile_image,'default.jpg') AS profile_image
-                  FROM {$this->table_name} f
-                  INNER JOIN users u ON f.id_usuario = u.id
-                  ORDER BY DATE(f.fecha_creacion) DESC";
+        $query = "SELECT
+                      f.id,
+                      f.title,
+                      f.description,
+                      DATE(f.createdAt) AS createdAt,
+                      u.userName,
+                      COALESCE(u.userImage,'default.jpg') AS userImage
+                  FROM {$this->tableName} f
+                  INNER JOIN users u ON f.userId = u.id
+                  ORDER BY f.createdAt DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
     }
 
+    // Read one forum by ID
     public function readOne()
     {
-        $query = "SELECT f.id, f.titulo, f.descripcion, DATE(f.fecha_creacion) AS fecha_creacion, f.id_usuario, u.name, u.profile_image
-                FROM {$this->table_name} f
-                INNER JOIN users u ON f.id_usuario = u.id
-                WHERE f.id = :id";
+        $query = "SELECT
+                      f.id,
+                      f.title,
+                      f.description,
+                      DATE(f.createdAt) AS createdAt,
+                      f.userId,
+                      u.userName,
+                      u.userImage
+                  FROM {$this->tableName} f
+                  INNER JOIN users u ON f.userId = u.id
+                  WHERE f.id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            $this->id             = $row['id'];
-            $this->id_usuario     = $row['id_usuario'];
-            $this->titulo         = $row['titulo'];
-            $this->descripcion    = $row['descripcion'];
-            $this->fecha_creacion = $row['fecha_creacion'];
-            $this->nombre_usuario = $row['name'];
-            $this->imagen_usuario = $row['profile_image'];
+            $this->title       = $row['title'];
+            $this->description = $row['description'];
+            $this->createdAt   = $row['createdAt'];
+            $this->userId      = $row['userId'];
+            $this->userName    = $row['userName'];
+            $this->userImage   = $row['userImage'];
             return true;
         }
         return false;
     }
 
+    // Delete forum and its comments
     public function delete()
     {
         try {
-            // 1) Iniciar transacción
             $this->conn->beginTransaction();
 
-            // 2) Borrar comentarios del foro
+            // Delete comments for this forum
             $sql1 = "DELETE FROM comentarios WHERE foro_id = :id";
             $stmt1 = $this->conn->prepare($sql1);
             $stmt1->bindParam(':id', $this->id);
             $stmt1->execute();
 
-            // 3) Borrar el propio foro
-            $sql2 = "DELETE FROM {$this->table_name} WHERE id = :id";
+            // Delete the forum itself
+            $sql2 = "DELETE FROM {$this->tableName} WHERE id = :id";
             $stmt2 = $this->conn->prepare($sql2);
             $stmt2->bindParam(':id', $this->id);
             $stmt2->execute();
 
-            // 4) Confirmar
             $this->conn->commit();
             return true;
         } catch (Exception $e) {
@@ -120,148 +131,165 @@ class Forum
         }
     }
 
-    public function toggleFavorito($id_usuario, $id_foro)
+    // Toggle favorite for a user
+    public function toggleFavorite($userId, $forumId)
     {
-        // ¿Ya es favorito?
-        $queryCheck = "SELECT 1 FROM forum_favorite WHERE id_usuario = :id_usuario AND id_foro = :id_foro";
-        $stmt = $this->conn->prepare($queryCheck);
-        $stmt->bindParam(':id_usuario', $id_usuario);
-        $stmt->bindParam(':id_foro', $id_foro);
+        // Check if already favorited
+        $check = "SELECT 1 FROM forum_favorite WHERE id_usuario = :userId AND id_foro = :forumId";
+        $stmt = $this->conn->prepare($check);
+        $stmt->bindParam(':userId',  $userId);
+        $stmt->bindParam(':forumId', $forumId);
         $stmt->execute();
 
         if ($stmt->fetch()) {
-            // Si ya existe, lo quitamos
-            $queryDel = "DELETE FROM forum_favorite WHERE id_usuario = :id_usuario AND id_foro = :id_foro";
-            $stmtDel = $this->conn->prepare($queryDel);
-            $stmtDel->bindParam(':id_usuario', $id_usuario);
-            $stmtDel->bindParam(':id_foro', $id_foro);
+            // Remove favorite
+            $del = "DELETE FROM forum_favorite WHERE id_usuario = :userId AND id_foro = :forumId";
+            $stmtDel = $this->conn->prepare($del);
+            $stmtDel->bindParam(':userId',  $userId);
+            $stmtDel->bindParam(':forumId', $forumId);
             return $stmtDel->execute();
         } else {
-            // Si no existe, lo agregamos
-            $queryAdd = "INSERT INTO forum_favorite (id_usuario, id_foro) VALUES (:id_usuario, :id_foro)";
-            $stmtAdd = $this->conn->prepare($queryAdd);
-            $stmtAdd->bindParam(':id_usuario', $id_usuario);
-            $stmtAdd->bindParam(':id_foro', $id_foro);
+            // Add favorite
+            $add = "INSERT INTO forum_favorite (id_usuario, id_foro) VALUES (:userId, :forumId)";
+            $stmtAdd = $this->conn->prepare($add);
+            $stmtAdd->bindParam(':userId',  $userId);
+            $stmtAdd->bindParam(':forumId', $forumId);
             return $stmtAdd->execute();
         }
     }
 
-    public function getFavoritos($id_usuario)
+    // Get favorites for a user
+    public function getFavorites($userId)
     {
-        $query = "SELECT f.id, f.titulo, f.descripcion, DATE(f.fecha_creacion) AS fecha_creacion,
-                        u.name, COALESCE(u.profile_image, 'default.jpg') AS profile_image
-                FROM forum_favorite ff
-                INNER JOIN forums f ON ff.id_foro = f.id
-                INNER JOIN users u ON f.id_usuario = u.id
-                WHERE ff.id_usuario = :id_usuario
-                ORDER BY ff.fecha_agregado DESC";
-
+        $query = "SELECT
+                      f.id,
+                      f.title,
+                      f.description,
+                      DATE(f.createdAt) AS createdAt,
+                      u.userName,
+                      COALESCE(u.userImage,'default.jpg') AS userImage
+                  FROM forum_favorite ff
+                  INNER JOIN {$this->tableName} f ON ff.id_foro = f.id
+                  INNER JOIN users u ON f.userId = u.id
+                  WHERE ff.id_usuario = :userId
+                  ORDER BY ff.fecha_agregado DESC";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id_usuario', $id_usuario);
+        $stmt->bindParam(':userId', $userId);
         $stmt->execute();
         return $stmt;
     }
-    public function readByUser($id_usuario)
+
+    // Read forums by a specific user
+    public function readByUser($userId)
     {
-        $query = "SELECT f.id, f.titulo, f.descripcion, 
-                     DATE(f.fecha_creacion) AS fecha_creacion,
-                     COALESCE(u.name,'') AS name,
-                     COALESCE(u.profile_image,'default.jpg') AS profile_image
-              FROM {$this->table_name} f
-              INNER JOIN users u ON f.id_usuario = u.id
-              WHERE f.id_usuario = :id_usuario
-              ORDER BY f.fecha_creacion DESC";
+        $query = "SELECT
+                      f.id,
+                      f.title,
+                      f.description,
+                      DATE(f.createdAt) AS createdAt,
+                      u.userName,
+                      COALESCE(u.userImage,'default.jpg') AS userImage
+                  FROM {$this->tableName} f
+                  INNER JOIN users u ON f.userId = u.id
+                  WHERE f.userId = :userId
+                  ORDER BY f.createdAt DESC";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id_usuario', $id_usuario);
+        $stmt->bindParam(':userId', $userId);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // Read replies made by a user
+    public function readRepliesByUser($userId)
+    {
+        $query = "SELECT
+                      c.id,
+                      f.title,
+                      c.content,
+                      DATE(c.created_at) AS createdAt
+                  FROM comments c
+                  INNER JOIN {$this->tableName} f ON c.foro_id = f.id
+                  WHERE c.user_id = :userId
+                  ORDER BY c.created_at DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt;
     }
 }
 
-// Instanciar DB y objeto
+// Instantiate database and model
 $database = new Database();
 $db       = $database->getConnection();
 $forum    = new Forum($db);
 
-// Respuesta por defecto
+// Default response
 $response = [
-    "exito"   => false,
-    "mensaje" => "Acción no reconocida"
+    "success" => false,
+    "message" => "Acción no reconocida"
 ];
 
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'POST':
-        // detecto la acción venga por POST o GET
         $action = $_POST['action'] ?? $_GET['action'] ?? '';
+        $data   = json_decode(file_get_contents("php://input"));
 
         switch ($action) {
             case 'create':
-                if (!empty($data->titulo) && !empty($data->descripcion)) {
-                    $forum->titulo      = $data->titulo;
-                    $forum->descripcion = $data->descripcion;
-                    $forum->id_usuario  = $_SESSION['id'];
+                if (!empty($data->title) && !empty($data->description)) {
+                    $forum->title       = $data->title;
+                    $forum->description = $data->description;
+                    $forum->userId      = $_SESSION['id'];
                     if ($forum->create()) {
                         $response = [
-                            "exito"   => true,
-                            "mensaje" => "Foro creado correctamente",
+                            "success" => true,
+                            "message" => "Foro creado correctamente",
                             "id"      => $forum->id
                         ];
                     } else {
-                        $response["mensaje"] = "Error al crear el foro";
+                        $response["message"] = "Error al crear el foro";
                     }
                 } else {
-                    $response["mensaje"] = "El título y la descripción son obligatorios";
+                    $response["message"] = "El título y la descripción son obligatorios";
                 }
                 break;
 
             case 'delete':
                 if (isset($_POST['id'])) {
                     $forum->id = $_POST['id'];
-                    if ($forum->readOne()) {
-                        if (isset($_SESSION['id']) && $_SESSION['id'] == $forum->id_usuario) {
-                            if ($forum->delete()) {
-                                $response = [
-                                    "exito"   => true,
-                                    "mensaje" => "Foro eliminado correctamente"
-                                ];
-                            } else {
-                                $response["mensaje"] = "Error al eliminar el foro";
-                            }
+                    if ($forum->readOne() && $_SESSION['id'] == $forum->userId) {
+                        if ($forum->delete()) {
+                            $response = [
+                                "success" => true,
+                                "message" => "Foro eliminado correctamente"
+                            ];
                         } else {
-                            $response["mensaje"] = "No tienes permiso para eliminar este foro";
+                            $response["message"] = "Error al eliminar el foro";
                         }
                     } else {
-                        $response["mensaje"] = "Foro no encontrado";
+                        $response["message"] = "No tienes permiso o el foro no existe";
                     }
                 } else {
-                    $response["mensaje"] = "ID no especificado";
+                    $response["message"] = "ID no especificado";
                 }
                 break;
 
-            case 'toggle_favorito':
-                // Lee directamente de $_POST
-                $id_foro = isset($_POST['id_foro']) ? intval($_POST['id_foro']) : null;
-                error_log("toggle_favorito llamado con id_foro=" . var_export($_POST['id_foro'], true));
-
-                if ($id_foro && isset($_SESSION['id'])) {
-                    if ($forum->toggleFavorito($_SESSION['id'], $id_foro)) {
+            case 'toggle_favorite':
+                $forumId = intval($_POST['forum_id'] ?? 0);
+                if ($forumId && isset($_SESSION['id'])) {
+                    if ($forum->toggleFavorite($_SESSION['id'], $forumId)) {
                         $response = [
-                            "exito"   => true,
-                            "mensaje" => "Estado de favorito actualizado"
+                            "success" => true,
+                            "message" => "Estado de favorito actualizado"
                         ];
                     } else {
-                        $response["mensaje"] = "Error al actualizar favorito";
+                        $response["message"] = "Error al actualizar favorito";
                     }
                 } else {
-                    $response["mensaje"] = "ID del foro o usuario no válidos. id_foro recibido: "
-                        . var_export($_POST['id_foro'], true);
+                    $response["message"] = "ID de foro o usuario no válidos";
                 }
-                break;
-
-            default:
-                // deja $response por defecto
                 break;
         }
         break;
@@ -270,23 +298,12 @@ switch ($method) {
         if (isset($_GET['action'])) {
             switch ($_GET['action']) {
                 case 'read':
-                    $stmt = $forum->readAll();
-                    $num  = $stmt->rowCount();
-                    $foros = [];
-                    if ($num > 0) {
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            extract($row);
-                            $foros[] = [
-                                "id"             => $id,
-                                "titulo"         => $titulo,
-                                "descripcion"    => $descripcion,
-                                "fecha_creacion" => $fecha_creacion,
-                                "nombre_usuario" => $name,
-                                "imagen_usuario" => $profile_image
-                            ];
-                        }
+                    $stmt   = $forum->readAll();
+                    $forums = [];
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $forums[] = $row;
                     }
-                    $response = ["exito" => true, "foros" => $foros];
+                    $response = ["success" => true, "forums" => $forums];
                     break;
 
                 case 'read_one':
@@ -294,81 +311,62 @@ switch ($method) {
                         $forum->id = $_GET['id'];
                         if ($forum->readOne()) {
                             $response = [
-                                "exito" => true,
-                                "foro"  => [
-                                    "id"             => $forum->id,
-                                    "titulo"         => $forum->titulo,
-                                    "descripcion"    => $forum->descripcion,
-                                    "fecha_creacion" => $forum->fecha_creacion,
-                                    "nombre_usuario" => $forum->nombre_usuario,
-                                    "imagen_usuario" => $forum->imagen_usuario,
-                                    "id_usuario"     => $forum->id_usuario
+                                "success" => true,
+                                "forum"   => [
+                                    "id"          => $forum->id,
+                                    "title"       => $forum->title,
+                                    "description" => $forum->description,
+                                    "createdAt"   => $forum->createdAt,
+                                    "userName"    => $forum->userName,
+                                    "userImage"   => $forum->userImage,
+                                    "userId"      => $forum->userId
                                 ]
                             ];
                         } else {
-                            $response["mensaje"] = "Foro no encontrado";
+                            $response["message"] = "Foro no encontrado";
                         }
                     } else {
-                        $response["mensaje"] = "ID no especificado";
+                        $response["message"] = "ID no especificado";
                     }
                     break;
 
-                case 'obtener_id':
+                case 'get_id':
                     $response = [
-                        "exito"      => true,
-                        "id_usuario" => $_SESSION['id']
+                        "success" => true,
+                        "userId"  => $_SESSION['id'] ?? null
                     ];
                     break;
-                case 'mis_foros':
-                    if (isset($_SESSION['id'])) {
-                        $stmt = $forum->readByUser($_SESSION['id']);
-                        $foros = [];
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            $foros[] = [
-                                "id"             => $row['id'],
-                                "titulo"         => $row['titulo'],
-                                "descripcion"    => $row['descripcion'],
-                                "fecha_creacion" => $row['fecha_creacion'],
-                                "nombre_usuario" => $row['name'],
-                                "imagen_usuario" => $row['profile_image']
-                            ];
-                        }
-                        $response = ["exito" => true, "foros" => $foros];
-                    } else {
-                        $response["mensaje"] = "Usuario no autenticado";
+
+                case 'my_forums':
+                    $stmt       = $forum->readByUser($_SESSION['id'] ?? 0);
+                    $userForums = [];
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $userForums[] = $row;
                     }
+                    $response = ["success" => true, "forums" => $userForums];
                     break;
 
-                case 'mis_favoritos':
-                    if (isset($_SESSION['id'])) {
-                        $stmt = $forum->getFavoritos($_SESSION['id']);
-                        $favoritos = [];
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            extract($row);
-                            $favoritos[] = [
-                                "id"             => $id,
-                                "titulo"         => $titulo,
-                                "descripcion"    => $descripcion,
-                                "fecha_creacion" => $fecha_creacion,
-                                "nombre_usuario" => $name,
-                                "imagen_usuario" => $profile_image
-                            ];
-                        }
-                        $response = ["exito" => true, "favoritos" => $favoritos];
-                    } else {
-                        $response["mensaje"] = "Usuario no autenticado";
+                case 'my_favorites':
+                    $stmt      = $forum->getFavorites($_SESSION['id'] ?? 0);
+                    $favForums = [];
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $favForums[] = $row;
                     }
+                    $response = ["success" => true, "favorites" => $favForums];
                     break;
 
-
-                default:
+                case 'my_replies':
+                    $stmt    = $forum->readRepliesByUser($_SESSION['id'] ?? 0);
+                    $replies = [];
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $replies[] = $row;
+                    }
+                    $response = ["success" => true, "replies" => $replies];
                     break;
             }
         }
         break;
-
-        // no usamos DELETE directo
 }
 
-// Enviar JSON de respuesta
+// Send JSON response
 echo json_encode($response);

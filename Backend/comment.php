@@ -1,19 +1,23 @@
 <?php
-// Encabezados requeridos
+// Encabezados para permitir solicitudes desde cualquier origen (CORS) y definir métodos permitidos
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+// Iniciar la sesión para acceder al ID del usuario autenticado
 session_start();
+
+// Incluir la configuración de conexión a la base de datos
 require_once 'config.php';
 
-class Comment
-{
+// Clase que representa un comentario
+class Comment {
     private $conn;
     private $table_name = "comments";
 
+    // Propiedades del comentario
     public $id;
     public $foro_id;
     public $user_id;
@@ -23,43 +27,45 @@ class Comment
     public $author_name;
     public $author_image;
 
-    public function __construct($db)
-    {
+    // Constructor con conexión a base de datos
+    public function __construct($db) {
         $this->conn = $db;
     }
 
-    // Crear comentario
-    public function create()
-    {
-        $this->content  = htmlspecialchars(strip_tags($this->content));
-        $this->foro_id  = (int)$this->foro_id;
-        $this->user_id  = (int)$this->user_id;
+    // Crear un nuevo comentario
+    public function create() {
+        // Limpiar entrada
+        $this->content = htmlspecialchars(strip_tags($this->content));
+        $this->foro_id = (int)$this->foro_id;
+        $this->user_id = (int)$this->user_id;
 
+        // Consulta SQL para insertar
         $query = "INSERT INTO " . $this->table_name . "
                   SET foro_id = :foro_id,
                       user_id  = :user_id,
                       content  = :content";
 
+        // Preparar y enlazar parámetros
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':foro_id', $this->foro_id);
         $stmt->bindParam(':user_id', $this->user_id);
         $stmt->bindParam(':content', $this->content);
 
+        // Ejecutar y retornar resultado
         if ($stmt->execute()) {
-            $this->id = $this->conn->lastInsertId();
+            $this->id = $this->conn->lastInsertId(); // Obtener ID generado
             return true;
         }
         return false;
     }
 
-    // Leer todos los comentarios de un foro
-    public function readByForum()
-    {
+    // Leer todos los comentarios de un foro específico
+    public function readByForum() {
         $query = "SELECT c.*, u.name as author_name, u.profile_image as author_image
-              FROM comments c
-              JOIN users u ON c.user_id = u.id
-              WHERE c.foro_id = :foro_id
-              ORDER BY c.created_at DESC";
+                  FROM comments c
+                  JOIN users u ON c.user_id = u.id
+                  WHERE c.foro_id = :foro_id
+                  ORDER BY c.created_at DESC";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':foro_id', $this->foro_id, PDO::PARAM_INT);
@@ -67,9 +73,8 @@ class Comment
         return $stmt;
     }
 
-    // Leer un comentario específico
-    public function readOne()
-    {
+    // Leer un comentario específico por su ID
+    public function readOne() {
         $query = "SELECT c.id, c.content, c.user_id, c.created_at, c.updated_at,
                          u.name AS author_name,
                          COALESCE(u.profile_image,'default.jpg') AS author_image
@@ -82,6 +87,8 @@ class Comment
         $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Si existe, llenar propiedades
         if ($row) {
             $this->content      = $row['content'];
             $this->user_id      = $row['user_id'];
@@ -94,79 +101,77 @@ class Comment
         return false;
     }
 
-    // Actualizar comentario
-    public function update()
-    {
+    // Actualizar un comentario
+    public function update() {
         $this->content = htmlspecialchars(strip_tags($this->content));
 
-        // Verificar autor
-        $orig = $this->conn
-            ->prepare("SELECT user_id FROM " . $this->table_name . " WHERE id = :id");
+        // Verificar si el comentario pertenece al usuario actual
+        $orig = $this->conn->prepare("SELECT user_id FROM " . $this->table_name . " WHERE id = :id");
         $orig->bindParam(':id', $this->id, PDO::PARAM_INT);
         $orig->execute();
         $row = $orig->fetch(PDO::FETCH_ASSOC);
         if (!$row || $row['user_id'] != $_SESSION['id']) {
-            return false;
+            return false; // No autorizado
         }
 
+        // Consulta SQL para actualizar contenido
         $query = "UPDATE " . $this->table_name . "
                   SET content = :content
                   WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':content', $this->content);
-        $stmt->bindParam(':id',      $this->id,    PDO::PARAM_INT);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
 
         return $stmt->execute();
     }
 
-    // Eliminar comentario
-    public function delete()
-    {
-        // Verificar autor
-        $orig = $this->conn
-            ->prepare("SELECT user_id FROM " . $this->table_name . " WHERE id = :id");
+    // Eliminar un comentario
+    public function delete() {
+        // Verificar si el comentario pertenece al usuario actual
+        $orig = $this->conn->prepare("SELECT user_id FROM " . $this->table_name . " WHERE id = :id");
         $orig->bindParam(':id', $this->id, PDO::PARAM_INT);
         $orig->execute();
         $row = $orig->fetch(PDO::FETCH_ASSOC);
         if (!$row || $row['user_id'] != $_SESSION['id']) {
-            return false;
+            return false; // No autorizado
         }
 
-        $stmt = $this->conn
-            ->prepare("DELETE FROM " . $this->table_name . " WHERE id = :id");
+        // Consulta SQL para eliminar
+        $stmt = $this->conn->prepare("DELETE FROM " . $this->table_name . " WHERE id = :id");
         $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 }
 
-// Conexión
+// Crear conexión y objeto de comentario
 $database = new Database();
-$db       = $database->getConnection();
-$comment  = new Comment($db);
+$db = $database->getConnection();
+$comment = new Comment($db);
 
-// Leer input
+// Leer entrada JSON del cliente
 $data = json_decode(file_get_contents("php://input"));
 
 // Respuesta por defecto
 $response = ["exito" => false, "mensaje" => "Acción no reconocida"];
 
-// Método y acción
+// Detectar método y acción
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
+// Enrutamiento según método HTTP
 switch ($method) {
     case 'POST':
         if ($action === 'create') {
             if (!empty($data->foro_id) && !empty($data->content)) {
-                $comment->foro_id  = $data->foro_id;
-                $comment->content  = $data->content;
-                $comment->user_id  = $_SESSION['id'];
+                $comment->foro_id = $data->foro_id;
+                $comment->content = $data->content;
+                $comment->user_id = $_SESSION['id'];
                 if ($comment->create()) {
                     $response = [
-                        "exito"   => true,
+                        "exito" => true,
                         "mensaje" => "Comentario creado",
-                        "id"     => $comment->id,
+                        "id" => $comment->id,
                     ];
                 } else {
                     $response["mensaje"] = "Error al crear";
@@ -191,15 +196,15 @@ switch ($method) {
             $comment->id = (int)$_GET['id'];
             if ($comment->readOne()) {
                 $response = [
-                    "exito"    => true,
+                    "exito" => true,
                     "comment" => [
-                        "id"           => $comment->id,
-                        "foro_id"      => $comment->foro_id,
-                        "user_id"      => $comment->user_id,
-                        "content"      => $comment->content,
-                        "created_at"   => $comment->created_at,
-                        "updated_at"   => $comment->updated_at,
-                        "author_name"  => $comment->author_name,
+                        "id" => $comment->id,
+                        "foro_id" => $comment->foro_id,
+                        "user_id" => $comment->user_id,
+                        "content" => $comment->content,
+                        "created_at" => $comment->created_at,
+                        "updated_at" => $comment->updated_at,
+                        "author_name" => $comment->author_name,
                         "author_image" => $comment->author_image
                     ]
                 ];
@@ -211,7 +216,7 @@ switch ($method) {
 
     case 'PUT':
         if ($action === 'update' && isset($_GET['id'])) {
-            $comment->id      = (int)$_GET['id'];
+            $comment->id = (int)$_GET['id'];
             $comment->content = $data->content ?? '';
             if ($comment->update()) {
                 $response = ["exito" => true, "mensaje" => "Comentario actualizado"];
@@ -233,4 +238,5 @@ switch ($method) {
         break;
 }
 
+// Devolver la respuesta como JSON
 echo json_encode($response);
