@@ -53,7 +53,7 @@ $forumId = isset($_GET['id']) ? (int) $_GET['id'] : null;
         <!-- Barra de navegación -->
         <div class="row">
             <nav class="navbar navbar-expand-md navbar-dark">
-                <div class="container rounded-4 text-bg-dark contenedor-header p-2">
+                <div class="container rounded-4 text-bg-dark contenedor-header px-3 gap-2">
 
                     <!-- Logo -->
                     <a class="navbar-brand d-flex align-items-center" href="dashboard.php">
@@ -74,9 +74,13 @@ $forumId = isset($_GET['id']) ? (int) $_GET['id'] : null;
                                     <strong><?php echo $name ?></strong>
                                     <small><?php echo $email ?></small>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li><a class="dropdown-item text-white" href="#modalUser" data-bs-toggle="modal">Edit</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li><a class="dropdown-item text-white" href="../Backend/logout.php">Sign out</a></li>
                             </ul>
                         </div>
@@ -99,14 +103,14 @@ $forumId = isset($_GET['id']) ? (int) $_GET['id'] : null;
                                 <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'history.php' ? 'active' : ''; ?>" href="history.php">Historial</a>
                             </li>
                         </ul>
-                        
+
                     </div>
                 </div>
             </nav>
         </div>
 
         <!-- Contenido del foro -->
-        <div class="container contenedor-principal p-5" id="forumContent">
+        <div class="container contenedor-principal contenedor-principal-foro p-5" id="forumContent">
             <!-- Header del foro -->
             <div class="d-flex justify-content-between gap-3 text-light mb-5">
                 <!-- Título del foro -->
@@ -120,17 +124,20 @@ $forumId = isset($_GET['id']) ? (int) $_GET['id'] : null;
                 <!-- Opciones y favorito -->
                 <div class="dropdown">
                     <!-- Botón de opciones -->
-                    <button class="btn p-1 d-flex align-items-center justify-content-center" type="button" id="optionsMenuToggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn p-1 d-flex align-items-center justify-content-center boton-desplegable" type="button" id="optionsMenuToggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class='bx bx-dots-vertical-rounded icono-opciones'></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end rounded fondo-dropdown" aria-labelledby="optionsMenuToggle">
-                        <li class="dropdown-header text-center"><i class='bx bx-star text-warning'></i> favoritos</li>
-                        <hr class="bg-light">
-                        <li id="deleteOption" class="dropdown-header text-center d-none"><i class='bx bx-trash text-danger'></i> Eliminar</li>
+                    <ul class="dropdown-menu dropdown-menu-end rounded fondo-dropdown" aria-labelledby="optionsMenuToggle" id="favoritesDropdownMenu">
+                        <li class="dropdown-item text-center">
+                            <button id="deleteOption" class="text-center btn tn-sm w-100 d-none"><i class='bx bx-trash text-danger'></i> Eliminar</button>
+                        </li>
                         <hr id="deleteDivider" class="d-none bg-light">
+
                         <li id="editOption" class="dropdown-header text-center d-none"><i class='bx bx-pencil text-info'></i> Editar</li>
                         <hr id="editDivider" class="d-none bg-light">
+
                         <li class="dropdown-header text-center"><i class='bx bx-error text-danger'></i> Reportar</li>
+                        <hr class="bg-light">
                     </ul>
                     <!-- Contenedor del botón favorito -->
                     <div id="favoriteButtonContainer"></div>
@@ -143,7 +150,7 @@ $forumId = isset($_GET['id']) ? (int) $_GET['id'] : null;
                 <hr>
                 <!-- Sección de comentarios -->
                 <div class="comentarios">
-                    <h3>Comentarios</h3>
+                    <h3 class="comment-title">Comentarios</h3>
                     <div id="commentSection" class="overflow-auto">
                         <!-- Contenedor de comentarios -->
                         <div id="commentContainer"></div>
@@ -205,7 +212,7 @@ $forumId = isset($_GET['id']) ? (int) $_GET['id'] : null;
     <!-- Scripts -->
     <script src="../js/jquery-3.7.1.min.js"></script>
     <script src="../js/viewForum.js"></script>
-    <script src="../js/eliminarForo.js"></script>
+    <script src="../js/deleteForum.js"></script>
     <script src="../js/update.js"></script>
     <script src="../js/comment.js"></script>
 </body>

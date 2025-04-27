@@ -33,7 +33,7 @@ class User
                 return ["status" => "error", "message" => "El correo electrónico ya está en uso"];
             }
 
-            $query = "UPDATE users SET name = :name, email = :email WHERE id = :user_id";
+            $query = "UPDATE users SET userName = :name, email = :email WHERE id = :user_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":name", $name);
             $stmt->bindParam(":email", $email);

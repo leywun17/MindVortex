@@ -77,13 +77,13 @@ $(document).ready(function () {
 
         // Si no hay foros, informa al usuario
         if (forums.length === 0) {
-            $("#forumList").html("<p>No hay foros disponibles</p>");
+            $("#forumList").html("<p class='text-warning'>No hay foros disponibles</p>");
             return;
         }
 
         const cardsPerPage = 4;
-        const totalPages   = Math.ceil(forums.length / cardsPerPage);
-        let currentPage    = 1;
+        const totalPages = Math.ceil(forums.length / cardsPerPage);
+        let currentPage = 1;
 
         // Muestra la página especificada por parámetro
         function showPage(page) {
@@ -94,7 +94,7 @@ $(document).ready(function () {
             });
 
             const startIndex = (page - 1) * cardsPerPage;
-            const endIndex   = Math.min(startIndex + cardsPerPage, forums.length);
+            const endIndex = Math.min(startIndex + cardsPerPage, forums.length);
             let html = "";
 
             // Construye cada card de foro
@@ -103,7 +103,7 @@ $(document).ready(function () {
                 let date = new Date(forum.createdAt).toLocaleDateString();
 
                 html += `
-                    <div class="card-item card mb-3 mx-2" data-id="${forum.id}" style="flex: 1 0 45%; min-width: 350px; max-width: 550px;">
+                    <div class="card-item card mb-3 mx-2" data-id="${forum.id}" style="flex: 1 0 45%; min-width: 350px; max-width: 500px;">
                         <div class="card-header d-flex justify-content-space-beetwen gap-3">
                             <h5 class="w-50 d-flex flex-wrap">${forum.title}</h5>
                             <div class="w-50 d-flex justify-content-between align-items-center">
@@ -127,10 +127,8 @@ $(document).ready(function () {
                 `;
 
                 // Agrega divisor vertical tras cada par de cards
-                if ((i - startIndex + 1) % 2 === 0 && (i - startIndex + 1) < (endIndex - startIndex)) {
-                    html += `
-                        <div class="vertical-divider"></div>
-                    `;
+                if ((i - startIndex + 1) % 2 === 0 && (i - startIndex + 1) < (endIndex - startIndex) && (endIndex - startIndex) !== 3) {
+                    html += `<div class="vertical-divider"></div>`;
                 }
             }
 
@@ -191,17 +189,17 @@ $(document).ready(function () {
         });
     }
 
-    $('#searchForm').on('submit', function(e) {
-        e.preventDefault();                          
+    $('#searchForm').on('submit', function (e) {
+        e.preventDefault();
         const term = $('#searchInput').val().trim();
-    
+
         // Si está vacío, recarga todo
         if (!term) {
             $('#paginationContainer').show();
             loadForums();
             return;
         }
-    
+
         // Petición AJAX al case 'search'
         $.ajax({
             url: "../Backend/foro.php",
@@ -211,17 +209,17 @@ $(document).ready(function () {
                 query: term
             },
             dataType: "json",
-            success: function(res) {
+            success: function (res) {
                 if (res.success) {
                     // Pagina y muestra sólo los resultados de búsqueda
                     renderForums(res.results);
                     $('#paginationContainer').show();
                 } else {
-                    $('#forumList').html('<p class="text-muted">No se encontraron foros.</p>');
+                    $('#forumList').html('<p class="text-warning">No se encontraron foros.</p>');
                     $('#paginationContainer').hide();
                 }
             },
-            error: function() {
+            error: function () {
                 $('#forumList').html('<p class="text-danger">Error de comunicación.</p>');
                 $('#paginationContainer').hide();
             }
@@ -245,12 +243,12 @@ $(document).ready(function () {
                     const btn = $("#btnFavorite");
                     if (btn.hasClass("btn-warning")) {
                         btn.removeClass("btn-warning")
-                           .addClass("btn-outline-warning")
-                           .text("⭐ Agregar a Favoritos");
+                            .addClass("btn-outline-warning")
+                            .text("⭐ Agregar a Favoritos");
                     } else {
                         btn.removeClass("btn-outline-warning")
-                           .addClass("btn-warning")
-                           .text("★ Quitar de Favoritos");
+                            .addClass("btn-warning")
+                            .text("★ Quitar de Favoritos");
                     }
                 }
             },

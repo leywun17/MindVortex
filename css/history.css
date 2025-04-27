@@ -1,131 +1,147 @@
-/* Historiales */
-
-html, body {
+body{
     height: 100vh;
 }
 
-.section-title {
-    font-family: 'Nunito', sans-serif;
-    color: #91C6F7;
-    text-align: center;
-    font-weight: 900;
-}
-
-.historiales-scroll {
-    height: auto;
-    max-height: 250px;
-    /* altura del scroll */
-    overflow-y: auto;
-    /* FF */
-}
-
 .historiales-section {
-    height: 75%;
+    padding: 2rem 0;
+    color: #e0f2f7; /* Un tono claro para el texto */
 }
 
-.fondo-dropdown{
-    background-color: #13293D !important;
+.historiales-section .contenedor {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    border-radius: 12px;
+    max-height: 80vh; /* límite de altura visible */
+}
+
+.historiales-section .section-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #91C6F7;
+}
+
+/* Estilos para los botones de las "pills" */
+.historial-button {
+    background-color: rgba(55, 71, 79, 0.7); /* Fondo oscuro para los botones */
+    color: #e0f2f7;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.historial-button:hover {
+    background-color: rgba(71, 90, 102, 0.7);
+}
+
+.historial-button i {
+    font-size: 1.2rem;
 }
 
 .contenedor{
-    height: 100%;
+    border-radius: 100px;
+    overflow: hidden;
 }
 
-.apartado-historiales {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 90%;
+.contenedor .collapse {
+    height: 75%;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox oculta scrollbar */
 }
 
-.historial-button {
-    background: linear-gradient(to right, rgb(145, 198, 247, .36) 20%, rgb(145, 198, 247, .5) 100%) !important;
-    border: none;
-    color: #91C6F7;
-    border-radius: 19px 19px 0 0 !important;
-    height: 70px;
-    text-align: center;
-    font-size: 1.15rem;
-    font-weight: 700;
+/* Para Chrome, Edge y Safari */
+.contenedor .collapse::-webkit-scrollbar {
+    width: 0px; /* Oculta el scrollbar */
+    background: transparent;
 }
 
+/* Cuando el usuario esté scrolleando, se muestra */
+.contenedor .collapse:active::-webkit-scrollbar,
+.contenedor .collapse:focus::-webkit-scrollbar,
+.contenedor .collapse:hover::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Estilos del track */
+.contenedor .collapse::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 10px 0;
+    border-radius: 10px;
+}
+
+/* Estilos del thumb (la bolita del scroll) */
+.contenedor .collapse::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #91C6F7 0%, #4A90E2 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Hover en el thumb */
+.contenedor .collapse::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #A8D8FF 0%, #5B9EFF 100%);
+}
+
+
+/* Estilos para el contenedor de los accordions */
 .accordion-item {
     background-color: transparent;
     border: none;
+    margin-bottom: 1rem;
 }
 
 .accordion-body {
-    background-color: #73737345;
-    border-radius: 0 0 19px 19px;
-    padding: 10px !important;
+    padding: 1.5rem;
+    background-color: rgba(45, 62, 75, 0.7);
+    border-radius: 20px;
+    color: #cfd8dc;
+    height: 95%;
+    overflow: auto;
 }
 
-
-/* Scrollbar Webkit */
-.historiales-scroll::-webkit-scrollbar {
-    width: 6px;
-    background-color: transparent;
+/* Estilos para el nested accordion (si es necesario) */
+.nested-accordion .accordion-item {
+    margin-bottom: 0.5rem;
 }
 
-.historiales-scroll::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
+.nested-accordion .accordion-body {
+    padding: 1rem;
+    background-color: rgba(66, 86, 100, 0.7);
+    border-radius: 6px;
 }
 
-.accordion-button:not(.collapsed) {
-    color: #91C6F7;
-    box-shadow: none;
-}
+/* Estilos específicos para el estado collapsed de los botones */
 
-.accordion-button:not(.collapsed)::after {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
-    transform: rotate(-180deg);
-}
 
-/* Estilos de cada ítem */
-.foro-item .accordion-button {
-    background: #91c6f752;
+.historial-button:not(.collapsed) {
+    background-color: #00897b; /* Un color акцентный cuando está expandido */
     color: #fff;
-    border: none;
-    border-radius: 50px 0 0 0;
-    padding: 0.75rem 1.5rem;
-    font-family: 'Nunito', sans-serif;
-    font-size: 1rem;
-    transition: background 0.2s;
-    border-radius: 15px 10px 0 0  !important;
 }
 
-.foro-item .accordion-button:not(.collapsed) {
-    background: #91c6f78f;
-}
+/* Ajustes para el contenedor principal en pantallas pequeñas */
+@media (max-width: 768px) {
+    .historiales-section .contenedor {
+        padding: 1.5rem;
+    }
 
-.bx-question-mark, .bxs-edit-alt{
-    font-size: 28px;
-    margin-right: 10px;
-    
-}
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
 
-.foro-item .accordion-button:hover {
-    background: #91c6f79d;
-}
+    .d-flex.flex-column.flex-md-row.gap-2.mb-3 {
+        flex-direction: column; /* Apila los botones en pantallas pequeñas */
+    }
 
-.foro-item .accordion-body {
-    background: #91c6f752;
-    color: #13293D;
-    border-radius: 0 0 16px 16px;
-    padding: 1rem 1.5rem;
-}
-
-.foro-item .foro-title {
-    flex-grow: 1;
-}
-
-
-/* Botón de opciones */
-.foro-item .btn-light {
-    background: transparent;
-    border: none;
-    color: #8888aa;
-    font-size: 1.25rem;
-    line-height: 1;
+    .historial-button {
+        width: 100%; /* Ocupa todo el ancho en pantallas pequeñas */
+    }
 }

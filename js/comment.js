@@ -3,7 +3,7 @@ $(document).ready(function () {
     const params = new URLSearchParams(window.location.search);
     const forumId = params.get('id');           // ID del foro actual
 
-    obtenerUserId().then(() => cargarComentarios());
+    obtenerUserId().then(() => loadComments());
 
     // Mostrar mensajes (console/UI)
     function mostrarMensaje(msg) {
@@ -25,7 +25,7 @@ $(document).ready(function () {
             success: res => {
                 if (res.success) {
                     $('#commentInput').val('');
-                    cargarComentarios();
+                    loadComments();
                 } else mostrarMensaje(res.message);
             },
             error: () => mostrarMensaje('Error en el servidor')
@@ -33,7 +33,7 @@ $(document).ready(function () {
     });
 
     // Cargar lista de comentarios
-    function cargarComentarios() {
+    function loadComments() {
         $.ajax({
             url: '../Backend/comment.php',
             type: 'GET',
@@ -67,21 +67,32 @@ $(document).ready(function () {
         list.forEach(c => {
             const isOwn = c.user_id === userId;
             const actions = isOwn
-                ? `<span>
-             <a href="#" class="edit-comment" data-id="${c.id}">Editar</a>
-             <a href="#" class="delete-comment" data-id="${c.id}">Eliminar</a>
-           </span>`
+                ? `<span class="dropdown">
+                        <!-- Tres puntos como icono -->
+                        <button class="btn btn-link" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bx bx-dots-vertical-rounded"></i> <!-- Icono de tres puntos -->
+                        </button>
+                        
+                        <!-- Menú desplegable con las opciones -->
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item edit-comment d-flex align-items-center gap-2" href="#" data-id="${c.id}"><i class='bx bx-edit text-light'></i>Editar</a></li>
+                            <li><a class="dropdown-item delete-comment d-flex align-items-center gap-2" href="#" data-id="${c.id}"><i class='bx bx-trash text-danger'></i>Eliminar</a></li>
+                        </ul>
+                    </span>`
                 : '';
 
             const html = `
-        <div class="comment mb-3" id="comment-${c.id}">
-          <div class="d-flex justify-content-between">
-            <span><strong>${c.author_name}</strong> <small>${new Date(c.created_at).toLocaleString()}</small></span>
-            ${actions}
-          </div>
-          <p class="comment-content">${c.content}</p>
-        </div>
-      `;
+                <div class="comment mb-3 gap-2" id="comment-${c.id}">
+                    <div class="d-flex justify-content-end align-items-center user-info">
+                        <span class='d-flex align-items-center gap-2'>
+                            <img class='img' src='../uploads/profile_images/${c.author_image}'>
+                            <strong>${c.author_name}</strong> 
+                            ${actions}
+                        </span>
+                    </div>
+                    <p class="comment-content">${c.content}</p>
+                </div>
+            `;
             container.append(html);
         });
     }

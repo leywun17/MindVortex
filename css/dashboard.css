@@ -221,6 +221,7 @@ footer img {
 	border: none;
 	flex: 1;
 	width: 500px;
+	
 }
 
 .card:hover {
@@ -263,6 +264,7 @@ footer img {
 .card-body {
 	padding: 20px;
 	color: #fff;
+	box-shadow: 0 0 40px #91c6f76d;
 }
 
 .texto-info-foro {
@@ -307,9 +309,26 @@ footer img {
 	width: 80%;
 }
 
+body .swal2-shown .swal2-height-auto{
+	height: 100vh !important;
+	border-radius: 10px;
+}
+
+div:where(.swal2-container).swal2-center>.swal2-popup {
+    grid-column: 2;
+    grid-row: 2;
+    place-self: center center;
+    border-radius: 30px;
+}
+
 .modal-dialog {
 	outline: none;
 	max-width: 700px !important;
+	height: 90%;
+    justify-content: center;
+    align-items: center;
+    display: flex
+;
 }
 
 .input-foro {
@@ -564,8 +583,44 @@ nav {
 	background-color: rgb(145, 198, 247, 0.12);
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
-	border-radius: 19px;
+	border-radius: 50px;
 	height: auto;
+}
+
+.modal-title{
+	font-weight: 900;
+	font-family: 'Nunito', sans-serif;
+	color: #91C6F7;
+}
+
+#addForumModal .form-control{
+	background-color: #d9d9d91d;
+	border: none;
+	border-radius: 18px;
+	padding: 17px 15px !important;
+	color: #fff;
+	text-indent: 5px;
+}
+
+#addForumModal .form-control:focus {
+    color: #212529;
+    background-color: #d9d9d91d;
+    outline: 0;
+    box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+}
+
+#addForumModal .btn{
+	background-color: #275886;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 18px;
+}
+
+#addForumModal .btn:hover{
+	background-color: #4885bb;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 18px;
 }
 
 /* Contenedor principal */

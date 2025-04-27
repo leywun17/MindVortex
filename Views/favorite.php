@@ -38,7 +38,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
 <body class="d-flex flex-column">
 
     <nav class="navbar navbar-expand-md navbar-dark">
-        <div class="container rounded-4 text-bg-dark contenedor-header p-2">
+        <div class="container rounded-4 text-bg-dark contenedor-header px-3 gap-2">
 
             <!-- Logo -->
             <a class="navbar-brand d-flex align-items-center" href="">

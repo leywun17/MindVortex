@@ -41,7 +41,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
 <body class="d-flex flex-column">
 
     <nav class="navbar navbar-expand-md navbar-dark">
-        <div class="container rounded-4 text-bg-dark contenedor-header p-2">
+        <div class="container rounded-4 text-bg-dark contenedor-header px-3 gap-2">
 
             <!-- Logo -->
             <a class="navbar-brand d-flex align-items-center" href="">
@@ -96,58 +96,65 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
         <section class="historiales-section py-2">
             <div class="container py-2 contenedor">
                 <h1 class="section-title mb-4">Historiales</h1>
-                <div class="p-3 apartado-historiales">
-                    <div class="accordion historiales-scroll" id="accordionPrincipal">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading-historial">
-                                <button class="accordion-button collapsed historial-button" type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapse-historial"
-                                    aria-expanded="false"
-                                    aria-controls="collapse-historial">
-                                    <i class='bx bx-question-mark'></i>
-                                    <span class="foro-title">Historial De Preguntas</span>
-                                </button>
-                            </h2>
-                            <div id="collapse-historial"
-                                class="accordion-collapse collapse"
-                                aria-labelledby="heading-historial"
-                                data-bs-parent="#accordionPrincipal">
-                                <div class="accordion-body px-0">
-                                    <!-- Aquí se inyecta el nested accordion de foros -->
-                                    <div class="accordion nested-accordion" id="accordionForos"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion historiales-scroll mt-3" id="accordionPrincipalRespuestas">
-                        <div class="accordion-item ">
-                            <h2 class="accordion-header" id="heading-respuestas">
-                                <button class="accordion-button collapsed historial-button" type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapse-respuestas"
-                                    aria-expanded="false"
-                                    aria-controls="collapse-respuestas">
-                                    <i class='bx bxs-edit-alt'></i>
-                                    <span class="foro-title text-center">Historial De Respuestas</span>
-                                </button>
-                            </h2>
-                            <div id="collapse-respuestas"
-                                class="accordion-collapse collapse"
-                                aria-labelledby="heading-respuestas"
-                                data-bs-parent="#accordionPrincipal">
-                                <div class="accordion-body px-0">
-                                    <!-- Aquí se inyectan los foros relacionados con respuestas -->
-                                    <div class="accordion nested-accordion" id="accordionRespuestas"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
+                <!-- PILLS -->
+                <!-- Nav Pills responsive -->
+                <div class="d-flex flex-column flex-md-row gap-2 mb-3">
+                    <button
+                        id="pill-historial"
+                        class="accordion-button historial-button flex-fill collapsed rounded-pill"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse-historial"
+                        aria-expanded="false"
+                        aria-controls="collapse-historial">
+                        <i class='bx bx-question-mark'></i>
+                        Historial De Preguntas
+                    </button>
+
+                    <button
+                        id="pill-respuestas"
+                        class="accordion-button historial-button flex-fill collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse-respuestas"
+                        aria-expanded="false"
+                        aria-controls="collapse-respuestas">
+                        <i class='bx bxs-edit-alt'></i>
+                        Historial De Respuestas
+                    </button>
                 </div>
-            </div>
 
+
+                <!-- CONTENEDOR PREGUNTAS -->
+                <div
+                    id="collapse-historial"
+                    class="collapse"
+                    data-bs-parent=".contenedor">
+                    <div class="accordion-item">
+                        <div class="accordion-body">
+                            <!-- Aquí inyectas tu nested accordion de foros -->
+                            <div class="accordion nested-accordion" id="accordionForos"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR RESPUESTAS -->
+                <div
+                    id="collapse-respuestas"
+                    class="collapse"
+                    data-bs-parent=".contenedor">
+                    <div class="accordion-item">
+                        <div class="accordion-body">
+                            <!-- Aquí inyectas tu nested accordion de respuestas -->
+                            <div class="accordion nested-accordion" id="accordionRespuestas"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </section>
+
 
     </main>
 

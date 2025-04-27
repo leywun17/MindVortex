@@ -1,260 +1,67 @@
 $(document).ready(function() {
-    // Password Change Form Submission
-    $('#changePasswordForm').on('submit', function(e) {
-        e.preventDefault(); // Prevent default form submission
-
-        
-        let newPassword = $('input[name="new_password"]').val();
-        let confirmPassword = $('input[name="confirm_password"]').val();
-
-        // Basic client-side validation
-        if (!newPassword || !confirmPassword) {
-            Swal.fire({
-                icon: "warning",
-                title: "Campos vacíos",
-                text: "Por favor, complete todos los campos."
-            });
-            return;
-        }
-
-
-        // AJAX request to change password
-        $.ajax({
-            url: '../Backend/update-user.php', // Updated endpoint
-            method: 'POST',
-            data: {
-                action: 'change_password',
-                new_password: newPassword
-            },
-            dataType: "json",
-            beforeSend: function() {
-                $('#changePasswordBtn')
-                    .html('<i class="fas fa-spinner fa-spin"></i> Cambiando...')
-                    .prop('disabled', true);
-            },
-            success: function(response) {
-                if (response.status === "success") {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Contraseña cambiada",
-                        text: response.message
-                    });
-                    $('#changePasswordForm')[0].reset();
-                    setTimeout(() => {
-                        window.location.href = "../Backend/logout.php";
-                    }, 1000);
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: response.message
-                    });
-                }
-            },
-            error: function(xhr) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error inesperado",
-                    text: "No se pudo cambiar la contraseña. Inténtalo de nuevo."
-                });
-            },
-            complete: function() {
-                $('#changePasswordBtn')
-                    .html('Cambiar contraseña')
-                    .prop('disabled', false);
-            }
-        });
-    });
-
-    // Image Upload Form
-    $('#profileImageInput').on('change', function() {
-        let file = this.files[0];
-        let uploadBtn = $('#uploadImageBtn');
-        
-        // Enable upload button only when a file is selected
-        uploadBtn.prop('disabled', !file);
-
-        // Image preview
-        if (file) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                $('#imagePreview')
-                    .attr('src', e.target.result)
-                    .show();
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    $('#uploadImageForm').on('submit', function(e) {
+    // Maneja la lógica de envío del formulario de edición
+    $("#updateProfileForm").on("submit", function(e) {
         e.preventDefault();
 
-        let formData = new FormData(this);
-        formData.append('action', 'upload_image');
-
-        $.ajax({
-            url: '../Backend/update-user.php', // Updated endpoint
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: "json",
-            xhr: function() {
-                let xhr = new window.XMLHttpRequest();
-                let progressBar = $('#uploadProgress');
-                
-                // Upload progress tracking
-                xhr.upload.addEventListener('progress', function(evt) {
-                    if (evt.lengthComputable) {
-                        let percentComplete = evt.loaded / evt.total * 100;
-                        progressBar
-                            .val(percentComplete)
-                            .show();
-                    }
-                }, false);
-
-                return xhr;
-            },
-            beforeSend: function() {
-                $('#uploadImageBtn')
-                    .html('<i class="fas fa-spinner fa-spin"></i> Subiendo...')
-                    .prop('disabled', true);
-            },
-            success: function(response) {
-                if (response.status === "success") {
-                    $('.modal').modal('hide');
-                    Swal.fire({
-                        icon: "success",
-                        title: "Imagen subida",
-                        text: response.message,
-                        timer: 1500, 
-                        target: 'body', // Se añade directamente al body
-                        backdrop: 'rgba(0, 0, 0, 0.4)', // Fondo semitransparente para la alerta
-                        customClass: {
-                            popup: 'my-swal-popup' // Clase personalizada para el popup
-                        }
-                    });
-                    $('#uploadProgress').hide();
-                    $('#imagePreview').hide();
-                    $('#uploadImageForm')[0].reset();
-                    $('#uploadImageBtn').prop('disabled', true);
-                    setTimeout(() => {
-                        window.location.href = "../Backend/logout.php";
-                    }, 1000);
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: response.message,
-                        target: 'body', // Se añade directamente al body
-                        backdrop: 'rgba(0, 0, 0, 0.4)', // Fondo semitransparente para la alerta
-                        customClass: {
-                            popup: 'my-swal-popup' // Clase personalizada para el popup
-                        }
-                    });
-                    $('#uploadProgress').hide();
-                }
-            },
-            complete: function() {
-                $('#uploadImageBtn')
-                    .html('Subir imagen')
-                    .prop('disabled', false);
-            }
-        });
-    });
-
-    // Update Profile Form
-    $("#updateProfileForm").submit(function (event) {
-        event.preventDefault();
-
-        // Obtener los valores de los campos
-        let name = $.trim($('input[name="name"]').val());
-        let email = $.trim($('input[name="email"]').val());
-
-        if (name === "" || email === "") {
-            Swal.fire({
-                icon: "warning",
-                title: "Campos vacíos",
-                text: "Por favor completa todos los campos antes de actualizar.",
-                target: 'body', // Se añade directamente al body
-                backdrop: 'rgba(0, 0, 0, 0.4)', // Fondo semitransparente para la alerta
-                customClass: {
-                    popup: 'my-swal-popup' // Clase personalizada para el popup
-                }
-            });
+        const formData = new FormData(this);
+        console.log(...formData);
+        
+        // Lógica para verificar que la contraseña coincida
+        const newPassword = $("input[name='new_password']").val();
+        const confirmPassword = $("input[name='confirm_password']").val();
+        
+        if (newPassword && newPassword !== confirmPassword) {
+            alert("Las contraseñas no coinciden.");
             return;
         }
 
-        // Enviar datos al backend
-        updateUserInfo(name, email);
-    });
-
-    // Función para actualizar información del usuario
-    function updateUserInfo(name, email) {
+        // Llama a la API para actualizar los datos del perfil
         $.ajax({
-            url: "../Backend/update-user.php",
+            url: "../Backend/updateProfile.php",  // Cambia esto por el URL real de tu backend
             type: "POST",
-            data: {
-                action: "update_info",
-                name: name,
-                email: email,
-            },
-            dataType: "json",
-            beforeSend: function () {
-                $("#updateProfileBtn").html('<i class="fas fa-spinner fa-spin"></i> Actualizando...').prop('disabled', true);
-            },
-            success: function (response) {
-                console.log("Respuesta del servidor:", response); // Log para depuración
-
-                if (response.status === "success") {
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.success) {
                     Swal.fire({
-                        icon: "success",
-                        title: "Actualización exitosa",
-                        text: response.message,
-                        confirmButtonText: "OK",
-                        target: 'body', // Se añade directamente al body
-                        backdrop: 'rgba(0, 0, 0, 0.4)', // Fondo semitransparente para la alerta
-                        customClass: {
-                            popup: 'my-swal-popup' // Clase personalizada para el popup
-                        }
+                        icon: 'success',
+                        title: 'Perfil actualizado',
+                        text: 'Tu perfil ha sido actualizado con éxito.',
                     }).then(() => {
-                        $(".info-user li:nth-child(1)").text("Nombre: " + name);
-                        $(".info-user li:nth-child(2)").text("Email: " + email);
-                        window.location.href = "../Backend/logout.php";
-                        $("#modalUser").modal('hide');
-                        setTimeout(() => {
-                            window.location.href = "../Backend/logout.php";
-                        }, 1000);
+                        // Puedes recargar la página o actualizar la vista
+                        location.reload();
                     });
                 } else {
                     Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: response.message,
-                        target: 'body', // Se añade directamente al body
-                        backdrop: 'rgba(0, 0, 0, 0.4)', // Fondo semitransparente para la alerta
-                        customClass: {
-                            popup: 'my-swal-popup' // Clase personalizada para el popup
-                        }
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Hubo un error al actualizar tu perfil.',
                     });
                 }
             },
-            error: function (xhr, status, error) {
-                console.error("Error AJAX:", xhr.responseText);
+            error: function() {
                 Swal.fire({
-                    icon: "error",
-                    title: "Error inesperado",
-                    text: "No se pudo actualizar la información. Inténtalo de nuevo.",
-                    target: 'body', // Se añade directamente al body
-                    backdrop: 'rgba(0, 0, 0, 0.4)', // Fondo semitransparente para la alerta
-                    customClass: {
-                        popup: 'my-swal-popup' // Clase personalizada para el popup
-                    }
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error en la comunicación con el servidor.',
                 });
-            },
-            complete: function () {
-                $("#updateProfileBtn").html('Actualizar información').prop('disabled', false);
             }
         });
-    }
+    });
+
+    // Habilitar/Deshabilitar el botón de actualizar imagen cuando se selecciona un archivo
+    $("#profileImageInput").on("change", function() {
+        const file = this.files[0];
+        if (file) {
+            $("#uploadImageBtn").prop("disabled", false);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $("#imagePreview").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $("#uploadImageBtn").prop("disabled", true);
+        }
+    });
 });

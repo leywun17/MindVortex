@@ -13,22 +13,25 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     const forum = response.forum;
-
-                    // Poblamos los elementos con los nuevos IDs
+            
                     $("#forumTitle").text(forum.title);
                     $("#forumDescription").text(forum.description);
                     $("#forumDate").text(forum.createdAt);
                     $("#forumAuthor").text(forum.userName);
                     $("#userImage").attr("src", "../uploads/profile_images/" + forum.userImage);
-
-                    // Genera botón de favoritos con nuevo ID y data attribute
-                    const favButton = `
-                        <button class="btn btn-outline-warning mt-3" id="btnFavorite" data-id="${forum.id}">
-                            ⭐ Agregar a Favoritos
-                        </button>`;
-                    $("#favoriteButtonContainer").html(favButton);
-
-                    // Si existe función para verificar autor, la ejecutamos
+            
+                    // Dependiendo de si es favorito o no, generamos el botón
+                    let favoriteButtonHtml = `
+                        <li class="dropdown-item text-center">
+                            <button class="btn ${forum.isFavorite ? 'btn' : 'btn'} btn-sm w-100" id="btnFavorite" data-id="${forum.id}">
+                                ${forum.isFavorite ? '★ Quitar de Favoritos' : '⭐ Agregar a Favoritos'}
+                            </button>
+                        </li>
+                    `;
+            
+                    $("#favoritesDropdownMenu").append(favoriteButtonHtml);
+            
+                    // Verificar autor, si corresponde
                     if (window.verificarAutorForo) {
                         window.verificarAutorForo(forum.userId);
                     }
@@ -45,7 +48,6 @@ $(document).ready(function () {
     // Maneja toggle de favorito usando delegación de evento y nuevos nombres
     $(document).on("click", "#btnFavorite", function () {
         const forumId = $(this).data("id");
-        console.log("▶️ forumId:", forumId);
 
         $.ajax({
             url: `../Backend/foro.php`,
@@ -57,17 +59,33 @@ $(document).ready(function () {
             dataType: "json",
             success: function (response) {
                 if (response.success) {
-                    alert(response.message);
                     const btn = $("#btnFavorite");
+
+                    // Mostrar el SweetAlert
+                    Swal.fire({
+                        icon: "success",
+                        title: "¡Éxito!",
+                        text: response.message,
+                        confirmButtonText: "Continuar",
+                    });
+
+                    // Actualizar botón
                     if (btn.hasClass("btn-warning")) {
                         btn.removeClass("btn-warning")
-                           .addClass("btn-outline-warning")
-                           .text("⭐ Agregar a Favoritos");
+                            .addClass("btn-outline-warning")
+                            .html("⭐ Agregar a Favoritos");
                     } else {
                         btn.removeClass("btn-outline-warning")
-                           .addClass("btn-warning")
-                           .text("★ Quitar de Favoritos");
+                            .addClass("btn-warning")
+                            .html("★ Quitar de Favoritos");
                     }
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: response.message || "No se pudo actualizar favorito.",
+                        confirmButtonText: "Ok"
+                    });
                 }
             },
             error: function (xhr, status, error) {
@@ -75,7 +93,13 @@ $(document).ready(function () {
                 console.error("HTTP Status Code:", xhr.status);
                 console.error("Response Text:", xhr.responseText);
                 console.error("Error Thrown:", error);
-                alert("Error al conectar con el servidor. Revisa la consola para más detalles.");
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Error de Servidor",
+                    text: "Error al conectar con el servidor. Revisa la consola para más detalles.",
+                    confirmButtonText: "Ok"
+                });
             }
         });
     });

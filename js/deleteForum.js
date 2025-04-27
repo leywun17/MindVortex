@@ -6,13 +6,12 @@ $(document).ready(function() {
 
     function verificarAutor(autorID) {
         autorId = autorID;
-        
         // ✅ Esto solo se debe hacer cuando IDusuario YA ESTÉ DEFINIDO
         if (parseInt(IDusuario) !== parseInt(autorId)) {
-            $("#opcionEliminar, #separadorEliminar").addClass("d-none");
+            $("#deleteOption, #deleteDivider").addClass("d-none");
         } else {
-            $("#opcionEliminar").removeClass("d-none");
-            $("#separadorEliminar").removeClass("d-none").addClass("d-block");
+            $("#deleteOption").removeClass("d-none");
+            $("#deleteDivider").removeClass("d-none").addClass("d-block");
         }
     }
 
@@ -47,7 +46,7 @@ $(document).ready(function() {
     }
 
     // Manejar clic en la opción eliminar
-    $("#opcionEliminar").click(function() {
+    $("#deleteOption").click(function() {
         if (!foroId) return;
         
         // 1. Mostrar confirmación con SweetAlert
@@ -73,7 +72,7 @@ $(document).ready(function() {
                     dataType: "json",
                     success: function(respuesta) {
                         // 3. Si la respuesta es exitosa, mostrar alerta y redirigir
-                        if (respuesta.exito) {
+                        if (respuesta.success) {
                             Swal.fire({
                                 icon: "success",
                                 title: "Éxito",
@@ -87,7 +86,7 @@ $(document).ready(function() {
                             Swal.fire({
                                 icon: "error",
                                 title: "Error",
-                                text: respuesta.mensaje || "No se pudo eliminar el foro"
+                                text: respuesta.message || "No se pudo eliminar el foro"
                             });
                         }
                     },

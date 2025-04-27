@@ -37,17 +37,19 @@ class Forum
     // Create new forum
     public function create()
     {
+        $this->createdAt = date('Y-m-d');
         // Sanitize input
         $this->title       = htmlspecialchars(strip_tags($this->title));
         $this->description = htmlspecialchars(strip_tags($this->description));
         $this->userId      = htmlspecialchars(strip_tags($this->userId));
 
-        $query = "INSERT INTO {$this->tableName} (title, description, userId)
-                  VALUES (:title, :description, :userId)";
+        $query = "INSERT INTO {$this->tableName} (title, description, userId, createdAt)
+                    VALUES (:title, :description, :userId, :createdAt)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':title',       $this->title);
         $stmt->bindParam(':description', $this->description);
         $stmt->bindParam(':userId',      $this->userId);
+        $stmt->bindParam(':createdAt',   $this->createdAt);
 
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
@@ -60,15 +62,15 @@ class Forum
     public function readAll()
     {
         $query = "SELECT
-                      f.id,
-                      f.title,
-                      f.description,
-                      DATE(f.createdAt) AS createdAt,
-                      u.userName,
-                      COALESCE(u.userImage,'default.jpg') AS userImage
-                  FROM {$this->tableName} f
-                  INNER JOIN users u ON f.userId = u.id
-                  ORDER BY f.createdAt DESC";
+                        f.id,
+                        f.title,
+                        f.description,
+                        DATE(f.createdAt) AS createdAt,
+                        u.userName,
+                        COALESCE(u.userImage,'default.jpg') AS userImage
+                    FROM {$this->tableName} f
+                    INNER JOIN users u ON f.userId = u.id
+                    ORDER BY f.createdAt DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -78,16 +80,16 @@ class Forum
     public function readOne()
     {
         $query = "SELECT
-                      f.id,
-                      f.title,
-                      f.description,
-                      DATE(f.createdAt) AS createdAt,
-                      f.userId,
-                      u.userName,
-                      u.userImage
-                  FROM {$this->tableName} f
-                  INNER JOIN users u ON f.userId = u.id
-                  WHERE f.id = :id";
+                        f.id,
+                        f.title,
+                        f.description,
+                        DATE(f.createdAt) AS createdAt,
+                        f.userId,
+                        u.userName,
+                        u.userImage
+                    FROM {$this->tableName} f
+                    INNER JOIN users u ON f.userId = u.id
+                    WHERE f.id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
@@ -112,7 +114,7 @@ class Forum
             $this->conn->beginTransaction();
 
             // Delete comments for this forum
-            $sql1 = "DELETE FROM comentarios WHERE foro_id = :id";
+            $sql1 = "DELETE FROM comments WHERE forum_id = :id";
             $stmt1 = $this->conn->prepare($sql1);
             $stmt1->bindParam(':id', $this->id);
             $stmt1->execute();
@@ -162,37 +164,40 @@ class Forum
     public function getFavorites($userId)
     {
         $query = "SELECT
-                      f.id,
-                      f.title,
-                      f.description,
-                      DATE(f.createdAt) AS createdAt,
-                      u.userName,
-                      COALESCE(u.userImage,'default.jpg') AS userImage
-                  FROM forum_favorite ff
-                  INNER JOIN {$this->tableName} f ON ff.id_foro = f.id
-                  INNER JOIN users u ON f.userId = u.id
-                  WHERE ff.id_usuario = :userId
-                  ORDER BY ff.fecha_agregado DESC";
+                    f.id,
+                    f.title,
+                    f.description,
+                    DATE(f.createdAt) AS createdAt,
+                    u.userName,
+                    COALESCE(u.userImage, 'default.jpg') AS userImage,
+                    -- Comprobamos si el foro está en favoritos para el usuario
+                    CASE WHEN ff.id_usuario IS NOT NULL THEN TRUE ELSE FALSE END AS isFavorite
+                FROM {$this->tableName} f
+                LEFT JOIN forum_favorite ff ON ff.id_foro = f.id AND ff.id_usuario = :userId
+                INNER JOIN users u ON f.userId = u.id
+                ORDER BY ff.fecha_agregado DESC";
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':userId', $userId);
         $stmt->execute();
         return $stmt;
     }
 
+
     // Read forums by a specific user
     public function readByUser($userId)
     {
         $query = "SELECT
-                      f.id,
-                      f.title,
-                      f.description,
-                      DATE(f.createdAt) AS createdAt,
-                      u.userName,
-                      COALESCE(u.userImage,'default.jpg') AS userImage
-                  FROM {$this->tableName} f
-                  INNER JOIN users u ON f.userId = u.id
-                  WHERE f.userId = :userId
-                  ORDER BY f.createdAt DESC";
+                        f.id,
+                        f.title,
+                        f.description,
+                        DATE(f.createdAt) AS createdAt,
+                        u.userName,
+                        COALESCE(u.userImage,'default.jpg') AS userImage
+                    FROM {$this->tableName} f
+                    INNER JOIN users u ON f.userId = u.id
+                    WHERE f.userId = :userId
+                    ORDER BY f.createdAt DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':userId', $userId);
         $stmt->execute();
@@ -203,14 +208,14 @@ class Forum
     public function readRepliesByUser($userId)
     {
         $query = "SELECT
-                      c.id,
-                      f.title,
-                      c.content,
-                      DATE(c.created_at) AS createdAt
-                  FROM comments c
-                  INNER JOIN {$this->tableName} f ON c.foro_id = f.id
-                  WHERE c.user_id = :userId
-                  ORDER BY c.created_at DESC";
+                        c.id,
+                        f.title,
+                        c.content,
+                        DATE(c.created_at) AS createdAt
+                    FROM comments c
+                    INNER JOIN {$this->tableName} f ON c.forum_id = f.id
+                    WHERE c.user_id = :userId
+                    ORDER BY c.created_at DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
@@ -295,7 +300,7 @@ switch ($method) {
                                 "message" => "Foro eliminado correctamente"
                             ];
                         } else {
-                            $response["message"] = "Error al eliminar el foro";
+                            $response["message"] = "No se pudo eliminar el foro";
                         }
                     } else {
                         $response["message"] = "No tienes permiso o el foro no existe";
@@ -348,7 +353,8 @@ switch ($method) {
                                     "createdAt"   => $forum->createdAt,
                                     "userName"    => $forum->userName,
                                     "userImage"   => $forum->userImage,
-                                    "userId"      => $forum->userId
+                                    "userId"      => $forum->userId,
+                                    "isFavorite"  => false
                                 ]
                             ];
                         } else {

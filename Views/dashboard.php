@@ -25,6 +25,9 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
     <!-- Librería de íconos Boxicons -->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Tipografía Nunito desde Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +46,7 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
 
     <!-- Barra de navegación principal -->
     <nav class="navbar navbar-expand-md navbar-dark">
-        <div class="container rounded-4 text-bg-dark contenedor-header p-2">
+        <div class="container rounded-4 text-bg-dark contenedor-header px-3 gap-2">
 
             <!-- Logo de la marca -->
             <a class="navbar-brand d-flex align-items-center" href="#">
@@ -65,14 +68,9 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                             <strong><?php echo $userName ?></strong>
                             <small><?php echo $userEmail ?></small>
                         </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item text-white" href="#editProfileModal" data-bs-toggle="modal">Edit</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item text-white" href="../Backend/logout.php">Sign out</a></li>
+                        <li><a class="dropdown-item text-white d-flex gap-2 align-items-center justify-content-center" href="#editProfileModal" data-bs-toggle="modal"><i class='bx bx-edit text-light'></i>Edit</a></li>
+                        <hr class="bg-light">
+                        <li><a class="dropdown-item text-white d-flex gap-2 align-items-center justify-content-center" href="../Backend/logout.php"><i class='bx bx-log-out text-danger'></i>logout</a></li>
                     </ul>
                 </div>
 
@@ -122,9 +120,9 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
 
     <!-- Contenido principal -->
     <main class="flex-fill container">
-        <div class="cuerpo p-3 flex-fill">
+        <div class="cuerpo p-4 pl-5 pt-5 flex-fill">
             <h2 class="mb-4">Preguntas</h2>
-            <div id="forumList" class="d-flex flex-wrap gap-3 justify-content-center"></div>
+            <div id="forumList" class="d-flex flex-wrap gap-3 justify-content-around"></div>
             <!-- Resultados de búsqueda -->
             <div id="searchResults" class="row"></div>
             <div id="paginationContainer" class="d-flex justify-content-center mt-3"></div>
@@ -142,8 +140,8 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
     <!-- Modal para agregar una nueva pregunta -->
     <div class="modal fade" id="addForumModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4">
-                <h5 class="modal-title mb-3">Agregar Pregunta</h5>
+            <div class="modal-content text-center p-5">
+                <h2 class="modal-title mb-3">Agregar Pregunta</h2>
                 <form id="forumForm">
                     <div class="mb-3">
                         <input type="text" class="form-control" id="title" name="title" placeholder="Título" required>
@@ -160,7 +158,7 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
     <!-- Modal para editar perfil -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content p-4">
+            <div class="modal-content p-5">
                 <h5 class="modal-title mb-3">Editar Perfil</h5>
 
                 <!-- Formulario para subir imagen -->
@@ -175,32 +173,27 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                     </div>
                 </form>
 
-                <!-- Formularios para editar datos y cambiar contraseña -->
-                <div class="d-flex gap-4">
-                    <!-- Formulario para actualizar nombre y correo -->
-                    <form id="updateProfileForm" class="flex-fill">
-                        <div class="mb-3">
-                            <input type="text" name="name" value="<?= htmlspecialchars($userName) ?>" class="form-control" placeholder="Nombre">
-                        </div>
-                        <div class="mb-3">
-                            <input type="email" name="email" value="<?= htmlspecialchars($userEmail) ?>" class="form-control" placeholder="Correo">
-                        </div>
-                        <button type="submit" id="updateProfileBtn" class="btn btn-primary w-100">Actualizar información</button>
-                    </form>
-
-                    <!-- Formulario para cambiar contraseña -->
-                    <form id="changePasswordForm" class="flex-fill">
-                        <div class="mb-3">
-                            <input type="password" name="new_password" class="form-control" placeholder="Nueva contraseña">
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" name="confirm_password" class="form-control" placeholder="Confirmar contraseña">
-                        </div>
-                        <button type="submit" id="changePasswordBtn" class="btn btn-secondary w-100">Cambiar contraseña</button>
-                    </form>
-                </div>
+                <!-- Formulario único para editar perfil y contraseña -->
+                <form id="updateProfileForm">
+                    <div class="mb-3">
+                        <input type="text" name="name" value="<?= htmlspecialchars($userName) ?>" class="form-control" placeholder="Nombre">
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" name="email" value="<?= htmlspecialchars($userEmail) ?>" class="form-control" placeholder="Correo">
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" name="new_password" class="form-control" placeholder="Nueva contraseña">
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Confirmar contraseña">
+                    </div>
+                    <!-- Botón único para actualizar todos los cambios -->
+                    <button type="submit" id="updateProfileBtn" class="btn btn-primary w-100">Actualizar Perfil</button>
+                </form>
             </div>
         </div>
+    </div>
+
     </div>
 
     <!-- Pie de página con imagen SVG -->
