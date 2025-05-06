@@ -51,7 +51,7 @@ class Comment {
 
     // Leer comentarios de un foro
     public function readByForum(): array {
-        $sql = "SELECT c.*, u.userName AS author_name, COALESCE(u.userImage, 'default.jpg') AS author_image
+        $sql = "SELECT c.*, u.userName AS author_name, COALESCE(u.userImage, '../../uploads/profile_images/default.jpg') AS author_image
                 FROM {$this->table} c
                 JOIN users u ON c.user_id = u.id
                 WHERE c.forum_id = :forum_id
@@ -66,7 +66,7 @@ class Comment {
     public function readOne(): bool {
         $sql = "SELECT c.id, c.forum_id, c.user_id, c.content, c.created_at, c.updated_at,
                        u.userName AS author_name,
-                       COALESCE(u.userImage,'default.jpg') AS author_image
+                       COALESCE(u.userImage,'../../uploads/profile_images/default.jpg') AS author_image
                 FROM {$this->table} c
                 JOIN users u ON c.user_id = u.id
                 WHERE c.id = :id

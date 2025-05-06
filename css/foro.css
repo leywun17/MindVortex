@@ -125,6 +125,10 @@ li .btn:hover {
 
 }
 
+#forumDescription{
+    word-break: break-word;
+}
+
 #boton-publicar:hover {
     background-color: #214668;
 }

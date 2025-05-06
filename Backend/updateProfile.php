@@ -180,7 +180,7 @@ switch ($method) {
                         "id" => $user->id,
                         "userName" => $user->userName,
                         "email" => $user->email,
-                        "userImage" => $user->userImage ?? 'default.jpg'
+                        "userImage" => $user->userImage ?? '../../uploads/profile_images/default.jpg'
                     ]
                 ];
             } else {

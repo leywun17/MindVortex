@@ -19,6 +19,7 @@ $(document).ready(function () {
                     $("#forumDate").text(forum.createdAt);
                     $("#forumAuthor").text(forum.userName);
                     $("#userImage").attr("src", "../uploads/profile_images/" + forum.userImage);
+                    console.log(forum.userImage)
             
                     // Dependiendo de si es favorito o no, generamos el botón
                     let favoriteButtonHtml = `

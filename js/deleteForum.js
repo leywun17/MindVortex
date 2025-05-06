@@ -6,7 +6,7 @@ $(document).ready(function() {
 
     function verificarAutor(autorID) {
         autorId = autorID;
-        // ✅ Esto solo se debe hacer cuando IDusuario YA ESTÉ DEFINIDO
+        // esto solo se debe hacer cuando IDusuario YA ESTÉ DEFINIDO
         if (parseInt(IDusuario) !== parseInt(autorId)) {
             $("#deleteOption, #deleteDivider").addClass("d-none");
         } else {
@@ -40,7 +40,6 @@ $(document).ready(function() {
     // Esta función puede ser llamada luego desde verForo.js cuando ya se sepa el autor
     window.verificarAutorForo = function(autorDelForo) {
         autorId = autorDelForo;
-        // ⚠️ Si ya tenés IDusuario, podés comparar ahora
         if (IDusuario) verificarAutor(autorId);
         // Si no, se va a comparar más tarde cuando llegue la respuesta de `Obtener_id()`
     }

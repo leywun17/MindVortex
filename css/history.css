@@ -105,6 +105,7 @@ body{
     color: #cfd8dc;
     height: 95%;
     overflow: auto;
+    word-break: break-word;
 }
 
 /* Estilos para el nested accordion (si es necesario) */
