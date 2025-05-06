@@ -7,7 +7,7 @@
   
   body {
     font-family: 'Nunito', sans-serif;
-    background: linear-gradient(210deg, #000 20%, #00529C 100%);
+    background: #fff;
     background-size: 450% 450%;
     color: #fff;
     min-height: 100vh;
@@ -20,7 +20,7 @@
   
   /* Estilos de enlaces */
   .header-desktop .nav-link {
-    color: #fff;
+    color: #000;
     position: relative;
     transition: color 0.3s;
   }
@@ -31,13 +31,13 @@
     bottom: -2px;
     width: 100%;
     height: 2px;
-    background: #91C6F7;
+    background: #60B5FF;
     transform: scaleX(0);
     transform-origin: right;
     transition: transform 0.3s;
   }
   .header-desktop .nav-link:hover {
-    color: #91C6F7;
+    color: #60B5FF;
   }
   .header-desktop .nav-link:hover::after {
     transform: scaleX(1);
@@ -48,13 +48,13 @@
     text-decoration: none;
     padding: 10px 25px;
     border-radius: 50px;
-    background-color: rgba(145, 198, 247, 0.37);
+    background-color: #60b5ffcf;
     color: #fff;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
     transition: background-color 0.3s, box-shadow 0.3s;
   }
   .boton-header:hover {
-    background-color: rgba(145, 198, 247, 0.55);
+    background-color: #60B5FF;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
   }
   
@@ -72,7 +72,8 @@
     text-align: center;
     gap: 20px;
     margin-top: 80px;
-    color: #91C6F7;
+    margin-bottom: 80px;
+    color: #60B5FF;
   }
   .contenedor-hero h1 {
     font-size: 4rem; /* Se reducirá en dispositivos más pequeños */
@@ -80,7 +81,7 @@
   }
   
   .container-objetivos{
-    background-color: rgba(217, 217, 217, 0.06) !important;
+    background-color: #e6e6e6 !important;
     padding: 40px;
     border-radius: 25px;
   }
@@ -91,38 +92,48 @@
   .part1 h2 {
     font-size: 2rem;
     margin-bottom: 15px;
-    color: #91C6F7;
+    color: #60B5FF;
     font-weight: bold;
   }
   .part1 p {
-    color: #fff;
     font-weight: 300;
     font-size: 1rem;
   }
   
   /* Sección Objetivos */
   .objetivos h2 {
-    color: #91C6F7;
+    color: #60B5FF;
     font-size: 2rem;
   }
   .texto-objetivos ul {
     padding-left: 20px;
     list-style: disc;
   }
-  
-  /* Footer */
-  footer {
-    padding: 20px 0;
-    margin-top: 40px;
-  }
 
-  .img-footer{
-    width: 100%;
-    position: relative;
-    bottom: -25px;
+  .contenedor-hero svg{
+    position: absolute;
+    top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: block;
+    z-index: -100;
   }
   
+  svg {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    z-index: -100;
+  }
+  footer{
+    background-color: transparent;
+    margin-top: 10px;
+    height: 220px;
+  }
   /* Menu Móvil (utilizando el collapse de Bootstrap) */
   @media (max-width: 767px) {
     .header-desktop {

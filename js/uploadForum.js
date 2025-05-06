@@ -189,8 +189,9 @@ $(document).ready(function () {
         });
     }
 
-    $('#searchForm').on('submit', function (e) {
-        e.preventDefault();
+    $('#searchForm').on('keypress', function (e) {
+        console.log('Tecla presionada:', e.key);
+
         const term = $('#searchInput').val().trim();
 
         // Si está vacío, recarga todo

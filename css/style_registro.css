@@ -12,44 +12,112 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background: linear-gradient(210deg, #000000 .10%, #00529C 100%);
+  background: #f8f8f8f8;
   background-size: 250% 250%;
   color: #fff;
-  animation: gradientAnimation 5s infinite alternate linear;
+  overflow: hidden;
 }
 
-@keyframes gradientAnimation {
+svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: block;
+  z-index: -100;
+  background-color: #ddd;
+  /* background-image: linear-gradient(to bottom, rgba(14, 65, 102, 0.86), #0e4166); */
+}
+
+.rain {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.rain.back-row {
+  display: none;
+  z-index: 1;
+  bottom: 60px;
+  opacity: 0.5;
+}
+
+body.back-row-toggle .rain.back-row {
+  display: block;
+}
+
+.drop {
+  position: absolute;
+  bottom: 100%;
+  width: 15px;
+  height: 120px;
+  pointer-events: none;
+  animation: drop 0.5s linear infinite;
+}
+
+@keyframes drop {
   0% {
-    background-position: 0% 50%;
+    transform: translateY(0vh);
   }
 
-  50% {
-    background-position: 100% 50%;
+  75% {
+    transform: translateY(90vh);
   }
 
   100% {
-    background-position: 0% 50%;
+    transform: translateY(90vh);
   }
+}
+
+.stem {
+  width: 1px;
+  height: 60%;
+  margin-left: 7px;
+  background: linear-gradient(to bottom, rgb(92, 132, 207), rgba(90, 93, 244, 0.25));
+  animation: stem 0.5s linear infinite;
+}
+
+@keyframes stem {
+  0% {
+    opacity: 1;
+  }
+
+  65% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.splat {
+  width: 15px;
+  height: 10px;
+  border-top: 2px dotted rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  opacity: 1;
+  transform: scale(0);
+  animation: splat 0.5s linear infinite;
+  display: none;
 }
 
 .form-container {
   width: 450px;
   border-radius: 0 20px 0 20px;
-  background-color: rgba(51, 51, 51, 0.621);
+  background-color: rgba(243, 244, 246, .50);
   padding: 2rem;
-  color: rgba(243, 244, 246, 1);
-  box-shadow: 0 0 30px rgb(119, 200, 251, 0.25);
-  animation: shadow-pulse 3s infinite alternate linear;
-}
-
-@keyframes shadow-pulse {
-  0% {
-    box-shadow: 0 0 20px rgba(119, 200, 251, 0.25);
-  }
-
-  100% {
-    box-shadow: 0 0 30px rgba(119, 200, 251, 0.5);
-  }
+  color: rgb(0, 0, 0);
+  position: relative;
+  z-index: 1000;
 }
 
 
@@ -84,43 +152,41 @@ h1 {
 
 .input-group label {
   display: block;
-  color: rgba(156, 163, 175, 1);
+  color: rgb(35, 35, 35);
   margin-bottom: 4px;
 }
 
 .input-group input {
   width: 100%;
-  border: 2px solid #fff;
+  border: 2px solid #0a0a0a6f;
   outline: 0;
   background-color: transparent;
   padding: 0.75rem 1rem;
-  color: rgba(243, 244, 246, 1);
+  color: rgba(0, 0, 0, 1);
   transition: box-shadow .3s linear;
+  border-radius: 5px;
 }
 
-.input-group input:focus {
-  box-shadow: 0 2px 7px #77C8FB;
-}
 
 .forgot {
   display: flex;
   justify-content: flex-end;
   font-size: 0.75rem;
   line-height: 1rem;
-  color: rgba(156, 163, 175, 1);
+  color: #13293D;
   margin: 8px 0 14px 0;
 }
 
 .forgot a,
 .signup a {
-  color: rgba(243, 244, 246, 1);
+  color: #13293D;
   text-decoration: none;
   font-size: 14px;
 }
 
 .forgot a:hover,
 .signup a:hover {
-  text-decoration: underline #77C8FB;
+  text-decoration: underline #000;
 }
 
 .sign {
@@ -129,8 +195,8 @@ h1 {
   background-color: transparent;
   padding: 0.75rem;
   text-align: center;
-  color: #fff;
-  border: 2px solid white;
+  color: #000;
+  border: 2px solid #0a0a0a6f;
   font-weight: 600;
   margin: .1em auto;
   cursor: pointer;
@@ -143,7 +209,7 @@ button:hover::after {
 }
 
 button:hover {
-  box-shadow: inset 0px 0px 25px #1479EA;
+  box-shadow: inset 0px 0px 25px #1d1d1d3b;
 }
 
 .social-message {
