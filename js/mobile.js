@@ -1,8 +1,16 @@
-const menuIcon = document.getElementById('menu-icon');
-const dashboard = document.getElementById('dashboard');
+const heroWave = document.getElementById('hero-wave');
 
-// Agregar un evento de clic al ícono de menú
-menuIcon.addEventListener('click', () => {
-    // Alternar la clase "active" en el dashboard
-    dashboard.classList.toggle('active');
+window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+
+    if (scrollTop > 100) {
+        // Oculta el SVG al hacer scroll
+        heroWave.style.opacity = '0';
+        heroWave.style.pointerEvents = 'none'; // Por si flota sobre contenido
+    } else {
+        // Muestra el SVG si volvés al tope
+        heroWave.style.opacity = '1';
+        heroWave.style.pointerEvents = 'auto';
+    }
 });
+
