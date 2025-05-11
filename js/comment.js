@@ -75,7 +75,7 @@ $(document).ready(function () {
                         
                         <!-- Menú desplegable con las opciones -->
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item edit-comment d-flex align-items-center gap-2" href="#" data-id="${c.id}"><i class='bx bx-edit text-light'></i>Editar</a></li>
+                            <li><a class="dropdown-item edit-comment d-flex align-items-center gap-2" href="#" data-id="${c.id}"><i class='bx bx-edit text-dark'></i>Editar</a></li>
                             <li><a class="dropdown-item delete-comment d-flex align-items-center gap-2" href="#" data-id="${c.id}"><i class='bx bx-trash text-danger'></i>Eliminar</a></li>
                         </ul>
                     </span>`

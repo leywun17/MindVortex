@@ -7,7 +7,7 @@
 
 body {
   font-family: 'Nunito', sans-serif;
-  background: #fff;
+  background: #ddd;
   background-size: 450% 450%;
   color: #fff;
   min-height: 100vh;
@@ -17,7 +17,7 @@ body {
 .header-desktop {
   margin-top: 10px !important;
   padding: 10px;
-  background-color: #00000011;
+  background-color: #fff;
 }
 
 /* Estilos de enlaces */
@@ -90,7 +90,7 @@ body {
 }
 
 .container-objetivos {
-  background-color: #e6e6e6 !important;
+  background-color: #fff !important;
   padding: 40px;
   border-radius: 25px;
 }
