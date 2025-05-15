@@ -71,7 +71,7 @@ class Forum
                 f.description,
                 DATE(f.createdAt) AS createdAt,
                 u.userName,
-                COALESCE(u.userImage,'../../uploads/profile_images/default.png') AS userImage,
+                COALESCE(u.userImage,'default.png') AS userImage,
                 f.image
             FROM {$this->tableName} f
             INNER JOIN users u ON f.userId = u.id
@@ -106,7 +106,7 @@ class Forum
                         DATE(f.createdAt) AS createdAt,
                         f.userId,
                         u.userName,
-                        COALESCE(u.userImage,'../../uploads/profile_images/default.jpg') AS userImage,
+                        COALESCE(u.userImage,'default.png') AS userImage,
                         f.image
                     FROM {$this->tableName} f
                     INNER JOIN users u ON f.userId = u.id
@@ -185,7 +185,7 @@ class Forum
     // Get favorites for a user
     public function getFavorites($userId)
     {
-        $query = "SELECT f.id, f.title, f.description, DATE(f.createdAt) AS createdAt, u.userName, COALESCE(u.userImage, '../../uploads/profile_images/default.jpg') AS userImage, TRUE AS isFavorite FROM forums f INNER JOIN forum_favorite ff ON ff.id_foro = f.id AND ff.id_usuario = :userId INNER JOIN users u ON f.userId = u.id ORDER BY ff.fecha_agregado DESC;";
+        $query = "SELECT f.id, f.title, f.description, DATE(f.createdAt) AS createdAt, u.userName, COALESCE(u.userImage, 'default.png') AS userImage, TRUE AS isFavorite FROM forums f INNER JOIN forum_favorite ff ON ff.id_foro = f.id AND ff.id_usuario = :userId INNER JOIN users u ON f.userId = u.id ORDER BY ff.fecha_agregado DESC;";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':userId', $userId);
@@ -203,7 +203,7 @@ class Forum
                         f.description,
                         DATE(f.createdAt) AS createdAt,
                         u.userName,
-                        COALESCE(u.userImage,'../../uploads/profile_images/default.jpg') AS userImage
+                        COALESCE(u.userImage,'default.png') AS userImage
                     FROM {$this->tableName} f
                     INNER JOIN users u ON f.userId = u.id
                     WHERE f.userId = :userId
@@ -249,7 +249,7 @@ class Forum
                     f.description,
                     DATE(f.createdAt) AS createdAt,
                     u.userName,
-                    COALESCE(u.userImage,'../../uploads/profile_images/default.jpg') AS userImage
+                    COALESCE(u.userImage,'default.png') AS userImage
                 FROM {$this->tableName} f
                 INNER JOIN users u ON f.userId = u.id
                 WHERE f.title LIKE :term OR f.description LIKE :term
