@@ -152,7 +152,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
 
                 <li>
                     <a href="./history.php">
-                        <i class="bx bx-send"></i>
+                        <i class="bx bx-history"></i>
                         <span class="links_name">Historial</span>
                     </a>
                     <span class="tooltip">Historial</span>

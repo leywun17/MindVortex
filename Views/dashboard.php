@@ -207,19 +207,22 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="forumForm">
+                    <form id="forumForm" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="title" class="form-label">Título</label>
                             <input type="text" class="form-control" id="title" name="title" placeholder="Escribe un título descriptivo" required>
                         </div>
+
                         <div class="mb-3">
                             <label for="description" class="form-label">Descripción</label>
                             <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe tu pregunta con detalles (mínimo 15 caracteres)" minlength="15" required></textarea>
                         </div>
+                        <input type="file" id="forumImage" name="forumImage" accept="image/*">
                         <div class="text-end">
                             <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Publicar</button>
                         </div>
+                        
                     </form>
                 </div>
             </div>

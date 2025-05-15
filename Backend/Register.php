@@ -23,7 +23,7 @@ class Usuarios {
         $contraseña_encriptada = password_hash($password, PASSWORD_ARGON2ID);
 
         try {
-            $sql = "INSERT INTO users (name, email, password, estado) VALUES (:name, :email, :password, 'activa')";
+            $sql = "INSERT INTO users (userName, email, password, estado) VALUES (:name, :email, :password, 'activa')";
             $stmt = $this->conex->prepare($sql);
             $stmt->bindParam(":name", $name, PDO::PARAM_STR);
             $stmt->bindParam(":email", $email, PDO::PARAM_STR);

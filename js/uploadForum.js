@@ -5,33 +5,37 @@ $(document).ready(function () {
 
     // Maneja el envío del formulario para crear un nuevo foro
     $("#forumForm").on("submit", function (e) {
-        e.preventDefault();
 
-        // Obtiene y limpia los valores de título y descripción
-        let data = {
-            title: $("#title").val().trim(),
-            description: $("#description").val().trim()
-        };
+        const title = $("#title").val().trim();
+        const description = $("#description").val().trim();
 
-        // Valida que ambos campos no estén vacíos
-        if (data.title === "" || data.description === "") {
+        if (!title || !description) {
             showToast("Debes completar todos los campos", "danger");
             return;
         }
 
-        // Deshabilita el botón de envío para evitar múltiples clicks
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("description", description);
+
+        // Agregar archivo (si existe)
+        const fileInput = $("#forumImage")[0];
+        if (fileInput.files.length > 0) {
+            formData.append("forumImage", fileInput.files[0]);
+        }
+
+        // Deshabilitar botón de envío
         $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...');
 
-        // Llama a la API para crear el foro
         $.ajax({
             url: "../Backend/foro.php?action=create",
             type: "POST",
-            data: JSON.stringify(data),
-            contentType: "application/json",
+            data: formData,
+            processData: false, // Importante para enviar FormData sin procesar
+            contentType: false, // Importante para que jQuery no establezca content-type manualmente
             dataType: "json",
             success: function (response) {
                 if (response.success) {
-                    // Muestra alerta de éxito y recarga la vista
                     Swal.fire({
                         icon: "success",
                         title: "¡Genial!",
@@ -42,16 +46,12 @@ $(document).ready(function () {
                         window.location.href = "../Views/dashboard.php";
                     });
                 } else {
-                    // Muestra mensaje de error devuelto por el servidor
                     showToast(response.message, "danger");
-                    // Rehabilita el botón
                     $('#forumForm').find('button[type="submit"]').prop('disabled', false).text('Publicar');
                 }
             },
             error: function () {
-                // Muestra mensaje si falla la comunicación con el servidor
                 showToast("Error en la comunicación con el servidor", "danger");
-                // Rehabilita el botón
                 $('#forumForm').find('button[type="submit"]').prop('disabled', false).text('Publicar');
             }
         });
@@ -61,12 +61,12 @@ $(document).ready(function () {
     function showToast(message, type = "info") {
         // Elimina cualquier toast anterior
         $('.toast').remove();
-        
+
         // Determina el color según el tipo
-        const bgClass = type === 'danger' ? 'bg-danger' : 
-                        type === 'warning' ? 'bg-warning' : 
-                        type === 'success' ? 'bg-success' : 'bg-info';
-        
+        const bgClass = type === 'danger' ? 'bg-danger' :
+            type === 'warning' ? 'bg-warning' :
+                type === 'success' ? 'bg-success' : 'bg-info';
+
         // Crea el toast
         const toastHtml = `
             <div class="position-fixed top-0 end-0 p-3" style="z-index: 1070">
@@ -80,7 +80,7 @@ $(document).ready(function () {
                 </div>
             </div>
         `;
-        
+
         // Añade al body y muestra
         $('body').append(toastHtml);
         const toastElement = $('.toast');
@@ -111,6 +111,7 @@ $(document).ready(function () {
                     // Renderiza los foros en pantalla
                     renderForums(response.forums);
                 } else {
+                    console.log(response.success)
                     $("#forumList").html(`
                         <div class="col-12 text-center py-5">
                             <div class="alert alert-danger" role="alert">
@@ -168,14 +169,14 @@ $(document).ready(function () {
             for (let i = startIndex; i < endIndex; i++) {
                 const forum = forums[i];
                 const date = new Date(forum.createdAt);
-                
+
                 // Formatear fecha relativa
                 const timeAgo = formatTimeAgo(date);
 
                 // Crear elemento de columna
                 const col = document.createElement('div');
                 col.className = 'col-md-6 col-lg-4 mb-4';
-                
+
                 // Crear contenido de la tarjeta
                 col.innerHTML = `
                     <div class="card h-100 forum-card" data-id="${forum.id}">
@@ -200,7 +201,7 @@ $(document).ready(function () {
 
                 $("#forumList").append(col);
             }
-            
+
             // Actualiza los botones de paginación
             updatePaginationButtons();
         }
@@ -219,7 +220,7 @@ $(document).ready(function () {
             const diffMins = Math.floor(diffSecs / 60);
             const diffHours = Math.floor(diffMins / 60);
             const diffDays = Math.floor(diffHours / 24);
-            
+
             if (diffDays > 30) {
                 return date.toLocaleDateString();
             } else if (diffDays > 0) {
@@ -245,17 +246,17 @@ $(document).ready(function () {
                             </a>
                         </li>
             `;
-            
+
             // Determina qué números de página mostrar
             const maxVisiblePages = 5;
             let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
+
             // Ajustar si estamos cerca del final
             if (endPage - startPage + 1 < maxVisiblePages) {
                 startPage = Math.max(1, endPage - maxVisiblePages + 1);
             }
-            
+
             // Añadir primera página y ellipsis si es necesario
             if (startPage > 1) {
                 paginationHTML += `
@@ -263,7 +264,7 @@ $(document).ready(function () {
                     ${startPage > 2 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
                 `;
             }
-            
+
             // Añadir números de página
             for (let i = startPage; i <= endPage; i++) {
                 paginationHTML += `
@@ -272,7 +273,7 @@ $(document).ready(function () {
                     </li>
                 `;
             }
-            
+
             // Añadir última página y ellipsis si es necesario
             if (endPage < totalPages) {
                 paginationHTML += `
@@ -280,7 +281,7 @@ $(document).ready(function () {
                     <li class="page-item"><a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a></li>
                 `;
             }
-            
+
             paginationHTML += `
                         <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
                             <a class="page-link" href="#" id="nextPage" aria-label="Siguiente">
@@ -290,28 +291,28 @@ $(document).ready(function () {
                     </ul>
                 </nav>
             `;
-            
+
             // Actualizar el contenedor de paginación
             $("#paginationContainer").html(paginationHTML).show();
-            
+
             // Asignar eventos a los botones de paginación
-            $("#prevPage").on("click", function(e) {
+            $("#prevPage").on("click", function (e) {
                 e.preventDefault();
                 if (currentPage > 1) {
                     currentPage--;
                     showPage(currentPage);
                 }
             });
-            
-            $("#nextPage").on("click", function(e) {
+
+            $("#nextPage").on("click", function (e) {
                 e.preventDefault();
                 if (currentPage < totalPages) {
                     currentPage++;
                     showPage(currentPage);
                 }
             });
-            
-            $(".page-link[data-page]").on("click", function(e) {
+
+            $(".page-link[data-page]").on("click", function (e) {
                 e.preventDefault();
                 const page = parseInt($(this).data("page"));
                 if (page !== currentPage) {
@@ -340,22 +341,22 @@ $(document).ready(function () {
 
     // Búsqueda de foros en tiempo real
     let searchTimeout = null;
-    
+
     $('#searchInput, #mobileSearchInput').on('input', function () {
         const term = $(this).val().trim();
-        
+
         // Limpia el timeout anterior
         clearTimeout(searchTimeout);
-        
+
         // Si el término está vacío, vuelve a cargar todos los foros
         if (!term) {
             $('#paginationContainer').show();
             loadForums();
             return;
         }
-        
+
         // Espera 500ms después de que el usuario deje de teclear
-        searchTimeout = setTimeout(function() {
+        searchTimeout = setTimeout(function () {
             // Mostrar indicador de búsqueda
             $("#forumList").html(`
                 <div class="col-12 text-center py-3">
@@ -365,7 +366,7 @@ $(document).ready(function () {
                     <p class="mt-2">Buscando "${term}"...</p>
                 </div>
             `);
-            
+
             // Petición AJAX al case 'search'
             $.ajax({
                 url: "../Backend/foro.php",
@@ -420,13 +421,13 @@ $(document).ready(function () {
     $(document).on("click", ".btn-favorite", function (e) {
         e.preventDefault();
         e.stopPropagation(); // Evita que se abra el foro al hacer clic en el botón
-        
+
         const $btn = $(this);
         const forumId = $btn.data("id");
-        
+
         // Cambiar estado del botón temporalmente
         $btn.prop('disabled', true);
-        
+
         $.ajax({
             url: "../Backend/foro.php",
             type: "POST",
@@ -439,7 +440,7 @@ $(document).ready(function () {
                 if (response.success) {
                     // Notificar con Toast en lugar de alert
                     showToast(response.message, "success");
-                    
+
                     // Actualizar UI del botón
                     if ($btn.hasClass("btn-warning")) {
                         $btn.removeClass("btn-warning")

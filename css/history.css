@@ -1,148 +1,91 @@
-body{
-    height: 100vh;
+:root {
+    --primary: #60B5FF;
+    --text: #1f2937;
+    --muted: #6b7280;
+    font-family: 'Nunito', sans-serif;
 }
 
-.historiales-section {
-    padding: 2rem 0;
-    color: #e0f2f7; /* Un tono claro para el texto */
+body {
+    background: #f9fafb;
+    color: var(--text);
 }
 
-.historiales-section .contenedor {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
-    border-radius: 12px;
-    max-height: 80vh; /* límite de altura visible */
-}
-
-.historiales-section .section-title {
-    font-size: 2.5rem;
-    font-weight: 900;
-    margin-bottom: 2rem;
-    text-align: center;
-    color: #91C6F7;
-}
-
-/* Estilos para los botones de las "pills" */
-.historial-button {
-    background-color: rgba(55, 71, 79, 0.7); /* Fondo oscuro para los botones */
-    color: #e0f2f7;
-    border: none;
-    padding: 1rem 1.5rem;
-    border-radius: 25px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.tabs {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
-.historial-button:hover {
-    background-color: rgba(71, 90, 102, 0.7);
-}
-
-.historial-button i {
-    font-size: 1.2rem;
-}
-
-.contenedor{
-    border-radius: 100px;
-    overflow: hidden;
-}
-
-.contenedor .collapse {
-    height: 75%;
-    overflow-y: auto;
-    scrollbar-width: none; /* Firefox oculta scrollbar */
-}
-
-/* Para Chrome, Edge y Safari */
-.contenedor .collapse::-webkit-scrollbar {
-    width: 0px; /* Oculta el scrollbar */
-    background: transparent;
-}
-
-/* Cuando el usuario esté scrolleando, se muestra */
-.contenedor .collapse:active::-webkit-scrollbar,
-.contenedor .collapse:focus::-webkit-scrollbar,
-.contenedor .collapse:hover::-webkit-scrollbar {
-    width: 6px;
-}
-
-/* Estilos del track */
-.contenedor .collapse::-webkit-scrollbar-track {
-    background: transparent;
-    margin: 10px 0;
-    border-radius: 10px;
-}
-
-/* Estilos del thumb (la bolita del scroll) */
-.contenedor .collapse::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #91C6F7 0%, #4A90E2 100%);
-    border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-}
-
-/* Hover en el thumb */
-.contenedor .collapse::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #A8D8FF 0%, #5B9EFF 100%);
-}
-
-
-/* Estilos para el contenedor de los accordions */
-.accordion-item {
-    background-color: transparent;
+.tab-btn {
+    background: none;
     border: none;
-    margin-bottom: 1rem;
+    padding: .5rem 1rem;
+    font-size: 1rem;
+    color: var(--muted);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s ease;
+    /* Suaviza color */
 }
 
-.accordion-body {
-    padding: 1.5rem;
-    background-color: rgba(45, 62, 75, 0.7);
-    border-radius: 20px;
-    color: #cfd8dc;
-    height: 95%;
-    overflow: auto;
-    word-break: break-word;
+.tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+    /* Suaviza subrayado */
 }
 
-/* Estilos para el nested accordion (si es necesario) */
-.nested-accordion .accordion-item {
-    margin-bottom: 0.5rem;
+.tab-btn.active {
+    color: var(--primary);
 }
 
-.nested-accordion .accordion-body {
-    padding: 1rem;
-    background-color: rgba(66, 86, 100, 0.7);
-    border-radius: 6px;
+.tab-btn.active::after {
+    width: 100%;
 }
 
-/* Estilos específicos para el estado collapsed de los botones */
+.tab-content {
+    min-height: 200px;
+}
 
+/* Accordion */
+.accordion .accordion-item {
+    border: none;
+    margin-bottom: .5rem;
+}
 
-.historial-button:not(.collapsed) {
-    background-color: #00897b; /* Un color акцентный cuando está expandido */
+.accordion-button {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: .375rem;
+    color: var(--text);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.accordion-button:not(.collapsed) {
+    background: var(--primary);
     color: #fff;
 }
 
-/* Ajustes para el contenedor principal en pantallas pequeñas */
-@media (max-width: 768px) {
-    .historiales-section .contenedor {
-        padding: 1.5rem;
-    }
+.accordion-body {
+    background: #fff;
+    border-left: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
 
-    .section-title {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-    }
+.btn-link-page {
+    font-size: .875rem;
+    color: var(--primary);
+    text-decoration: none;
+}
 
-    .d-flex.flex-column.flex-md-row.gap-2.mb-3 {
-        flex-direction: column; /* Apila los botones en pantallas pequeñas */
-    }
-
-    .historial-button {
-        width: 100%; /* Ocupa todo el ancho en pantallas pequeñas */
-    }
+.loader {
+    text-align: center;
+    color: var(--muted);
+    padding: 2rem 0;
 }

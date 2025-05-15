@@ -28,6 +28,8 @@ class Forum
     public $createdAt;
     public $userName;
     public $userImage;
+    public $image; // nueva propiedad
+
 
     public function __construct($db)
     {
@@ -42,14 +44,16 @@ class Forum
         $this->title       = htmlspecialchars(strip_tags($this->title));
         $this->description = htmlspecialchars(strip_tags($this->description));
         $this->userId      = htmlspecialchars(strip_tags($this->userId));
+        $this->image       = htmlspecialchars(strip_tags($this->image));
 
-        $query = "INSERT INTO {$this->tableName} (title, description, userId, createdAt)
-                    VALUES (:title, :description, :userId, :createdAt)";
+        $query = "INSERT INTO {$this->tableName} (title, description, userId, createdAt, image)
+                VALUES (:title, :description, :userId, :createdAt, :image)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':title',       $this->title);
         $stmt->bindParam(':description', $this->description);
         $stmt->bindParam(':userId',      $this->userId);
         $stmt->bindParam(':createdAt',   $this->createdAt);
+        $stmt->bindParam(':image',       $this->image);
 
         if ($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
@@ -62,18 +66,34 @@ class Forum
     public function readAll()
     {
         $query = "SELECT
-                        f.id,
-                        f.title,
-                        f.description,
-                        DATE(f.createdAt) AS createdAt,
-                        u.userName,
-                        COALESCE(u.userImage,'../../uploads/profile_images/default.jpg') AS userImage
-                    FROM {$this->tableName} f
-                    INNER JOIN users u ON f.userId = u.id
-                    ORDER BY f.createdAt DESC";
+                f.id,
+                f.title,
+                f.description,
+                DATE(f.createdAt) AS createdAt,
+                u.userName,
+                COALESCE(u.userImage,'../../uploads/profile_images/default.png') AS userImage,
+                f.image
+            FROM {$this->tableName} f
+            INNER JOIN users u ON f.userId = u.id
+            ORDER BY f.createdAt DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
+    }
+
+    public function update()
+    {
+        $query = "UPDATE {$this->tableName}
+                SET title       = :title,
+                    description = :description
+              WHERE id = :id AND userId = :userId";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':title',       $this->title);
+        $stmt->bindParam(':description', $this->description);
+        $stmt->bindParam(':id',          $this->id,        PDO::PARAM_INT);
+        $stmt->bindParam(':userId',      $this->userId,    PDO::PARAM_INT);
+
+        return $stmt->execute();
     }
 
     // Read one forum by ID
@@ -86,7 +106,8 @@ class Forum
                         DATE(f.createdAt) AS createdAt,
                         f.userId,
                         u.userName,
-                        COALESCE(u.userImage,'../../uploads/profile_images/default.jpg') AS userImage
+                        COALESCE(u.userImage,'../../uploads/profile_images/default.jpg') AS userImage,
+                        f.image
                     FROM {$this->tableName} f
                     INNER JOIN users u ON f.userId = u.id
                     WHERE f.id = :id";
@@ -102,6 +123,7 @@ class Forum
             $this->userId      = $row['userId'];
             $this->userName    = $row['userName'];
             $this->userImage   = $row['userImage'];
+            $this->image = $row['image'] ?? null;
             return true;
         }
         return false;
@@ -260,10 +282,50 @@ switch ($method) {
 
         switch ($action) {
             case 'create':
-                if (!empty($data->title) && !empty($data->description)) {
-                    $forum->title       = $data->title;
-                    $forum->description = $data->description;
+                if (!empty($_POST['title']) && !empty($_POST['description'])) {
+                    $forum->title       = $_POST['title'];
+                    $forum->description = $_POST['description'];
                     $forum->userId      = $_SESSION['id'];
+
+                    // Manejo de imagen
+                    $uploadDir = '../uploads/forum_images/';
+                    $imageName = null;
+
+                    if (isset($_FILES['forumImage']) && $_FILES['forumImage']['error'] === UPLOAD_ERR_OK) {
+                        $fileTmpPath = $_FILES['forumImage']['tmp_name'];
+                        $fileName = $_FILES['forumImage']['name'];
+                        $fileSize = $_FILES['forumImage']['size'];
+                        $fileType = $_FILES['forumImage']['type'];
+                        $fileNameCmps = explode(".", $fileName);
+                        $fileExtension = strtolower(end($fileNameCmps));
+
+                        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+                        if (in_array($fileExtension, $allowedExtensions)) {
+                            // Crear un nombre único para la imagen
+                            $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+                            $destPath = $uploadDir . $newFileName;
+
+                            if (!file_exists($uploadDir)) {
+                                mkdir($uploadDir, 0755, true);
+                            }
+
+                            if (move_uploaded_file($fileTmpPath, $destPath)) {
+                                $imageName = $newFileName;
+                            } else {
+                                $response["message"] = "Error al mover la imagen subida.";
+                                echo json_encode($response);
+                                exit;
+                            }
+                        } else {
+                            $response["message"] = "Tipo de imagen no permitido.";
+                            echo json_encode($response);
+                            exit;
+                        }
+                    }
+
+                    $forum->image = $imageName;
+
                     if ($forum->create()) {
                         $response = [
                             "success" => true,
@@ -277,6 +339,34 @@ switch ($method) {
                     $response["message"] = "El título y la descripción son obligatorios";
                 }
                 break;
+
+
+            case 'update':
+                // Validaciones mínimas
+                if (isset($_POST['id'], $_POST['title'], $_POST['description'])) {
+                    $forum->id          = intval($_POST['id']);
+                    $forum->title       = $_POST['title'];
+                    $forum->description = $_POST['description'];
+                    $forum->userId      = $_SESSION['id'];
+
+                    // Primero lees para verificar que existe y que el usuario sea el dueño
+                    if ($forum->readOne() && $forum->userId === $_SESSION['id']) {
+                        if ($forum->update()) {
+                            $response = [
+                                "success" => true,
+                                "message" => "Foro actualizado correctamente"
+                            ];
+                        } else {
+                            $response["message"] = "No se pudo actualizar el foro";
+                        }
+                    } else {
+                        $response["message"] = "No tienes permiso o no existe el foro";
+                    }
+                } else {
+                    $response["message"] = "Faltan parámetros para actualizar";
+                }
+                break;
+
 
             case 'delete':
                 if (isset($_POST['id'])) {
@@ -341,6 +431,7 @@ switch ($method) {
                                     "createdAt"   => $forum->createdAt,
                                     "userName"    => $forum->userName,
                                     "userImage"   => $forum->userImage,
+                                    "image"       => '../uploads/forum_images/' . $forum->image,
                                     "userId"      => $forum->userId,
                                     "isFavorite"  => false
                                 ]

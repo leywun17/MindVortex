@@ -67,32 +67,39 @@ $(document).ready(function () {
         list.forEach(c => {
             const isOwn = c.user_id === userId;
             const actions = isOwn
-                ? `<span class="dropdown">
-                        <!-- Tres puntos como icono -->
-                        <button class="btn btn-link" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bx bx-dots-vertical-rounded"></i> <!-- Icono de tres puntos -->
-                        </button>
-                        
-                        <!-- Menú desplegable con las opciones -->
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item edit-comment d-flex align-items-center gap-2" href="#" data-id="${c.id}"><i class='bx bx-edit text-dark'></i>Editar</a></li>
-                            <li><a class="dropdown-item delete-comment d-flex align-items-center gap-2" href="#" data-id="${c.id}"><i class='bx bx-trash text-danger'></i>Eliminar</a></li>
-                        </ul>
-                    </span>`
+                ? `<div class="dropdown">
+            <button class="btn btn-sm btn-light" type="button" id="dropdownMenu-${c.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bx bx-dots-vertical-rounded"></i>
+            </button>
+            <ul class="dropdown-menu botones-desplegables" aria-labelledby="dropdownMenu-${c.id}">
+                <li>
+                    <a class="dropdown-item edit-comment d-flex align-items-center gap-2" href="#" data-id="${c.id}">
+                        <i class='bx bx-edit text-primary'></i> Editar
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item delete-comment d-flex align-items-center gap-2" href="#" data-id="${c.id}">
+                        <i class='bx bx-trash text-danger'></i> Eliminar
+                    </a>
+                </li>
+            </ul>
+        </div>`
                 : '';
 
-            const html = `
-                <div class="comment mb-3 gap-2" id="comment-${c.id}">
-                    <div class="d-flex justify-content-end align-items-center user-info">
-                        <span class='d-flex align-items-center gap-2'>
-                            <img class='img' src='../uploads/profile_images/${c.author_image}'>
-                            <strong>${c.author_name}</strong> 
-                            ${actions}
-                        </span>
-                    </div>
-                    <p class="comment-content">${c.content}</p>
-                </div>
-            `;
+
+            const html = `<div class="card mb-3" id="comment-${c.id}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img src="../uploads/profile_images/${c.author_image}" class="rounded-circle" width="40" height="40" alt="Imagen de perfil">
+                                            <strong>${c.author_name}</strong>
+                                        </div>
+                                        ${actions}
+                                    </div>
+                                    <p class="comment-content mb-0">${c.content}</p>
+                                </div>
+                            </div>
+                        `;
             container.append(html);
         });
     }
