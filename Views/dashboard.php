@@ -165,12 +165,18 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                 </li>
 
                 <li>
-                    <a href="./notificaciones.php">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#notificationModal">
                         <i class="bx bx-bell"></i>
                         <span class="links_name">Notificaciones</span>
+                        <!-- Badge contador -->
+                        <span id="notifCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">
+                            <span id="notifNumber"></span>
+                            <span class="visually-hidden">notificaciones nuevas</span>
+                        </span>
                     </a>
                     <span class="tooltip">Notificaciones</span>
                 </li>
+
 
             </ul>
         </div>
@@ -187,7 +193,7 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
 
                 <!-- Lista de foros/preguntas -->
                 <div id="forumList" class="row g-4">
-                    
+
                 </div>
 
                 <!-- Paginación -->
@@ -222,7 +228,7 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                             <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Publicar</button>
                         </div>
-                        
+
                     </form>
                 </div>
             </div>
@@ -280,6 +286,23 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                             <button type="submit" id="updateProfileBtn" class="btn btn-primary">Guardar cambios</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">Notificación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="notificationModalBody">
+                    <div id="contenedor-notificaciones"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -346,6 +369,8 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
     <script src="../js/uploadForum.js"></script>
     <script src="../js/update.js"></script>
     <script src="../js/aside.js"></script>
+    <script src="../js/notification.js"></script>
+
 </body>
 
 </html>

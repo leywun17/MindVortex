@@ -30,7 +30,6 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
 
     <!-- Tus estilos -->
     <link rel="stylesheet" href="../css/dashboard.css">
-    <link rel="stylesheet" href="../css/fav.css">
 
     <link rel="shortcut icon" href="../Assets/logo.png" type="image/x-icon">
 </head>

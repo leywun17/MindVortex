@@ -302,6 +302,21 @@ footer svg{
     bottom: -25px;
 }
 
+#forumImageContainer{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#forumImageContainer img{
+    position: relative;
+    height: 400px !important;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 35px;
+}
+
 /* Modal styles */
 .modal-content {
     background-color: var(--surface-bg);

@@ -1,6 +1,6 @@
 <?php
 // Encabezados CORS y configuración de respuesta JSON
-$title="Access-Control-Allow-Origin: *";
+$title = "Access-Control-Allow-Origin: *";
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE");
@@ -12,7 +12,8 @@ session_start();
 // Incluir configuración de la base de datos
 require_once 'config.php';
 
-class Comment {
+class Comment
+{
     private PDO $db;
     private string $table = 'comments';
 
@@ -26,17 +27,18 @@ class Comment {
     public string $authorImage;
 
     // Constructor recibe conexión PDO
-    public function __construct(PDO $db) {
+    public function __construct(PDO $db)
+    {
         $this->db = $db;
     }
 
     // Crear nuevo comentario
-    public function create(): bool {
-        // Limpiar entrada
+    public function create(): bool
+    {
         $this->content = htmlspecialchars(strip_tags($this->content));
 
         $sql = "INSERT INTO {$this->table} (forum_id, user_id, content)
-                VALUES (:forum_id, :user_id, :content)";
+            VALUES (:forum_id, :user_id, :content)";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':forum_id', $this->forumId, PDO::PARAM_INT);
         $stmt->bindParam(':user_id',  $this->userId,  PDO::PARAM_INT);
@@ -44,13 +46,39 @@ class Comment {
 
         if ($stmt->execute()) {
             $this->id = (int)$this->db->lastInsertId();
+
+            $forumOwnerId = $this->getForumOwner($this->forumId);
+            if ($forumOwnerId && $forumOwnerId !== $this->userId) {
+                $notifSql = "INSERT INTO notifications (user_id, type, message)
+                                    VALUES (:user_id, 'comment', :message)";
+                $notifStmt = $this->db->prepare($notifSql);
+                $message = "Han comentado en tu foro.";
+                $notifStmt->execute([
+                    ':user_id' => $forumOwnerId,
+                    ':message' => $message
+                ]);
+            }
+
             return true;
         }
+
         return false;
     }
 
+
+    private function getForumOwner(int $forumId): ?int
+    {
+        $stmt = $this->db->prepare("SELECT userId FROM forums WHERE id = :forum_id");
+        $stmt->bindParam(':forum_id', $forumId, PDO::PARAM_INT);
+        $stmt->execute();
+        $owner = $stmt->fetchColumn();
+        return $owner !== false ? (int)$owner : null;
+    }
+
+
     // Leer comentarios de un foro
-    public function readByForum(): array {
+    public function readByForum(): array
+    {
         $sql = "SELECT c.*, u.userName AS author_name, COALESCE(u.userImage, '../../uploads/profile_images/default.jpg') AS author_image
                 FROM {$this->table} c
                 JOIN users u ON c.user_id = u.id
@@ -63,7 +91,8 @@ class Comment {
     }
 
     // Leer un solo comentario
-    public function readOne(): bool {
+    public function readOne(): bool
+    {
         $sql = "SELECT c.id, c.forum_id, c.user_id, c.content, c.created_at, c.updated_at,
                        u.userName AS author_name,
                        COALESCE(u.userImage,'../../uploads/profile_images/default.jpg') AS author_image
@@ -88,7 +117,8 @@ class Comment {
     }
 
     // Actualizar comentario (sólo autor)
-    public function update(): bool {
+    public function update(): bool
+    {
         $this->content = htmlspecialchars(strip_tags($this->content));
 
         // Verificar autor
@@ -108,7 +138,8 @@ class Comment {
     }
 
     // Eliminar comentario (sólo autor)
-    public function delete(): bool {
+    public function delete(): bool
+    {
         // Verificar autor
         $check = $this->db->prepare("SELECT user_id FROM {$this->table} WHERE id = :id");
         $check->bindParam(':id', $this->id, PDO::PARAM_INT);
@@ -144,6 +175,20 @@ switch ($method) {
             } else {
                 $response['message'] = 'Error al crear';
             }
+        } elseif ($action === 'mark_as_read' && !empty($data->notification_id)) {
+            $userId = (int)($_SESSION['id'] ?? 0);
+            $notifId = (int)$data->notification_id;
+
+            // Asegurarse que la notificación pertenezca al usuario actual
+            $stmt = $db->prepare("UPDATE notifications SET is_read = 1 WHERE id = :id AND user_id = :user_id");
+            $stmt->bindParam(':id', $notifId, PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+            if ($stmt->execute() && $stmt->rowCount() > 0) {
+                $response = ['success' => true, 'message' => 'Notificación marcada como leída'];
+            } else {
+                $response = ['success' => false, 'message' => 'No se encontró la notificación o ya estaba leída'];
+            }
         }
         break;
 
@@ -166,12 +211,22 @@ switch ($method) {
                     'author_image' => $comment->authorImage
                 ]];
             } else {
-                $response['message'] = 'No encontrado';
+                $response['message'] = 'Comentario no encontrado';
             }
+        } ;
+        if ($action === 'get_notifications') {
+            $userId = (int)($_SESSION['id'] ?? 0);
+            $stmt = $db->prepare("SELECT * FROM notifications WHERE user_id = :id ORDER BY created_at DESC");
+            $stmt->bindParam(':id', $userId);
+            $stmt->execute();
+            $response = ['success' => true, 'notifications' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
         } elseif ($action === 'get_id') {
             $response = ['success' => true, 'user_id' => $_SESSION['id'] ?? null];
+        } else {
+            $response['message'] = 'Acción GET no válida';
         }
         break;
+
 
     case 'PUT':
         if ($action === 'update' && isset($_GET['id'])) {

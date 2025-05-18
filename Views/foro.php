@@ -192,23 +192,29 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                                     <i class='bx bx-dots-vertical-rounded fs-4'></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <<li id="editOption" class="d-flex">
-                                        <a id="btnEdit" class="dropdown-item" href="#">Editar</a>
-                                        </li>
-                                        <li id="deleteOption" class="d-flex">
-                                            <a id="btnDelete" class="dropdown-item" href="#">Eliminar</a>
-                                        </li>
 
-                                        <li>
-                                            <a class="dropdown-item" href="#">
-                                                <i class='bx bx-error me-2 text-warning'></i>Reportar
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li id="favoriteButtonContainer"></li>
+                                    <li>
+                                        <a id="btnEdit" class="dropdown-item d-flex align-items-center" href="#">
+                                            <i class='bx bx-edit-alt me-2'></i> Editar
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a id="btnDelete" class="dropdown-item d-flex align-items-center" href="#">
+                                            <i class='bx bx-trash me-2 text-danger'></i> Eliminar
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="#">
+                                            <i class='bx bx-error me-2 text-warning'></i> Reportar
+                                        </a>
+                                    </li>
+
+                                    <li id="favoriteButtonContainer"></li>
+
                                 </ul>
+
                             </div>
                         </div>
                     </div>
@@ -217,9 +223,9 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
 
             <!-- Cuerpo del foro -->
             <div class="forum-body">
-                <div id="forumImageContainer"></div>
                 <div class="forum-content mb-4">
                     <p id="forumDescription" class="lead"></p>
+                    <div id="forumImageContainer"></div>
                 </div>
                 <hr>
 

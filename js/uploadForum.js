@@ -241,9 +241,6 @@ $(document).ready(function () {
                 <nav aria-label="Navegación de páginas">
                     <ul class="pagination">
                         <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                            <a class="page-link" href="#" id="prevPage" aria-label="Anterior">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
                         </li>
             `;
 
@@ -282,15 +279,7 @@ $(document).ready(function () {
                 `;
             }
 
-            paginationHTML += `
-                        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                            <a class="page-link" href="#" id="nextPage" aria-label="Siguiente">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            `;
+            
 
             // Actualizar el contenedor de paginación
             $("#paginationContainer").html(paginationHTML).show();
