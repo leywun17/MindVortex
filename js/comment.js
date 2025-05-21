@@ -1,7 +1,7 @@
 $(document).ready(function () {
-    let userId;                                 // ID del usuario autenticado
+    let userId;                                
     const params = new URLSearchParams(window.location.search);
-    const forumId = params.get('id');           // ID del foro actual
+    const forumId = params.get('id');           
 
     obtenerUserId().then(() => loadComments());
 
@@ -72,6 +72,7 @@ $(document).ready(function () {
             const isReply = level > 0 || c.parent_id !== null; // Determinar si es respuesta
             const margin = level * 40;
             const borderClass = level > 0 ? 'border-start ps-3' : '';
+            console.log(c.author_image)
 
             const actions = !isReply ? `
             <div class="dropdown">
@@ -94,7 +95,7 @@ $(document).ready(function () {
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div class="d-flex align-items-center gap-2">
-                            <img src="../uploads/profile_images/${c.author_image}" 
+                            <img src="${c.author_image}" 
                                  class="rounded-circle" 
                                  width="40" 
                                  height="40" 

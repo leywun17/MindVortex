@@ -176,7 +176,6 @@ $(document).ready(function () {
                 // Crear elemento de columna
                 const col = document.createElement('div');
                 col.className = 'col-md-6 col-lg-4 mb-4';
-                console.log(forum.userImage)
                 // Crear contenido de la tarjeta
                 col.innerHTML = `
                     <div class="card h-100 forum-card" data-id="${forum.id}">
@@ -187,7 +186,7 @@ $(document).ready(function () {
                         <div class="card-footer bg-white border-0">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
-                                    <img src="../uploads/profile_images/${forum.userImage}" 
+                                    <img src="${forum.userImage}" 
                                          alt="${forum.userName}" 
                                          class="rounded-circle bg-light me-2" 
                                          width="24" height="24">

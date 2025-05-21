@@ -132,11 +132,11 @@ switch ($method) {
             }
 
             // Si se envía una imagen de usuario, manejarla
-            if (isset($_FILES['userImage']) && $_FILES['userImage']['error'] == 0) {
+            if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == 0) {
                 // Aquí puedes manejar la subida de la imagen (reemplaza esto por tu lógica)
-                $targetDir = "uploads/";
-                $targetFile = $targetDir . basename($_FILES['userImage']['name']);
-                if (move_uploaded_file($_FILES['userImage']['tmp_name'], $targetFile)) {
+                $targetDir = "../uploads/profile_images/";
+                $targetFile = $targetDir . basename($_FILES['profile_image']['name']);
+                if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetFile)) {
                     $user->userImage = $targetFile;
                 } else {
                     $response = [
@@ -152,7 +152,12 @@ switch ($method) {
             if ($user->updateProfile()) {
                 $response = [
                     "success" => true,
-                    "message" => "Perfil actualizado correctamente"
+                    "user" => [
+                        "id" => $user->id,
+                        "userName" => $user->userName,
+                        "email" => $user->email,
+                        "userImage" => $user->userImage ?? 'default.jpg'
+                    ]
                 ];
             } else {
                 $response = [
@@ -180,7 +185,7 @@ switch ($method) {
                         "id" => $user->id,
                         "userName" => $user->userName,
                         "email" => $user->email,
-                        "userImage" => $user->userImage ?? '../../uploads/profile_images/default.jpg'
+                        "userImage" => $user->userImage ?? 'default.png'
                     ]
                 ];
             } else {
@@ -192,4 +197,3 @@ switch ($method) {
 
 // Send JSON response
 echo json_encode($response);
-?>

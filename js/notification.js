@@ -70,3 +70,7 @@ function marcarComoLeida(id) {
 $('#notificationModal').on('show.bs.modal', function () {
     cargarNotificaciones();
 });
+
+$(document).ready(function () {
+    cargarNotificaciones();
+});

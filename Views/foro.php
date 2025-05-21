@@ -6,10 +6,9 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
-// Obtiene datos del usuario con valores por defecto
-$img = $_SESSION["profile_image"] ?? "";
-$name = $_SESSION['name'] ?? 'Usuario';
-$email = $_SESSION["email"] ?? 'Correo no disponible';
+$profileImage = $_SESSION["profile_image"] ?? "";
+$userName     = $_SESSION['name'];
+$userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
 ?>
 
 <!DOCTYPE html>
@@ -38,84 +37,91 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     <link rel="shortcut icon" href="../Assets/logo.png" type="image/x-icon">
 
     <!-- Hojas de estilo locales -->
-    <link rel="stylesheet" href="../css/foro.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/foro.css">
 </head>
 
 <body>
     <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container-fluid">
-            <button class="btn btn-link text-dark p-0 me-3" id="btn">
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container-fluid px-3">
+            <!-- Botón para sidebar -->
+            <button class="btn" id="btn">
                 <i class='bx bx-menu fs-4'></i>
             </button>
 
-            <a class="navbar-brand d-flex align-items-center text-dark" href="#">
-                <img src="../Assets/logo.png" alt="MindVortex Logo" height="36">
-                <p>MindVortex</p>
+            <!-- Logo de la marca -->
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="../Assets/logo.png" alt="MindVortex Logo" height="38" class="d-inline-block">
+                <p class="text-center">MindVortex</p>
             </a>
 
-            <!-- Barra de búsqueda desktop -->
-            <div class="search-container d-none d-lg-block mx-auto">
-                <form id="searchForm" class="w-100">
-                    <div class="input-group">
-                        <input id="searchInput" type="search" class="form-control rounded-pill border border-dark"
-                            placeholder="Buscar foros..." autocomplete="off">
-                        <button id="searchBtn" type="submit" class="btn btn-link">
-                            <i class='bx bx-search-alt-2 fs-5'></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <!-- Formulario de búsqueda -->
+            <form id="searchForm" class="d-flex mx-auto d-none d-md-flex" style="max-width: 400px;">
+                <div class="input-group">
+                    <input
+                        id="searchInput"
+                        type="search"
+                        class="form-control rounded-pill"
+                        placeholder="Buscar foros..."
+                        aria-label="Buscar"
+                        autocomplete="off">
+                    <button
+                        id="searchBtn"
+                        type="submit"
+                        class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-3">
+                        <i class='bx bx-search-alt-2 fs-5 text-secondary'></i>
+                    </button>
+                </div>
+            </form>
 
-            <!-- Menú usuario -->
+            <!-- Botón hamburguesa para pantallas pequeñas -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Enlaces de navegación y menú usuario -->
             <div class="collapse navbar-collapse" id="mainNav">
-                <!-- Barra de búsqueda mobile -->
-                <form id="mobileSearchForm" class="d-lg-none mt-3 mb-2 w-100">
+                <!-- Búsqueda en móvil -->
+                <form id="mobileSearchForm" class="d-flex d-md-none mt-2 mb-3 w-100">
                     <div class="input-group">
-                        <input type="search" class="form-control rounded-pill" placeholder="Buscar foros..."
+                        <input
+                            type="search"
+                            class="form-control rounded-pill"
+                            placeholder="Buscar foros..."
+                            aria-label="Buscar"
                             autocomplete="off">
-                        <button type="submit" class="btn btn-link">
-                            <i class='bx bx-search-alt-2 fs-5'></i>
+                        <button
+                            type="submit"
+                            class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-3">
+                            <i class='bx bx-search-alt-2 fs-5 text-secondary'></i>
                         </button>
                     </div>
                 </form>
 
+                <!-- Menú de usuario -->
                 <div class="ms-auto">
                     <div class="dropdown">
-                        <button class="btn d-flex align-items-center gap-2 rounded-pill px-3 border border-dark text-dark"
-                            type="button" id="userMenuToggle" data-bs-toggle="dropdown">
-                            <img id="navbarUserImage" src="../uploads/profile_images/<?= htmlspecialchars($img) ?>"
-                                alt="Usuario" class="rounded-circle" width="32" height="32">
-                            <span class="d-none d-lg-block"><?= htmlspecialchars($name) ?></span>
+                        <button class="btn p-1 d-flex align-items-center gap-2 rounded-pill px-2 border" type="button" id="userMenuToggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img class="userProfileImage rounded-circle bg-light" src="" alt="user photo" width="32" height="32">
+                            <span class="d-none d-lg-block userNameDisplay"></span>
                             <i class='bx bx-chevron-down'></i>
                         </button>
 
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userMenuToggle">
                             <li class="dropdown-header d-flex align-items-center flex-column p-3">
-                                <img src="../uploads/profile_images/<?= htmlspecialchars($img) ?>" alt="Usuario"
-                                    class="rounded-circle mb-2" width="64" height="64">
-                                <strong class="mb-1"><?= htmlspecialchars($name) ?></strong>
-                                <small class="text-muted"><?= htmlspecialchars($email) ?></small>
+                                <img class="userProfileImage rounded-circle bg-light mb-2" src="../uploads/profile_images/default.jpg" alt="user photo" width="48" height="48">
+                                <strong class="d-none d-lg-block userNameDisplay"></strong>
+                                <small class="userEmailDisplay text-muted"></small>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li>
-                                <a class="dropdown-item d-flex gap-2 align-items-center" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#editProfileModal">
-                                    <i class='bx bx-edit'></i>Editar perfil
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item d-flex gap-2 align-items-center" href="#editProfileModal" data-bs-toggle="modal"><i class='bx bx-edit'></i>Editar perfil</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li>
-                                <a class="dropdown-item d-flex gap-2 align-items-center text-danger"
-                                    href="../Backend/logout.php">
-                                    <i class='bx bx-log-out'></i>Cerrar sesión
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item d-flex gap-2 align-items-center text-danger" href="../Backend/logout.php"><i class='bx bx-log-out'></i>Cerrar sesión</a></li>
                         </ul>
                     </div>
                 </div>
@@ -128,6 +134,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
         <!-- Barra lateral -->
         <div class="sidebar">
             <ul class="nav-list">
+
                 <li class="add-foro-btn">
                     <a href="#" data-bs-toggle="modal" data-bs-target="#addForumModal">
                         <i class='bx bx-plus'></i>
@@ -142,6 +149,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                     </a>
                     <span class="tooltip">Preguntas</span>
                 </li>
+
                 <li>
                     <a href="./favorite.php">
                         <i class="bx bx-star"></i>
@@ -149,6 +157,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                     </a>
                     <span class="tooltip">Favoritos</span>
                 </li>
+
                 <li>
                     <a href="./history.php">
                         <i class="bx bx-history"></i>
@@ -156,18 +165,26 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                     </a>
                     <span class="tooltip">Historial</span>
                 </li>
+
                 <li>
-                    <a href="./notificaciones.php">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#notificationModal">
                         <i class="bx bx-bell"></i>
                         <span class="links_name">Notificaciones</span>
+                        <!-- Badge contador -->
+                        <span id="notifCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">
+                            <span id="notifNumber"></span>
+                            <span class="visually-hidden">notificaciones nuevas</span>
+                        </span>
                     </a>
                     <span class="tooltip">Notificaciones</span>
                 </li>
+
+
             </ul>
         </div>
 
         <!-- Contenido del foro -->
-        <div class="main-content contenedor-principal" id="forumContent">
+        <div class="contenedor-principal flex-grow-1" id="forumContent">
             <!-- Encabezado del foro -->
             <div class="forum-header">
                 <div class="row align-items-center">
@@ -177,7 +194,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                     <div class="col-md-4">
                         <div class="d-flex justify-content-md-end align-items-center mt-3 mt-md-0">
                             <div class="d-flex align-items-center me-3">
-                                <img id="userImage" src="" alt="Autor" class="rounded-circle me-2" width="32"
+                                <img id="userImage" src="" alt="Autor" class="userProfileImage rounded-circle me-2" width="32"
                                     height="32">
                                 <div>
                                     <div id="forumAuthor" class="fw-bold"></div>
@@ -247,7 +264,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                                 </div>
                             </div>
 
-                            <div class="replies-container mt-3 ms-4"></div> 
+                            <div class="replies-container mt-3 ms-4"></div>
 
                             <!-- Formulario (oculto inicialmente) -->
                             <form id="commentForm" class="d-none">
@@ -334,38 +351,31 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title">Editar Perfil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="uploadImageForm" class="mb-4 text-center">
-                        <div class="mb-3">
-                            <img id="imagePreview" class="rounded-circle mb-3"
-                                src="../uploads/profile_images/<?= htmlspecialchars($img) ?>" width="100" height="100"
-                                alt="Foto de perfil">
+                    <!-- Formulario para subir imagen -->
+                    <form id="updateProfileForm" enctype="multipart/form-data">
+                        <div class="mb-3 text-center">
+                            <img class="userProfileImage rounded-circle bg-light mb-2" src="../uploads/profile_images/default.jpg" alt="user photo" width="64" height="64">
                             <div class="d-flex justify-content-center gap-2">
                                 <label class="btn btn-outline-primary">
-                                    <input type="file" id="profileImageInput" name="profile_image" accept="image/*"
-                                        hidden>
+                                    <input type="file" id="profileImageInput" name="profile_image" accept="image/*" hidden>
                                     Cambiar imagen
                                 </label>
-                                <button type="submit" id="uploadImageBtn" class="btn btn-primary"
-                                    disabled>Actualizar</button>
                             </div>
                         </div>
-                    </form>
 
-                    <hr>
+                        <hr>
 
-                    <form id="updateProfileForm">
+                        <!-- Los campos de texto -->
                         <div class="mb-3">
                             <label for="profileName" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="profileName" name="name"
-                                value="<?= htmlspecialchars($name) ?>">
+                            <input type="text" class="form-control" id="profileName" name="name" value="<?= htmlspecialchars($userName) ?>">
                         </div>
                         <div class="mb-3">
-                            <label for="profileEmail" class="form-label">Correo</label>
-                            <input type="email" class="form-control" id="profileEmail" name="email"
-                                value="<?= htmlspecialchars($email) ?>">
+                            <label for="profileEmail" class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" id="profileEmail" name="email" value="<?= htmlspecialchars($userEmail) ?>">
                         </div>
 
                         <h6 class="mt-4">Cambiar contraseña</h6>
@@ -374,16 +384,16 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                             <input type="password" class="form-control" id="newPassword" name="new_password">
                         </div>
                         <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirmar</label>
+                            <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
                             <input type="password" class="form-control" id="confirmPassword" name="confirm_password">
                         </div>
 
                         <div class="text-end">
-                            <button type="button" class="btn btn-outline-secondary me-2"
-                                data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" id="updateProfileBtn" class="btn btn-primary">Guardar cambios</button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -415,6 +425,23 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                         </div>
 
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">Notificación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="notificationModalBody">
+                    <div id="contenedor-notificaciones"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -455,6 +482,9 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
     <script src="../js/aside.js"></script>
     <script src="../js/uploadForum.js"></script>
     <script src="../js/comment.js"></script>
+    <script src="../js/notification.js"></script>
+    <script src="../js/loadProfile.js"></script>
+
 </body>
 
 </html>

@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($result === 'inactive') {
         echo json_encode(array('status' => 'error', 'message' => 'El usuario está inactivo'));
     } elseif ($result === 'invalid') {
-        echo json_encode(array('status' => 'error', 'message' => 'Verifique la información ingresada'));
+        echo json_encode(array('status' => 'error', 'message' => $password));
     } elseif (is_array($result)) {
         echo json_encode($result);
     }

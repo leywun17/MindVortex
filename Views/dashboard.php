@@ -101,16 +101,16 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                 <div class="ms-auto">
                     <div class="dropdown">
                         <button class="btn p-1 d-flex align-items-center gap-2 rounded-pill px-2 border" type="button" id="userMenuToggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="../uploads/profile_images/<?php echo $profileImage ?>" alt="user photo" class="rounded-circle bg-light" width="32" height="32">
-                            <span class="d-none d-lg-block"><?php echo $userName ?></span>
+                            <img class="userProfileImage rounded-circle bg-light" src="" alt="user photo" width="32" height="32">
+                            <span class="d-none d-lg-block userNameDisplay"></span>
                             <i class='bx bx-chevron-down'></i>
                         </button>
 
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userMenuToggle">
                             <li class="dropdown-header d-flex align-items-center flex-column p-3">
-                                <img src="../uploads/profile_images/<?php echo $profileImage ?>" alt="user photo" class="rounded-circle bg-light d-block mb-2" width="64" height="64">
-                                <strong class="mb-1"><?php echo $userName ?></strong>
-                                <small class="text-muted"><?php echo $userEmail ?></small>
+                                <img class="userProfileImage rounded-circle bg-light mb-2" src="../uploads/profile_images/default.jpg" alt="user photo" width="48" height="48">
+                                <strong class="d-none d-lg-block userNameDisplay"></strong>
+                                <small class="userEmailDisplay text-muted"></small>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -245,23 +245,20 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                 </div>
                 <div class="modal-body">
                     <!-- Formulario para subir imagen -->
-                    <form id="uploadImageForm" class="mb-4 text-center">
-                        <div class="mb-3">
-                            <img id="imagePreview" class="rounded-circle mb-3" src="../uploads/profile_images/<?php echo $profileImage ?>" width="100" height="100" alt="Foto de perfil">
+                    <form id="updateProfileForm" enctype="multipart/form-data">
+                        <div class="mb-3 text-center">
+                            <img class="userProfileImage rounded-circle bg-light mb-2" src="../uploads/profile_images/default.jpg" alt="user photo" width="64" height="64">
                             <div class="d-flex justify-content-center gap-2">
                                 <label class="btn btn-outline-primary">
                                     <input type="file" id="profileImageInput" name="profile_image" accept="image/*" hidden>
                                     Cambiar imagen
                                 </label>
-                                <button type="submit" id="uploadImageBtn" class="btn btn-primary" disabled>Actualizar</button>
                             </div>
                         </div>
-                    </form>
 
-                    <hr>
+                        <hr>
 
-                    <!-- Formulario de datos de perfil -->
-                    <form id="updateProfileForm">
+                        <!-- Los campos de texto -->
                         <div class="mb-3">
                             <label for="profileName" class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="profileName" name="name" value="<?= htmlspecialchars($userName) ?>">
@@ -274,11 +271,11 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                         <h6 class="mt-4">Cambiar contraseña</h6>
                         <div class="mb-3">
                             <label for="newPassword" class="form-label">Nueva contraseña</label>
-                            <input type="password" class="form-control" id="newPassword" name="new_password" placeholder="Dejar en blanco para mantener la actual">
+                            <input type="password" class="form-control" id="newPassword" name="new_password">
                         </div>
                         <div class="mb-3">
                             <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
-                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" placeholder="Confirma la nueva contraseña">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password">
                         </div>
 
                         <div class="text-end">
@@ -286,6 +283,7 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                             <button type="submit" id="updateProfileBtn" class="btn btn-primary">Guardar cambios</button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -370,6 +368,7 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
     <script src="../js/update.js"></script>
     <script src="../js/aside.js"></script>
     <script src="../js/notification.js"></script>
+    <script src="../js/loadProfile.js"></script>
 
 </body>
 

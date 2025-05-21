@@ -71,7 +71,7 @@ class Forum
                 f.description,
                 DATE(f.createdAt) AS createdAt,
                 u.userName,
-                COALESCE(u.userImage,'default.png') AS userImage,
+                COALESCE(u.userImage,'../uploads/profile_images/default.png') AS userImage,
                 f.image
             FROM {$this->tableName} f
             INNER JOIN users u ON f.userId = u.id

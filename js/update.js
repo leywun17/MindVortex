@@ -22,6 +22,7 @@ $(document).ready(function() {
             data: formData,
             contentType: false,
             processData: false,
+            dataType: 'json',
             success: function(response) {
                 if (response.success) {
                     Swal.fire({
@@ -30,7 +31,7 @@ $(document).ready(function() {
                         text: 'Tu perfil ha sido actualizado con éxito.',
                     }).then(() => {
                         // Puedes recargar la página o actualizar la vista
-                        location.reload();
+                        /* location.reload(); */
                     });
                 } else {
                     Swal.fire({
@@ -65,3 +66,17 @@ $(document).ready(function() {
         }
     });
 });
+
+$(document).ready(function () {
+    $("#profileImageInput").on("change", function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $(".userProfileImage").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+
