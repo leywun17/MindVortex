@@ -59,7 +59,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
             <div class="search-container d-none d-lg-block mx-auto">
                 <form id="searchForm" class="w-100">
                     <div class="input-group">
-                        <input id="searchInput" type="search" class="form-control rounded-pill"
+                        <input id="searchInput" type="search" class="form-control rounded-pill border border-dark"
                             placeholder="Buscar foros..." autocomplete="off">
                         <button id="searchBtn" type="submit" class="btn btn-link">
                             <i class='bx bx-search-alt-2 fs-5'></i>
@@ -83,7 +83,7 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
 
                 <div class="ms-auto">
                     <div class="dropdown">
-                        <button class="btn d-flex align-items-center gap-2 rounded-pill px-3 border-0 text-dark"
+                        <button class="btn d-flex align-items-center gap-2 rounded-pill px-3 border border-dark text-dark"
                             type="button" id="userMenuToggle" data-bs-toggle="dropdown">
                             <img id="navbarUserImage" src="../uploads/profile_images/<?= htmlspecialchars($img) ?>"
                                 alt="Usuario" class="rounded-circle" width="32" height="32">
@@ -235,26 +235,43 @@ $email = $_SESSION["email"] ?? 'Correo no disponible';
                     <div id="commentContainer" class="mb-4"></div>
 
                     <!-- Formulario de comentarios -->
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm" id="commentTrigger">
                         <div class="card-body">
                             <h5 class="card-title mb-3">Tu comentario</h5>
-                            <form id="commentForm">
+
+                            <!-- Estado inicial (sin hacer clic) -->
+                            <div class="comment-prompt" style="cursor: pointer; padding: 15px; border: 1px dashed #dee2e6; border-radius: 8px;">
+                                <div class="text-muted d-flex align-items-center gap-2">
+                                    <i class='bx bx-edit'></i>
+                                    Haz clic aquí para escribir un comentario...
+                                </div>
+                            </div>
+
+                            <div class="replies-container mt-3 ms-4"></div> 
+
+                            <!-- Formulario (oculto inicialmente) -->
+                            <form id="commentForm" class="d-none">
                                 <div class="input-group d-flex flex-column">
-                                    <textarea id="commentInput" class="form-control" rows="2"
-                                        placeholder="Escribe un comentario..." required></textarea>
-                                    <br>
-                                    <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
-                                        Publicar
-                                        <i class='bx bx-send'></i>
-                                    </button>
+                                    <textarea id="commentInput" class="form-control" rows="3"
+                                        placeholder="Escribe tu comentario..." required></textarea>
+                                    <div class="d-flex justify-content-end gap-2 mt-3">
+                                        <button type="button" class="btn btn-outline-secondary btn-cancel">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                                            Publicar
+                                            <i class='bx bx-send'></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
+
+    </div>
     </div>
     <!-- Footer con animación SVG -->
     <footer>

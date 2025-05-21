@@ -205,6 +205,8 @@ body.sidebar-expanded .main-content {
 .dropdown-menu {
     min-width: 120px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    left: -120px !important;
+    transform: translate3d(0px, -5px, 0px) !important;
 }
 
 .dropdown-item {
@@ -218,6 +220,66 @@ body.sidebar-expanded .main-content {
 
 .dropdown-item i {
     margin-right: 5px;
+}
+
+#commentTrigger {
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+#commentTrigger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.comment-prompt {
+    transition: all 0.3s ease;
+}
+
+.comment-prompt:hover {
+    background-color: #f8f9fa;
+    border-color: #0d6efd !important;
+}
+
+#commentInput {
+    resize: none;
+    min-height: 100px;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.reply-form {
+    transition: opacity 0.3s ease;
+    margin-top: 1rem;
+}
+
+.replies-container {
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.replies-container::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #dee2e6;
+}
+
+.reply-form {
+    border: 1px solid #dee2e6;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.replies-container {
+    display: none; /* Oculto inicialmente */
 }
 
 .no-comments {

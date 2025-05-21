@@ -16,7 +16,7 @@ class Comment
 {
     private PDO $db;
     private string $table = 'comments';
-
+    public ?int $parentId = null;
     public int    $id;
     public int    $forumId;
     public int    $userId;
@@ -37,34 +37,63 @@ class Comment
     {
         $this->content = htmlspecialchars(strip_tags($this->content));
 
-        $sql = "INSERT INTO {$this->table} (forum_id, user_id, content)
-            VALUES (:forum_id, :user_id, :content)";
+        $sql = "INSERT INTO {$this->table} (forum_id, parent_id, user_id, content)
+                VALUES (:forum_id, :parent_id, :user_id, :content)";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':forum_id', $this->forumId, PDO::PARAM_INT);
-        $stmt->bindParam(':user_id',  $this->userId,  PDO::PARAM_INT);
-        $stmt->bindParam(':content',  $this->content, PDO::PARAM_STR);
+        $stmt->bindParam(':parent_id', $this->parentId, PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $this->userId, PDO::PARAM_INT);
+        $stmt->bindParam(':content', $this->content, PDO::PARAM_STR);
 
         if ($stmt->execute()) {
             $this->id = (int)$this->db->lastInsertId();
 
-            $forumOwnerId = $this->getForumOwner($this->forumId);
-            if ($forumOwnerId && $forumOwnerId !== $this->userId) {
-                $notifSql = "INSERT INTO notifications (user_id, type, message)
-                                    VALUES (:user_id, 'comment', :message)";
-                $notifStmt = $this->db->prepare($notifSql);
-                $message = "Han comentado en tu foro.";
-                $notifStmt->execute([
-                    ':user_id' => $forumOwnerId,
-                    ':message' => $message
-                ]);
+            // Notificar al dueño del foro si es comentario principal
+            if (!$this->parentId) {
+                $forumOwnerId = $this->getForumOwner($this->forumId);
+                if ($forumOwnerId && $forumOwnerId !== $this->userId) {
+                    $this->createNotification(
+                        $forumOwnerId,
+                        'comment',
+                        "Han comentado en tu foro."
+                    );
+                }
+            } else {
+                // Notificar al autor del comentario padre
+                $parentAuthorId = $this->getParentCommentAuthor();
+                if ($parentAuthorId && $parentAuthorId !== $this->userId) {
+                    $this->createNotification(
+                        $parentAuthorId,
+                        'reply',
+                        "Han respondido a tu comentario."
+                    );
+                }
             }
 
             return true;
         }
-
         return false;
     }
 
+    private function getParentCommentAuthor(): ?int
+    {
+        $stmt = $this->db->prepare("SELECT user_id FROM comments WHERE id = :parent_id");
+        $stmt->bindParam(':parent_id', $this->parentId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn() ?: null;
+    }
+
+    private function createNotification(int $userId, string $type, string $message): void
+    {
+        $notifSql = "INSERT INTO notifications (user_id, type, message)
+                      VALUES (:user_id, :type, :message)";
+        $notifStmt = $this->db->prepare($notifSql);
+        $notifStmt->execute([
+            ':user_id' => $userId,
+            ':type' => $type,
+            ':message' => $message
+        ]);
+    }
 
     private function getForumOwner(int $forumId): ?int
     {
@@ -75,19 +104,41 @@ class Comment
         return $owner !== false ? (int)$owner : null;
     }
 
-
-    // Leer comentarios de un foro
     public function readByForum(): array
     {
-        $sql = "SELECT c.*, u.userName AS author_name, COALESCE(u.userImage, '../../uploads/profile_images/default.jpg') AS author_image
-                FROM {$this->table} c
-                JOIN users u ON c.user_id = u.id
-                WHERE c.forum_id = :forum_id
-                ORDER BY c.created_at DESC";
+        $sql = "SELECT c.*, 
+                   u.userName AS author_name,
+                   COALESCE(u.userImage, '../../uploads/profile_images/default.jpg') AS author_image
+            FROM {$this->table} c
+            JOIN users u ON c.user_id = u.id
+            WHERE c.forum_id = :forum_id
+            ORDER BY COALESCE(c.parent_id, c.id), c.created_at ASC"; // Orden modificado
+
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':forum_id', $this->forumId, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->buildCommentTree($comments); // Devolver estructura jerárquica
+    }
+
+    private function buildCommentTree(array $comments): array
+    {
+        $tree = [];
+        $map = [];
+
+        foreach ($comments as &$comment) {
+            $comment['replies'] = [];
+            $map[$comment['id']] = &$comment;
+
+            if ($comment['parent_id']) {
+                $map[$comment['parent_id']]['replies'][] = &$comment;
+            } else {
+                $tree[] = &$comment;
+            }
+        }
+
+        return $tree;
     }
 
     // Leer un solo comentario
@@ -166,6 +217,37 @@ $action = $_GET['action'] ?? '';
 
 switch ($method) {
     case 'POST':
+
+        if ($action === 'reply' && !empty($data->parent_id) && !empty($data->content)) {
+            // Obtener forum_id del comentario padre
+            $stmt = $db->prepare("SELECT forum_id FROM comments WHERE id = :parent_id");
+            $stmt->bindParam(':parent_id', $data->parent_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $forumId = $stmt->fetchColumn();
+
+            if (!$forumId) {
+                $response = ['success' => false, 'message' => 'Comentario padre no válido'];
+                break;
+            }
+
+            $comment->forumId = (int)$forumId;
+            $comment->parentId = (int)$data->parent_id;
+            $comment->content = $data->content;
+            $comment->userId = (int)($_SESSION['id'] ?? 0);
+
+            if ($comment->create()) {
+                $response = [
+                    'success' => true,
+                    'message' => 'Respuesta creada',
+                    'id' => $comment->id,
+                    'author_name' => $_SESSION['name'],
+                    'author_image' => $_SESSION['user_image'] ?? 'default.jpg'
+                ];
+            } else {
+                $response['message'] = 'Error al responder';
+            }
+        }
+
         if ($action === 'create' && !empty($data->forum_id) && !empty($data->content)) {
             $comment->forumId = (int)$data->forum_id;
             $comment->content = $data->content;
@@ -201,20 +283,19 @@ switch ($method) {
             $comment->id = (int)$_GET['id'];
             if ($comment->readOne()) {
                 $response = ['success' => true, 'comment' => [
-                    'id'           => $comment->id,
-                    'forum_id'     => $comment->forumId,
-                    'user_id'      => $comment->userId,
-                    'content'      => $comment->content,
-                    'created_at'   => $comment->createdAt,
-                    'updated_at'   => $comment->updatedAt,
-                    'author_name'  => $comment->authorName,
+                    'id' => $comment->id,
+                    'forum_id' => $comment->forumId,
+                    'user_id' => $comment->userId,
+                    'content' => $comment->content,
+                    'created_at' => $comment->createdAt,
+                    'updated_at' => $comment->updatedAt,
+                    'author_name' => $comment->authorName,
                     'author_image' => $comment->authorImage
                 ]];
             } else {
                 $response['message'] = 'Comentario no encontrado';
             }
-        } ;
-        if ($action === 'get_notifications') {
+        } elseif ($action === 'get_notifications') {
             $userId = (int)($_SESSION['id'] ?? 0);
             $stmt = $db->prepare("SELECT * FROM notifications WHERE user_id = :id ORDER BY created_at DESC");
             $stmt->bindParam(':id', $userId);
