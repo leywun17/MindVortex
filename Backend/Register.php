@@ -9,13 +9,11 @@ class Usuarios {
     }
 
     public function registrar($name, $email, $password, $confirmPassword) {
-        // Validar correo
         $email = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
         if (!$email) {
             return ["status" => "error", "message" => "Correo electrónico inválido."];
         }
 
-        // Verificar si las contraseñas coinciden
         if ($password !== $confirmPassword) {
             return ["status" => "error", "message" => "Las contraseñas no coinciden."];
         }
@@ -37,7 +35,6 @@ class Usuarios {
     }
 }
 
-// Conectar a la base de datos
 $database = new Database();
 $conexion = $database->getConnection();
 $user = new Usuarios($conexion);
@@ -50,7 +47,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $resultado = $user->registrar($name, $email, $password, $confirmPassword);
 
-    // Enviar respuesta JSON
     header("Content-Type: application/json");
     echo json_encode($resultado);
     exit;

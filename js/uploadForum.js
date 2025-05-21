@@ -1,9 +1,8 @@
 $(document).ready(function () {
-    // Carga la lista de foros al iniciar y habilita la apertura de un foro al hacer clic
+    
     loadForums();
     bindOpenForum();
 
-    // Maneja el envío del formulario para crear un nuevo foro
     $("#forumForm").on("submit", function (e) {
 
         const title = $("#title").val().trim();
@@ -18,21 +17,19 @@ $(document).ready(function () {
         formData.append("title", title);
         formData.append("description", description);
 
-        // Agregar archivo (si existe)
         const fileInput = $("#forumImage")[0];
         if (fileInput.files.length > 0) {
             formData.append("forumImage", fileInput.files[0]);
         }
 
-        // Deshabilitar botón de envío
         $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...');
 
         $.ajax({
             url: "../Backend/foro.php?action=create",
             type: "POST",
             data: formData,
-            processData: false, // Importante para enviar FormData sin procesar
-            contentType: false, // Importante para que jQuery no establezca content-type manualmente
+            processData: false,
+            contentType: false,
             dataType: "json",
             success: function (response) {
                 if (response.success) {
@@ -57,17 +54,13 @@ $(document).ready(function () {
         });
     });
 
-    // Función para mostrar toast de Bootstrap
     function showToast(message, type = "info") {
-        // Elimina cualquier toast anterior
         $('.toast').remove();
 
-        // Determina el color según el tipo
         const bgClass = type === 'danger' ? 'bg-danger' :
             type === 'warning' ? 'bg-warning' :
                 type === 'success' ? 'bg-success' : 'bg-info';
 
-        // Crea el toast
         const toastHtml = `
             <div class="position-fixed top-0 end-0 p-3" style="z-index: 1070">
                 <div class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
@@ -81,7 +74,6 @@ $(document).ready(function () {
             </div>
         `;
 
-        // Añade al body y muestra
         $('body').append(toastHtml);
         const toastElement = $('.toast');
         const toast = new bootstrap.Toast(toastElement, {
@@ -90,9 +82,7 @@ $(document).ready(function () {
         toast.show();
     }
 
-    // Función para obtener todos los foros desde la API
     function loadForums() {
-        // Añadir un indicador de carga
         $("#forumList").html(`
             <div class="col-12 text-center py-5">
                 <div class="spinner-border text-primary" role="status">
@@ -108,7 +98,6 @@ $(document).ready(function () {
             dataType: "json",
             success: function (response) {
                 if (response.success) {
-                    // Renderiza los foros en pantalla
                     renderForums(response.forums);
                 } else {
                     console.log(response.success)
@@ -133,12 +122,9 @@ $(document).ready(function () {
         });
     }
 
-    // Función para mostrar los foros con paginación
     function renderForums(forums) {
-        // Limpia el contenedor de foros
         $("#forumList").empty();
 
-        // Si no hay foros, informa al usuario
         if (forums.length === 0) {
             $("#forumList").html(`
                 <div class="col-12 text-center py-5">
@@ -154,29 +140,24 @@ $(document).ready(function () {
             return;
         }
 
-        const cardsPerPage = 6; // Aumentamos a 6 cards por página (2 filas de 3 en pantallas grandes)
+        const cardsPerPage = 6;
         const totalPages = Math.ceil(forums.length / cardsPerPage);
         let currentPage = 1;
 
-        // Muestra la página especificada por parámetro
         function showPage(page) {
             $("#forumList").empty();
 
             const startIndex = (page - 1) * cardsPerPage;
             const endIndex = Math.min(startIndex + cardsPerPage, forums.length);
 
-            // Construye cada card de foro
             for (let i = startIndex; i < endIndex; i++) {
                 const forum = forums[i];
                 const date = new Date(forum.createdAt);
 
-                // Formatear fecha relativa
                 const timeAgo = formatTimeAgo(date);
 
-                // Crear elemento de columna
                 const col = document.createElement('div');
                 col.className = 'col-md-6 col-lg-4 mb-4';
-                // Crear contenido de la tarjeta
                 col.innerHTML = `
                     <div class="card h-100 forum-card" data-id="${forum.id}">
                         <div class="card-body">
@@ -201,17 +182,14 @@ $(document).ready(function () {
                 $("#forumList").append(col);
             }
 
-            // Actualiza los botones de paginación
             updatePaginationButtons();
         }
 
-        // Función para truncar texto largo
         function truncateText(text, maxLength) {
             if (text.length <= maxLength) return text;
             return text.substring(0, maxLength) + '...';
         }
 
-        // Función para formatear fecha relativa
         function formatTimeAgo(date) {
             const now = new Date();
             const diffMs = now - date;
@@ -233,9 +211,7 @@ $(document).ready(function () {
             }
         }
 
-        // Actualiza el estado de los botones de paginación
         function updatePaginationButtons() {
-            // Implementación moderna de paginación con Bootstrap 5
             let paginationHTML = `
                 <nav aria-label="Navegación de páginas">
                     <ul class="pagination">
@@ -243,17 +219,14 @@ $(document).ready(function () {
                         </li>
             `;
 
-            // Determina qué números de página mostrar
             const maxVisiblePages = 5;
             let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-            // Ajustar si estamos cerca del final
             if (endPage - startPage + 1 < maxVisiblePages) {
                 startPage = Math.max(1, endPage - maxVisiblePages + 1);
             }
 
-            // Añadir primera página y ellipsis si es necesario
             if (startPage > 1) {
                 paginationHTML += `
                     <li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>
@@ -261,7 +234,6 @@ $(document).ready(function () {
                 `;
             }
 
-            // Añadir números de página
             for (let i = startPage; i <= endPage; i++) {
                 paginationHTML += `
                     <li class="page-item ${i === currentPage ? 'active' : ''}">
@@ -270,7 +242,6 @@ $(document).ready(function () {
                 `;
             }
 
-            // Añadir última página y ellipsis si es necesario
             if (endPage < totalPages) {
                 paginationHTML += `
                     ${endPage < totalPages - 1 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
@@ -280,10 +251,8 @@ $(document).ready(function () {
 
             
 
-            // Actualizar el contenedor de paginación
             $("#paginationContainer").html(paginationHTML).show();
 
-            // Asignar eventos a los botones de paginación
             $("#prevPage").on("click", function (e) {
                 e.preventDefault();
                 if (currentPage > 1) {
@@ -310,16 +279,13 @@ $(document).ready(function () {
             });
         }
 
-        // Verifica si hay necesidad de paginación
         if (totalPages <= 1) {
             $("#paginationContainer").hide();
         }
 
-        // Muestra la primera página al cargar
         showPage(1);
     }
 
-    // Enlaza el click de los elementos .forum-card para abrir el detalle del foro
     function bindOpenForum() {
         $(document).on("click", ".forum-card", function (e) {
             const id = $(this).data("id");
@@ -327,25 +293,20 @@ $(document).ready(function () {
         });
     }
 
-    // Búsqueda de foros en tiempo real
     let searchTimeout = null;
 
     $('#searchInput, #mobileSearchInput').on('input', function () {
         const term = $(this).val().trim();
 
-        // Limpia el timeout anterior
         clearTimeout(searchTimeout);
 
-        // Si el término está vacío, vuelve a cargar todos los foros
         if (!term) {
             $('#paginationContainer').show();
             loadForums();
             return;
         }
 
-        // Espera 500ms después de que el usuario deje de teclear
         searchTimeout = setTimeout(function () {
-            // Mostrar indicador de búsqueda
             $("#forumList").html(`
                 <div class="col-12 text-center py-3">
                     <div class="spinner-border spinner-border-sm text-primary" role="status">
@@ -355,7 +316,6 @@ $(document).ready(function () {
                 </div>
             `);
 
-            // Petición AJAX al case 'search'
             $.ajax({
                 url: "../Backend/foro.php",
                 type: "GET",
@@ -366,7 +326,6 @@ $(document).ready(function () {
                 dataType: "json",
                 success: function (res) {
                     if (res.success) {
-                        // Pagina y muestra sólo los resultados de búsqueda
                         renderForums(res.results);
                     } else {
                         $('#forumList').html(`
@@ -398,22 +357,17 @@ $(document).ready(function () {
         }, 500);
     });
 
-    // Manejar el submit del formulario de búsqueda
     $('#searchForm, #mobileSearchForm').on('submit', function (e) {
         e.preventDefault();
-        // Disparar el evento input para iniciar la búsqueda
         $(this).find('input[type="search"]').trigger('input');
     });
 
-    // Maneja el toggle de favorito
     $(document).on("click", ".btn-favorite", function (e) {
         e.preventDefault();
-        e.stopPropagation(); // Evita que se abra el foro al hacer clic en el botón
-
+        e.stopPropagation(); 
         const $btn = $(this);
         const forumId = $btn.data("id");
 
-        // Cambiar estado del botón temporalmente
         $btn.prop('disabled', true);
 
         $.ajax({
@@ -426,10 +380,8 @@ $(document).ready(function () {
             dataType: "json",
             success: function (response) {
                 if (response.success) {
-                    // Notificar con Toast en lugar de alert
                     showToast(response.message, "success");
 
-                    // Actualizar UI del botón
                     if ($btn.hasClass("btn-warning")) {
                         $btn.removeClass("btn-warning")
                             .addClass("btn-outline-warning")

@@ -1,12 +1,12 @@
 <?php
-session_start(); // Asegúrate de iniciar la sesión antes de acceder a las variables de sesión.
+session_start();
 
 require_once './config.php';
 
 class Auth {
     private $db;
-    private $maxIntentos = 5; // Máximo de intentos fallidos
-    private $tiempoBloqueo = 120; // Tiempo de bloqueo en segundos (2 minutos)
+    private $maxIntentos = 5;
+    private $tiempoBloqueo = 120;
 
     public function __construct() {
         $dbConfig = new Database();
@@ -23,7 +23,6 @@ class Auth {
             return ["status" => "error", "message" => $email];
         }
 
-        // Verificar si la cuenta está bloqueada
         $bloqueo = $this->verificarBloqueo($email);
         if ($bloqueo !== false) {
             return ["status" => "error", "message" => "Cuenta bloqueada. Intenta en $bloqueo minutos."];
@@ -47,17 +46,16 @@ class Auth {
                     $_SESSION['email'] = $row['email'];
                     $_SESSION['desc'] = $row['descripcion'];
                     $_SESSION['profile_image'] = $row['userImage'];
-                    return true; // Autenticación exitosa
+                    return true;
                 } else {
-                    return 'inactive'; // Usuario inactivo
+                    return 'inactive';
                 }
             } else {
-                // Registrar intento fallido
                 $this->registrarIntentoFallido($email);
-                return 'invalid'; // Credenciales inválidas
+                return 'invalid';
             }
         } else {
-            return 'invalid'; // Usuario no encontrado
+            return 'invalid';
         }
     }
 
@@ -74,9 +72,8 @@ class Auth {
             $tiempoRestante = $this->tiempoBloqueo - ($tiempoActual - $ultimoIntento);
 
             if ($tiempoRestante > 0) {
-                return ceil($tiempoRestante / 60); // Devuelve minutos restantes
+                return ceil($tiempoRestante / 60);
             } else {
-                // Si el tiempo de bloqueo ha expirado, restablecer el estado
                 $this->restablecerEstado($email);
             }
         }
@@ -112,7 +109,6 @@ class Auth {
         $stmt->bindParam(":email", $email);
         $stmt->execute();
 
-        // Verificar si se debe bloquear la cuenta
         if ($intentos >= $this->maxIntentos) {
             $this->bloquearCuenta($email);
         }
@@ -126,9 +122,7 @@ class Auth {
     }
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Leer la entrada JSON
     $input = json_decode(file_get_contents("php://input"), true);
 
     $email = $_POST['email'];
@@ -155,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($result === 'inactive') {
         echo json_encode(array('status' => 'error', 'message' => 'El usuario está inactivo'));
     } elseif ($result === 'invalid') {
-        echo json_encode(array('status' => 'error', 'message' => $password));
+        echo json_encode(array('status' => 'error', 'message' => 'credenciales invalidas'));
     } elseif (is_array($result)) {
         echo json_encode($result);
     }

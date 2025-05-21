@@ -5,12 +5,10 @@ $(document).ready(function () {
 
     obtenerUserId().then(() => loadComments());
 
-    // Mostrar mensajes (console/UI)
     function mostrarMensaje(msg) {
         console.log(msg);
     }
 
-    // Evento submit: crear comentario
     $('#commentForm').submit(e => {
         e.preventDefault();
         const content = $('#commentInput').val().trim();
@@ -32,7 +30,6 @@ $(document).ready(function () {
         });
     });
 
-    // Cargar lista de comentarios
     function loadComments() {
         $.ajax({
             url: '../Backend/comment.php',
@@ -47,7 +44,6 @@ $(document).ready(function () {
         });
     }
 
-    // Obtener ID de usuario autenticado
     function obtenerUserId() {
         return $.ajax({
             url: '../Backend/comment.php',
@@ -59,7 +55,6 @@ $(document).ready(function () {
         }).fail(() => alert('Error al obtener ID'));
     }
 
-    // Renderizar comentarios en DOM
     function renderizarComentarios(comments, container = $('#commentContainer'), level = 0) {
         container.empty();
 
@@ -69,7 +64,7 @@ $(document).ready(function () {
 
         comments.forEach(c => {
             const isOwn = c.user_id === userId;
-            const isReply = level > 0 || c.parent_id !== null; // Determinar si es respuesta
+            const isReply = level > 0 || c.parent_id !== null;
             const margin = level * 40;
             const borderClass = level > 0 ? 'border-start ps-3' : '';
             console.log(c.author_image)
@@ -155,17 +150,14 @@ $(document).ready(function () {
         const parentId = $button.data('id');
         const $card = $button.closest('.card');
 
-        // Asegurar la existencia del contenedor
         let $repliesContainer = $card.find('.replies-container');
         if (!$repliesContainer.length) {
             $repliesContainer = $('<div class="replies-container mt-3 ms-4"></div>');
             $card.find('.card-body').append($repliesContainer);
         }
 
-        // Limpiar formularios existentes
         $('.reply-form').remove();
 
-        // Crear y mostrar formulario
         const formHTML = `
         <div class="reply-form mt-3 p-2 bg-light rounded">
             <div class="input-group">
@@ -191,13 +183,11 @@ $(document).ready(function () {
     });
 
 
-    // Manejar cancelación
     $(document).on('click', '.cancel-reply', function (e) {
         e.preventDefault();
         $(this).closest('.reply-form').remove();
     });
 
-    // 4. Enviar respuesta
     $(document).on('click', '.send-reply', function () {
         const $form = $(this).closest('.reply-form');
         const parentId = $(this).closest('.card').attr('id').split('-')[1];
@@ -217,11 +207,11 @@ $(document).ready(function () {
             data: JSON.stringify({
                 parent_id: parentId,
                 content: content,
-                forum_id: forumId // Añadir forum_id
+                forum_id: forumId
             }),
             success: res => {
                 if (res.success) {
-                    // Actualizar interfaz correctamente
+                    
                     loadComments();
                 }
             },
@@ -230,7 +220,6 @@ $(document).ready(function () {
     });
 
     $('#commentTrigger').click(function (e) {
-        // Evitar activación cuando se hace clic en el formulario
         if (!$(e.target).closest('#commentForm').length) {
             $('.comment-prompt').addClass('d-none');
             $('#commentForm').removeClass('d-none');
@@ -238,20 +227,18 @@ $(document).ready(function () {
         }
     });
 
-    // Botón cancelar
     $('#commentForm').on('click', '.btn-cancel', function () {
         $('#commentForm').addClass('d-none');
         $('.comment-prompt').removeClass('d-none');
         $('#commentInput').val('');
     });
 
-    // Ajustar altura del textarea automáticamente
     $('#commentInput').on('input', function () {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });
 
-    // Editar comentario
+    
     $(document).on('click', '.edit-comment', function (e) {
         e.preventDefault();
         const commentId = $(this).data('id');
@@ -296,7 +283,6 @@ $(document).ready(function () {
         });
     });
 
-    // Eliminar comentario
     $(document).on('click', '.delete-comment', function (e) {
         e.preventDefault();
         const commentId = $(this).data('id');

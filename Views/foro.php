@@ -1,5 +1,4 @@
 <?php
-// Inicia la sesión y verifica autenticación
 session_start();
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: ../index.html");
@@ -19,44 +18,34 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MindVortex</title>
 
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-    <!-- Google Fonts: Nunito -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Favicon -->
     <link rel="shortcut icon" href="../Assets/logo.png" type="image/x-icon">
 
-    <!-- Hojas de estilo locales -->
     <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="stylesheet" href="../css/foro.css">
 </head>
 
 <body>
-    <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container-fluid px-3">
-            <!-- Botón para sidebar -->
             <button class="btn" id="btn">
                 <i class='bx bx-menu fs-4'></i>
             </button>
 
-            <!-- Logo de la marca -->
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <img src="../Assets/logo.png" alt="MindVortex Logo" height="38" class="d-inline-block">
                 <p class="text-center">MindVortex</p>
             </a>
 
-            <!-- Formulario de búsqueda -->
             <form id="searchForm" class="d-flex mx-auto d-none d-md-flex" style="max-width: 400px;">
                 <div class="input-group">
                     <input
@@ -75,14 +64,11 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                 </div>
             </form>
 
-            <!-- Botón hamburguesa para pantallas pequeñas -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Enlaces de navegación y menú usuario -->
             <div class="collapse navbar-collapse" id="mainNav">
-                <!-- Búsqueda en móvil -->
                 <form id="mobileSearchForm" class="d-flex d-md-none mt-2 mb-3 w-100">
                     <div class="input-group">
                         <input
@@ -99,7 +85,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                     </div>
                 </form>
 
-                <!-- Menú de usuario -->
                 <div class="ms-auto">
                     <div class="dropdown">
                         <button class="btn p-1 d-flex align-items-center gap-2 rounded-pill px-2 border" type="button" id="userMenuToggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -129,9 +114,7 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
         </div>
     </nav>
 
-    <!-- Contenido principal -->
     <div class="d-flex">
-        <!-- Barra lateral -->
         <div class="sidebar">
             <ul class="nav-list">
 
@@ -170,7 +153,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                     <a href="#" data-bs-toggle="modal" data-bs-target="#notificationModal">
                         <i class="bx bx-bell"></i>
                         <span class="links_name">Notificaciones</span>
-                        <!-- Badge contador -->
                         <span id="notifCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">
                             <span id="notifNumber"></span>
                             <span class="visually-hidden">notificaciones nuevas</span>
@@ -183,9 +165,7 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
             </ul>
         </div>
 
-        <!-- Contenido del foro -->
         <div class="contenedor-principal flex-grow-1" id="forumContent">
-            <!-- Encabezado del foro -->
             <div class="forum-header">
                 <div class="row align-items-center">
                     <div class="col-md-8">
@@ -202,7 +182,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                                 </div>
                             </div>
 
-                            <!-- Menú de opciones -->
                             <div class="dropdown">
                                 <button class="btn btn-link text-dark p-0" type="button" id="optionsMenuToggle"
                                     data-bs-toggle="dropdown">
@@ -238,7 +217,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                 </div>
             </div>
 
-            <!-- Cuerpo del foro -->
             <div class="forum-body">
                 <div class="forum-content mb-4">
                     <p id="forumDescription" class="lead"></p>
@@ -246,17 +224,14 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                 </div>
                 <hr>
 
-                <!-- Sección de comentarios -->
                 <div class="comments-section mt-5">
                     <h3 class="mb-4">Comentarios</h3>
                     <div id="commentContainer" class="mb-4"></div>
 
-                    <!-- Formulario de comentarios -->
                     <div class="card shadow-sm" id="commentTrigger">
                         <div class="card-body">
                             <h5 class="card-title mb-3">Tu comentario</h5>
 
-                            <!-- Estado inicial (sin hacer clic) -->
                             <div class="comment-prompt" style="cursor: pointer; padding: 15px; border: 1px dashed #dee2e6; border-radius: 8px;">
                                 <div class="text-muted d-flex align-items-center gap-2">
                                     <i class='bx bx-edit'></i>
@@ -266,7 +241,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
 
                             <div class="replies-container mt-3 ms-4"></div>
 
-                            <!-- Formulario (oculto inicialmente) -->
                             <form id="commentForm" class="d-none">
                                 <div class="input-group d-flex flex-column">
                                     <textarea id="commentInput" class="form-control" rows="3"
@@ -290,7 +264,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
 
     </div>
     </div>
-    <!-- Footer con animación SVG -->
     <footer>
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
@@ -344,8 +317,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
         </svg>
     </footer>
 
-    <!-- Modals -->
-    <!-- Modal Editar Perfil -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -354,7 +325,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Formulario para subir imagen -->
                     <form id="updateProfileForm" enctype="multipart/form-data">
                         <div class="mb-3 text-center">
                             <img class="userProfileImage rounded-circle bg-light mb-2" src="../uploads/profile_images/default.jpg" alt="user photo" width="64" height="64">
@@ -368,7 +338,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
 
                         <hr>
 
-                        <!-- Los campos de texto -->
                         <div class="mb-3">
                             <label for="profileName" class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="profileName" name="name" value="<?= htmlspecialchars($userName) ?>">
@@ -399,7 +368,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
         </div>
     </div>
 
-    <!-- Modal Nueva Pregunta -->
     <div class="modal fade" id="addForumModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -475,7 +443,6 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
     </div>
     */
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/jquery-3.7.1.min.js"></script>
     <script src="../js/viewForum.js"></script>

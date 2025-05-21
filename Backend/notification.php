@@ -31,7 +31,6 @@ class Notification
 
     public function markAsRead(int $notificationId): bool
     {
-        // Solo marcar como leída si la notificación pertenece al usuario actual
         $sql = "UPDATE notifications SET is_read = 1 WHERE id = :id AND user_id = :user_id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':id', $notificationId, PDO::PARAM_INT);

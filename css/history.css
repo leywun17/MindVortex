@@ -25,7 +25,6 @@ body {
     cursor: pointer;
     position: relative;
     transition: color 0.3s ease;
-    /* Suaviza color */
 }
 
 .tab-btn::after {
@@ -37,7 +36,6 @@ body {
     height: 2px;
     background: var(--primary);
     transition: width 0.3s ease;
-    /* Suaviza subrayado */
 }
 
 .tab-btn.active {
@@ -52,7 +50,6 @@ body {
     min-height: 200px;
 }
 
-/* Accordion */
 .accordion .accordion-item {
     border: none;
     margin-bottom: .5rem;

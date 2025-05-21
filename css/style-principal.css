@@ -13,14 +13,12 @@ body {
   min-height: 100vh;
 }
 
-/* Header Desktop */
 .header-desktop {
   margin-top: 10px !important;
   padding: 10px;
   background-color: #fff;
 }
 
-/* Estilos de enlaces */
 .header-desktop .nav-link {
   color: #000;
   position: relative;
@@ -69,7 +67,6 @@ body {
   max-height: 60px;
 }
 
-/* Sección Hero */
 .contenedor-hero {
   min-height: 70vh;
   display: flex;
@@ -85,7 +82,6 @@ body {
 
 .contenedor-hero h1 {
   font-size: 4rem;
-  /* Se reducirá en dispositivos más pequeños */
   font-weight: 800;
 }
 
@@ -97,7 +93,6 @@ body {
 
 
 
-/* Sección About Us */
 .aboutUs {
   padding: 60px 0;
 }
@@ -114,7 +109,6 @@ body {
   font-size: 1rem;
 }
 
-/* Sección Objetivos */
 .objetivos h2 {
   color: #60B5FF;
   font-size: 2rem;
@@ -152,7 +146,7 @@ svg {
 
 #hero-wave {
   transition: opacity 0.5s ease-in-out;
-  z-index: -1; /* Para que no tape contenido */
+  z-index: -1;
   position: absolute;
   top: 0;
   left: 0;
@@ -170,7 +164,6 @@ footer {
   height: 220px;
 }
 
-/* Menu Móvil (utilizando el collapse de Bootstrap) */
 @media (max-width: 767px) {
   .header-desktop {
     display: none;

@@ -6,7 +6,6 @@ $(document).ready(function() {
 
     function verificarAutor(autorID) {
         autorId = autorID;
-        // esto solo se debe hacer cuando IDusuario YA ESTÉ DEFINIDO
         if (parseInt(IDusuario) !== parseInt(autorId)) {
             $("#deleteOption, #deleteDivider").addClass("d-none");
         } else {
@@ -22,10 +21,9 @@ $(document).ready(function() {
             data: { action: 'get_id' },
             dataType: "json",
             success: function(data) {
-                IDusuario = data.userId || data.mensaje; // según cómo venga del backend
+                IDusuario = data.userId || data.mensaje;
                 console.log("IDusuario obtenido:", IDusuario);
 
-                // 👇 Si ya tenías el autorId cargado antes, podrías hacer:
                 if (autorId) verificarAutor(autorId); 
             },
             error: function() {
@@ -34,21 +32,16 @@ $(document).ready(function() {
         });
     }
 
-    // Llamar al obtener ID del usuario al principio
     Obtener_id();
 
-    // Esta función puede ser llamada luego desde verForo.js cuando ya se sepa el autor
     window.verificarAutorForo = function(autorDelForo) {
         autorId = autorDelForo;
         if (IDusuario) verificarAutor(autorId);
-        // Si no, se va a comparar más tarde cuando llegue la respuesta de `Obtener_id()`
     }
 
-    // Manejar clic en la opción eliminar
     $("#deleteOption").click(function() {
         if (!foroId) return;
         
-        // 1. Mostrar confirmación con SweetAlert
         Swal.fire({
             title: "¿Estás seguro?",
             text: "No podrás revertir esta acción",
@@ -60,7 +53,6 @@ $(document).ready(function() {
             cancelButtonText: "Cancelar"
         }).then((result) => {
             if (result.isConfirmed) {
-                // 2. Hacer la petición AJAX mediante POST
                 $.ajax({
                     url: "../Backend/foro.php",
                     type: "POST",
@@ -70,7 +62,6 @@ $(document).ready(function() {
                     },
                     dataType: "json",
                     success: function(respuesta) {
-                        // 3. Si la respuesta es exitosa, mostrar alerta y redirigir
                         if (respuesta.success) {
                             Swal.fire({
                                 icon: "success",
@@ -81,7 +72,6 @@ $(document).ready(function() {
                                 window.location.href = "../Views/dashboard.php";
                             });
                         } else {
-                            // 4. Si hay un error lógico, mostrar mensaje de error
                             Swal.fire({
                                 icon: "error",
                                 title: "Error",
@@ -90,7 +80,6 @@ $(document).ready(function() {
                         }
                     },
                     error: function(xhr, status, error) {
-                        // 5. Si la petición falla, loguear y notificar
                         console.error("Error AJAX:", error);
                         Swal.fire({
                             icon: "error",

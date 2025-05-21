@@ -1,16 +1,14 @@
 $(document).ready(function () {
     $(".sign").on("click", function (event)  {
         console.log("hola");
-        event.preventDefault(); // Evita el comportamiento predeterminado del botón
+        event.preventDefault(); 
         console.log("Script cargado");
 
-      8  // Obtener los valores de los campos
         let name = $.trim($('input[name="name"]').val());
         let email = $.trim($('input[name="email"]').val());
         let password = $.trim($('input[name="password"]').val());
         let confirmPassword = $.trim($('input[name="confirmPassword"]').val());
 
-        // Validar que los campos no estén vacíos
         if (name === "" || email === "" || password === "" || confirmPassword === "") {
             Swal.fire({
                 icon: "warning",
@@ -20,7 +18,6 @@ $(document).ready(function () {
             return;
         }
 
-        // Validar que las contraseñas coincidan
         if (password !== confirmPassword) {
             Swal.fire({
                 icon: "error",
@@ -30,26 +27,24 @@ $(document).ready(function () {
             return;
         }
 
-        // Crear objeto FormData para enviar los datos
         let formData = new FormData();
         formData.append("name", name);
         formData.append("email", email);
         formData.append("password", password);
         formData.append("confirmPassword", confirmPassword);
 
-        // Enviar datos mediante AJAX
         registerUser(formData);
     });
 });
 
 function registerUser(formData) {
     $.ajax({
-        url: "../Backend/Register.php", // Ruta del backend
+        url: "../Backend/Register.php",
         method: "POST",
         data: formData,
-        processData: false,  // Necesario para FormData
-        contentType: false,  // Necesario para FormData
-        dataType: "json", // Espera una respuesta en JSON
+        processData: false, 
+        contentType: false, 
+        dataType: "json",
         success: function (data) {
             if (data.status === "success") {
                 Swal.fire({
@@ -58,7 +53,7 @@ function registerUser(formData) {
                     text: data.message,
                     confirmButtonText: "Ir al login"
                 }).then(() => {
-                    window.location.href = "../Views/login.php"; // Redirigir al login
+                    window.location.href = "../Views/login.php";
                 });
             } else {
                 Swal.fire({

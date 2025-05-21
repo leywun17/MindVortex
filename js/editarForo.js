@@ -1,26 +1,22 @@
 $(document).ready(function() {
-    // Obtener ID del foro de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const foroId = urlParams.get("id");
     
 
     let autorId;
     
-    // Al cargar los datos del foro, verificar si el usuario actual es el autor
     function verificarAutor(autorID) {
         autorId = autorID;
         
-        // Si el usuario actual no es el autor, ocultar la opción de eliminar
         if (parseInt(usuarioActualId) !== parseInt(autorId)) {
             $("#opcionEditar, #separadorEditar").addClass("d-none");
         } else {
-            $("#opcionEditar").removeClass("d-none"); // mantiene d-flex
-            $("#separadorEditar").removeClass("d-none").addClass("d-block"); // <hr> necesita d-block
+            $("#opcionEditar").removeClass("d-none");
+            $("#separadorEditar").removeClass("d-none").addClass("d-block");
         }
     }
     
     
-    // Manejar clic en la opción eliminar
     $("#opcionEliminar").click(function() {
         if (!foroId) return;
         
@@ -35,7 +31,6 @@ $(document).ready(function() {
             cancelButtonText: "Cancelar"
         }).then((result) => {
             if (result.isConfirmed) {
-                // Proceder con la eliminación
                 $.ajax({
                     url: `../Backend/foro.php?action=delete&id=${foroId}`,
                     type: "DELETE",
@@ -71,6 +66,5 @@ $(document).ready(function() {
         });
     });
     
-    // Función para exponer al exterior y ser llamada desde verForo.js
     window.verificarAutorForo = verificarAutor;
 });

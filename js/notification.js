@@ -13,7 +13,6 @@ function cargarNotificaciones() {
                 const noLeidas = data.notifications.filter(n => n.is_read == 0).length;
 
                 if (noLeidas > 0) {
-                    // Insertar el número y el texto accesible dentro del badge
                     notifCount.html(`${noLeidas} <span class="visually-hidden">notificaciones nuevas</span>`).show();
                 } else {
                     notifCount.hide();

@@ -21,6 +21,5 @@ $(document).ready(function () {
         });
     }
 
-    // Llama a la función al cargar la página
     loadUserProfileData();
 });

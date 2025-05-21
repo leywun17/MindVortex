@@ -1,5 +1,5 @@
 <?php
-// CORS and JSON response headers
+
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
@@ -8,7 +8,6 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 session_start();
 
-// Respond to CORS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
@@ -16,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once 'config.php';
 
-// User class
 class User
 {
     private $conn;
@@ -33,24 +31,19 @@ class User
         $this->conn = $db;
     }
 
-    // Update profile information
     public function updateProfile()
     {
-        // Sanitize input
         $this->userName = htmlspecialchars(strip_tags($this->userName));
         $this->email = htmlspecialchars(strip_tags($this->email));
 
-        // Prepare the query to update the user's profile
         $query = "UPDATE {$this->tableName} 
                   SET userName = :userName, email = :email";
 
-        // If a password is provided, update it
         if ($this->password) {
             $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
             $query .= ", password = :password";
         }
 
-        // If a new image is provided, update it
         if ($this->userImage) {
             $query .= ", userImage = :userImage";
         }
@@ -59,7 +52,6 @@ class User
 
         $stmt = $this->conn->prepare($query);
 
-        // Bind the parameters
         $stmt->bindParam(':userName', $this->userName);
         $stmt->bindParam(':email', $this->email);
         if ($this->password) {
@@ -70,11 +62,9 @@ class User
         }
         $stmt->bindParam(':id', $this->id);
 
-        // Execute the query
         return $stmt->execute();
     }
 
-    // Get user by ID
     public function getUserById()
     {
         $query = "SELECT id, userName, email, userImage FROM {$this->tableName} WHERE id = :id";
@@ -94,12 +84,10 @@ class User
     }
 }
 
-// Instantiate database and model
 $database = new Database();
 $db = $database->getConnection();
 $user = new User($db);
 
-// Default response
 $response = [
     "success" => false,
     "message" => "Acción no reconocida"
@@ -109,7 +97,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'POST':
-        // Verificar si el usuario está autenticado
         if (!isset($_SESSION['id'])) {
             $response = [
                 "success" => false,
@@ -118,22 +105,17 @@ switch ($method) {
             break;
         }
 
-        // Set the user ID from session
         $user->id = $_SESSION['id'];
 
-        // Verificar si los datos del perfil fueron enviados
         if (isset($_POST['name']) && isset($_POST['email'])) {
             $user->userName = $_POST['name'];
             $user->email = $_POST['email'];
 
-            // Si se envía una nueva contraseña, asignarla
             if (isset($_POST['password']) && !empty($_POST['password'])) {
                 $user->password = $_POST['password'];
             }
 
-            // Si se envía una imagen de usuario, manejarla
             if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == 0) {
-                // Aquí puedes manejar la subida de la imagen (reemplaza esto por tu lógica)
                 $targetDir = "../uploads/profile_images/";
                 $targetFile = $targetDir . basename($_FILES['profile_image']['name']);
                 if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetFile)) {
@@ -148,7 +130,6 @@ switch ($method) {
                 }
             }
 
-            // Intentar actualizar el perfil
             if ($user->updateProfile()) {
                 $response = [
                     "success" => true,
@@ -175,7 +156,6 @@ switch ($method) {
 
     case 'GET':
         if (isset($_GET['action']) && $_GET['action'] === 'get_user') {
-            // Obtener los datos del usuario por ID
             $user->id = $_SESSION['id'];
 
             if ($user->getUserById()) {
@@ -185,7 +165,7 @@ switch ($method) {
                         "id" => $user->id,
                         "userName" => $user->userName,
                         "email" => $user->email,
-                        "userImage" => $user->userImage ?? 'default.png'
+                        "userImage" => $user->userImage ?? '../uploads/profile_images/default.png'
                     ]
                 ];
             } else {
@@ -195,5 +175,4 @@ switch ($method) {
         break;
 }
 
-// Send JSON response
 echo json_encode($response);

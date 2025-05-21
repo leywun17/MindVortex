@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    // Carga los foros favoritos del usuario
     function loadFavorites() {
         $.ajax({
             url: '../Backend/foro.php',
@@ -10,10 +9,8 @@ $(document).ready(function () {
                 const container = $('#contenedor-favoritos');
                 container.empty();
 
-                // Verificamos la clave 'success' y que haya al menos un favorito
                 if (response.success && response.favorites.length > 0) {
                     response.favorites.forEach(forum => {
-                        // Construimos la tarjeta con los campos que devuelve el backend
                         const card = `
                           <div class="col-md-4 mb-4">
                             <div class="card h-100 shadow-sm">
@@ -38,7 +35,6 @@ $(document).ready(function () {
                         container.append(card);
                     });
                 } else {
-                    // Mensaje si no hay favoritos
                     container.append(`
                       <div class="col-12">
                         <p class="text-muted">No tienes foros en favoritos aún.</p>
@@ -52,6 +48,5 @@ $(document).ready(function () {
         });
     }
 
-    // Ejecutamos al cargar la página
     loadFavorites();
 });

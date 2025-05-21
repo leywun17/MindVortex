@@ -1,5 +1,4 @@
 <?php
-// CORS and JSON response headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
@@ -8,7 +7,6 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 session_start();
 
-// Respond to CORS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
@@ -28,19 +26,16 @@ class Forum
     public $createdAt;
     public $userName;
     public $userImage;
-    public $image; // nueva propiedad
-
+    public $image;
 
     public function __construct($db)
     {
         $this->conn = $db;
     }
 
-    // Create new forum
     public function create()
     {
         $this->createdAt = date('Y-m-d');
-        // Sanitize input
         $this->title       = htmlspecialchars(strip_tags($this->title));
         $this->description = htmlspecialchars(strip_tags($this->description));
         $this->userId      = htmlspecialchars(strip_tags($this->userId));
@@ -62,7 +57,6 @@ class Forum
         return false;
     }
 
-    // Read all forums
     public function readAll()
     {
         $query = "SELECT
@@ -84,7 +78,7 @@ class Forum
     public function update()
     {
         $query = "UPDATE {$this->tableName}
-                SET title       = :title,
+                SET title = :title,
                     description = :description
               WHERE id = :id AND userId = :userId";
         $stmt = $this->conn->prepare($query);
@@ -96,7 +90,6 @@ class Forum
         return $stmt->execute();
     }
 
-    // Read one forum by ID
     public function readOne()
     {
         $query = "SELECT
@@ -129,19 +122,16 @@ class Forum
         return false;
     }
 
-    // Delete forum and its comments
     public function delete()
     {
         try {
             $this->conn->beginTransaction();
 
-            // Delete comments for this forum
             $sql1 = "DELETE FROM comments WHERE forum_id = :id";
             $stmt1 = $this->conn->prepare($sql1);
             $stmt1->bindParam(':id', $this->id);
             $stmt1->execute();
 
-            // Delete the forum itself
             $sql2 = "DELETE FROM {$this->tableName} WHERE id = :id";
             $stmt2 = $this->conn->prepare($sql2);
             $stmt2->bindParam(':id', $this->id);
@@ -155,10 +145,8 @@ class Forum
         }
     }
 
-    // Toggle favorite for a user
     public function toggleFavorite($userId, $forumId)
     {
-        // Check if already favorited
         $check = "SELECT 1 FROM forum_favorite WHERE id_usuario = :userId AND id_foro = :forumId";
         $stmt = $this->conn->prepare($check);
         $stmt->bindParam(':userId',  $userId);
@@ -166,14 +154,12 @@ class Forum
         $stmt->execute();
 
         if ($stmt->fetch()) {
-            // Remove favorite
             $del = "DELETE FROM forum_favorite WHERE id_usuario = :userId AND id_foro = :forumId";
             $stmtDel = $this->conn->prepare($del);
             $stmtDel->bindParam(':userId',  $userId);
             $stmtDel->bindParam(':forumId', $forumId);
             return $stmtDel->execute();
         } else {
-            // Add favorite
             $add = "INSERT INTO forum_favorite (id_usuario, id_foro) VALUES (:userId, :forumId)";
             $stmtAdd = $this->conn->prepare($add);
             $stmtAdd->bindParam(':userId',  $userId);
@@ -182,19 +168,15 @@ class Forum
         }
     }
 
-    // Get favorites for a user
     public function getFavorites($userId)
     {
         $query = "SELECT f.id, f.title, f.description, DATE(f.createdAt) AS createdAt, u.userName, COALESCE(u.userImage, 'default.png') AS userImage, TRUE AS isFavorite FROM forums f INNER JOIN forum_favorite ff ON ff.id_foro = f.id AND ff.id_usuario = :userId INNER JOIN users u ON f.userId = u.id ORDER BY ff.fecha_agregado DESC;";
-
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':userId', $userId);
         $stmt->execute();
         return $stmt;
     }
 
-
-    // Read forums by a specific user
     public function readByUser($userId)
     {
         $query = "SELECT
@@ -214,7 +196,6 @@ class Forum
         return $stmt;
     }
 
-    // Read replies made by a user
     public function readRepliesByUser($userId)
     {
         $query = "SELECT
@@ -232,15 +213,8 @@ class Forum
         return $stmt;
     }
 
-    /**
-     * Busca foros por título o descripción
-     *
-     * @param string $term Término de búsqueda
-     * @return array Lista de foros que coinciden
-     */
     public function search(string $term): array
     {
-        // Preparar término con comodines
         $term = '%' . $term . '%';
 
         $sql = "SELECT
@@ -262,12 +236,13 @@ class Forum
     }
 }
 
-// Instantiate database and model
+
+
 $database = new Database();
 $db       = $database->getConnection();
 $forum    = new Forum($db);
 
-// Default response
+
 $response = [
     "success" => false,
     "message" => "Acción no reconocida"
@@ -287,7 +262,6 @@ switch ($method) {
                     $forum->description = $_POST['description'];
                     $forum->userId      = $_SESSION['id'];
 
-                    // Manejo de imagen
                     $uploadDir = '../uploads/forum_images/';
                     $imageName = null;
 
@@ -302,7 +276,6 @@ switch ($method) {
                         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
                         if (in_array($fileExtension, $allowedExtensions)) {
-                            // Crear un nombre único para la imagen
                             $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
                             $destPath = $uploadDir . $newFileName;
 
@@ -342,14 +315,12 @@ switch ($method) {
 
 
             case 'update':
-                // Validaciones mínimas
                 if (isset($_POST['id'], $_POST['title'], $_POST['description'])) {
                     $forum->id          = intval($_POST['id']);
                     $forum->title       = $_POST['title'];
                     $forum->description = $_POST['description'];
                     $forum->userId      = $_SESSION['id'];
 
-                    // Primero lees para verificar que existe y que el usuario sea el dueño
                     if ($forum->readOne() && $forum->userId === $_SESSION['id']) {
                         if ($forum->update()) {
                             $response = [
@@ -460,11 +431,8 @@ switch ($method) {
                     $response = ["success" => true, "forums" => $userForums];
                     break;
                 case 'search':
-                    // Obtenemos término de búsqueda desde la query string
                     $queryTerm = $_GET['query'] ?? '';
-                    // Ejecutamos método search de la clase Forum
                     $results = $forum->search($queryTerm);
-                    // Devolvemos respuesta JSON
                     $response = [
                         'success' => true,
                         'results' => $results
@@ -493,5 +461,4 @@ switch ($method) {
         break;
 }
 
-// Send JSON response
 echo json_encode($response);

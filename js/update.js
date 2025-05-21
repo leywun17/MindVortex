@@ -1,12 +1,10 @@
 $(document).ready(function() {
-    // Maneja la lógica de envío del formulario de edición
     $("#updateProfileForm").on("submit", function(e) {
         e.preventDefault();
 
         const formData = new FormData(this);
         console.log(...formData);
         
-        // Lógica para verificar que la contraseña coincida
         const newPassword = $("input[name='new_password']").val();
         const confirmPassword = $("input[name='confirm_password']").val();
         
@@ -15,9 +13,8 @@ $(document).ready(function() {
             return;
         }
 
-        // Llama a la API para actualizar los datos del perfil
         $.ajax({
-            url: "../Backend/updateProfile.php",  // Cambia esto por el URL real de tu backend
+            url: "../Backend/updateProfile.php",  
             type: "POST",
             data: formData,
             contentType: false,
@@ -30,8 +27,7 @@ $(document).ready(function() {
                         title: 'Perfil actualizado',
                         text: 'Tu perfil ha sido actualizado con éxito.',
                     }).then(() => {
-                        // Puedes recargar la página o actualizar la vista
-                        /* location.reload(); */
+                        location.reload();
                     });
                 } else {
                     Swal.fire({
@@ -51,7 +47,6 @@ $(document).ready(function() {
         });
     });
 
-    // Habilitar/Deshabilitar el botón de actualizar imagen cuando se selecciona un archivo
     $("#profileImageInput").on("change", function() {
         const file = this.files[0];
         if (file) {

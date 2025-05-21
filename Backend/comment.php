@@ -1,15 +1,13 @@
 <?php
-// Encabezados CORS y configuración de respuesta JSON
+
 $title = "Access-Control-Allow-Origin: *";
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-// Iniciar sesión para obtener el usuario autenticado
 session_start();
 
-// Incluir configuración de la base de datos
 require_once 'config.php';
 
 class Comment
@@ -26,13 +24,11 @@ class Comment
     public string $authorName;
     public string $authorImage;
 
-    // Constructor recibe conexión PDO
     public function __construct(PDO $db)
     {
         $this->db = $db;
     }
 
-    // Crear nuevo comentario
     public function create(): bool
     {
         $this->content = htmlspecialchars(strip_tags($this->content));
@@ -48,7 +44,6 @@ class Comment
         if ($stmt->execute()) {
             $this->id = (int)$this->db->lastInsertId();
 
-            // Notificar al dueño del foro si es comentario principal
             if (!$this->parentId) {
                 $forumOwnerId = $this->getForumOwner($this->forumId);
                 if ($forumOwnerId && $forumOwnerId !== $this->userId) {
@@ -59,7 +54,6 @@ class Comment
                     );
                 }
             } else {
-                // Notificar al autor del comentario padre
                 $parentAuthorId = $this->getParentCommentAuthor();
                 if ($parentAuthorId && $parentAuthorId !== $this->userId) {
                     $this->createNotification(
@@ -112,14 +106,14 @@ class Comment
             FROM {$this->table} c
             JOIN users u ON c.user_id = u.id
             WHERE c.forum_id = :forum_id
-            ORDER BY COALESCE(c.parent_id, c.id), c.created_at ASC"; // Orden modificado
+            ORDER BY COALESCE(c.parent_id, c.id), c.created_at ASC";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':forum_id', $this->forumId, PDO::PARAM_INT);
         $stmt->execute();
 
         $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $this->buildCommentTree($comments); // Devolver estructura jerárquica
+        return $this->buildCommentTree($comments);
     }
 
     private function buildCommentTree(array $comments): array
@@ -141,7 +135,7 @@ class Comment
         return $tree;
     }
 
-    // Leer un solo comentario
+
     public function readOne(): bool
     {
         $sql = "SELECT c.id, c.forum_id, c.user_id, c.content, c.created_at, c.updated_at,
@@ -167,12 +161,11 @@ class Comment
         return true;
     }
 
-    // Actualizar comentario (sólo autor)
+
     public function update(): bool
     {
         $this->content = htmlspecialchars(strip_tags($this->content));
 
-        // Verificar autor
         $check = $this->db->prepare("SELECT user_id FROM {$this->table} WHERE id = :id");
         $check->bindParam(':id', $this->id, PDO::PARAM_INT);
         $check->execute();
@@ -188,10 +181,8 @@ class Comment
         return $stmt->execute();
     }
 
-    // Eliminar comentario (sólo autor)
     public function delete(): bool
     {
-        // Verificar autor
         $check = $this->db->prepare("SELECT user_id FROM {$this->table} WHERE id = :id");
         $check->bindParam(':id', $this->id, PDO::PARAM_INT);
         $check->execute();
@@ -206,7 +197,7 @@ class Comment
     }
 }
 
-// Instanciar base de datos y objeto
+
 $db      = (new Database())->getConnection();
 $comment = new Comment($db);
 $data    = json_decode(file_get_contents('php://input'));
@@ -219,7 +210,6 @@ switch ($method) {
     case 'POST':
 
         if ($action === 'reply' && !empty($data->parent_id) && !empty($data->content)) {
-            // Obtener forum_id del comentario padre
             $stmt = $db->prepare("SELECT forum_id FROM comments WHERE id = :parent_id");
             $stmt->bindParam(':parent_id', $data->parent_id, PDO::PARAM_INT);
             $stmt->execute();
@@ -261,7 +251,6 @@ switch ($method) {
             $userId = (int)($_SESSION['id'] ?? 0);
             $notifId = (int)$data->notification_id;
 
-            // Asegurarse que la notificación pertenezca al usuario actual
             $stmt = $db->prepare("UPDATE notifications SET is_read = 1 WHERE id = :id AND user_id = :user_id");
             $stmt->bindParam(':id', $notifId, PDO::PARAM_INT);
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);

@@ -1,20 +1,16 @@
 $(document).ready(function () {
-    // Constantes y variables globales
     const URL_PARAMS = new URLSearchParams(window.location.search);
     const FORUM_ID = URL_PARAMS.get("id");
     const API_URL = "../Backend/foro.php";
     const USER_ID = window.userId || null;
 
-    // Elementos del DOM
     const $forumContent = $("#forumContent");
     const $editModal = $("#editForumModal");
     const $editTitle = $("#editForumTitle");
     const $editDescription = $("#editForumDescription");
 
-    // Inicialización
     inicializarForo();
 
-    /* Funciones principales ***********************************************/
 
     function inicializarForo() {
         if (!FORUM_ID) {
@@ -68,7 +64,6 @@ $(document).ready(function () {
             manejarEliminacion(e);
         });
 
-    /* Funciones de visualización *******************************************/
 
     function mostrarDatosForo(forum) {
         $("#forumTitle").text(forum.title);
@@ -81,10 +76,9 @@ $(document).ready(function () {
         actualizarBotonFavorito(forum.isFavorite);
 
         if (forum.image) {
-            // Asumiendo que tienes un div o contenedor donde mostrar la imagen, por ejemplo:
             $("#forumImageContainer").html(`<img src="${forum.image}" alt="Imagen del foro" class="img-fluid rounded mb-3">`);
         } else {
-            $("#forumImageContainer").html(''); // Si no hay imagen, limpiar el contenedor
+            $("#forumImageContainer").html(''); 
         }
     }
 
@@ -101,8 +95,6 @@ $(document).ready(function () {
         `;
         $("#favoriteButtonContainer").html(botonFavorito);
     }
-
-    /* Funciones de interacción ********************************************/
 
     function manejarFavorito() {
         const forumId = $(this).data("id");
@@ -163,7 +155,6 @@ $(document).ready(function () {
         });
     }
 
-    /* Funciones de utilidad ***********************************************/
 
     function verificarPropietario(userId) {
         if (userId === USER_ID) {
