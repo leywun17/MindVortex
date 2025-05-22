@@ -306,7 +306,7 @@ $userEmail    = $_SESSION["email"] ?? 'Correo no disponible';
                             <label for="description" class="form-label">Descripción</label>
                             <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe tu pregunta con detalles (mínimo 15 caracteres)" minlength="15" required></textarea>
                         </div>
-                        <input type="file" id="forumImage" name="forumImage" accept="image/*">
+                        <input class="form-control mb-2" type="file" id="forumImage" name="forumImage" accept="image/*">
                         <div class="text-end">
                             <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Publicar</button>
